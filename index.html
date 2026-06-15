@@ -388,7 +388,26 @@ const PAGE=25;
 let allDA=[],allXP=[],filtered=[],listData=[],curPg=1,charts={};
 
 // ── UTILS ─────────────────────────────────────
-const N=s=>{const v=parseFloat(String(s||0).replace(/[,\s%]/g,''));return isNaN(v)?0:v};
+// Parse số Việt Nam: '500.000.000' hoặc '500,000,000' đều ra 500000000
+const N=s=>{
+  if(!s&&s!==0)return 0;
+  let str=String(s).trim().replace(/\s/g,'');
+  if(!str||str==='-')return 0;
+  // Nếu có nhiều dấu chấm (1.000.000) → dấu chấm là phân cách hàng nghìn
+  const dots=(str.match(/\./g)||[]).length;
+  const commas=(str.match(/,/g)||[]).length;
+  if(dots>1){str=str.replace(/\./g,'');} // xóa tất cả dấu chấm
+  else if(dots===1&&commas===0){
+    // 1 dấu chấm: có thể là hàng nghìn (93.648) hoặc decimal (93.5)
+    const afterDot=str.split('.')[1];
+    if(afterDot&&afterDot.length===3)str=str.replace('.',''); // hàng nghìn
+    // nếu không phải 3 số sau chấm → giữ nguyên làm decimal
+  }
+  if(commas>1){str=str.replace(/,/g,'');} // nhiều dấu phẩy → phân cách hàng nghìn
+  else if(commas===1){str=str.replace(',','.');}  // 1 dấu phẩy → decimal
+  const v=parseFloat(str.replace(/[^\d.]/g,''));
+  return isNaN(v)?0:v;
+};
 const P=s=>{const v=parseFloat(String(s||'').replace('%',''));return isNaN(v)?null:v};
 const FMT=(v,d=0)=>v.toLocaleString('vi-VN',{maximumFractionDigits:d});
 const TY=v=>(v/1e9).toFixed(1);
