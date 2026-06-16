@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Dashboard | Ban QLDA Giao thông & Nông nghiệp Đà Nẵng</title>
+<title>Dashboard | Ban Quản lý dự án đầu tư xây dựng các công trình giao thông và nông nghiệp Đà Nẵng</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
 :root{
@@ -884,7 +884,7 @@ function renderTop20(){
   const bigKH=[...d].filter(r=>r.kh>0).sort((a,b)=>b.kh-a.kh).slice(0,20);
   const xm={};d.forEach(r=>{if(r.dia){if(!xm[r.dia])xm[r.dia]={cnt:0,gn:0,kh:0};xm[r.dia].cnt++;xm[r.dia].gn+=r.gn;xm[r.dia].kh+=r.kh;}});
   const topXP=Object.entries(xm).sort((a,b)=>b[1].kh-a[1].kh).slice(0,20);
-  function fillT(id,rows,valFn){document.querySelector(`#${id} tbody`).innerHTML=rows.map((r,i)=>{const p=pc(r);const c=COL(p);return`<tr><td class="rnk ${rnkC(i)}">${i+1}</td><td class="tnm" title="${r.ten}">${r.ten}</td><td style="font-size:10px;white-space:nowrap">${r.cb||'--'}</td><td class="r">${valFn(r)}</td><td>${pbRow(p,c)}</td></tr>`;}).join('');}
+  function fillT(id,rows,valFn){document.querySelector(`#${id} tbody`).innerHTML=rows.map((r,i)=>{const p=pc(r);const c=COL(p);return`<tr><td class="rnk ${rnkC(i)}">${i+1}</td><td class="tnm" title='${r.ten}'>${r.ten}</td><td style="font-size:10px;white-space:nowrap">${r.cb||'--'}</td><td class="r">${valFn(r)}</td><td>${pbRow(p,c)}</td></tr>`;}).join('');}
   fillT('tLow',low,r=>r.kh?MN(r.kh):'--');fillT('tHigh',high,r=>r.gn?MN(r.gn):'--');fillT('tKH',bigKH,r=>r.kh?MN(r.kh):'--');
   document.querySelector('#tXP tbody').innerHTML=topXP.map(([xp,v],i)=>{const p=v.kh>0?Math.round(v.gn/v.kh*100):null;const c=COL(p);return`<tr><td class="rnk ${rnkC(i)}">${i+1}</td><td style="font-weight:600;color:var(--teal)">${xp}</td><td class="r">${v.cnt}</td><td class="r" style="font-weight:700;color:var(--navy)">${TY(v.kh)}</td><td class="r" style="color:var(--green)">${TY(v.gn)}</td><td>${pbRow(p,c)}</td></tr>`;}).join('');
 }
@@ -914,9 +914,9 @@ function renderTDTable(){
   document.getElementById('tdPrv').disabled=tdPg<=1;document.getElementById('tdNxt').disabled=tdPg>=pgs;
   document.getElementById('tdTbody').innerHTML=pg.map(r=>{
     const cbHD=canhBaoHD(r.batdau,r.tiendoHD,r.tt);const cbNam=canhBaoNamDA(r.namda,r.tt);
-    return`<tr onclick="openDA('${r.ma}',${JSON.stringify(r)})" style="cursor:pointer">
+    return`<tr onclick="openDA('${r.ma}')" style="cursor:pointer">
       <td><span class="st n" style="font-size:9px">${r.ma}</span></td>
-      <td class="tdn" title="${r.ten}">${r.ten}</td>
+      <td class="tdn" title='${r.ten}'>${r.ten}</td>
       <td style="font-size:10px;white-space:nowrap">${r.cb||'--'}</td>
       <td style="font-size:10px;text-align:center">${r.batdau||'--'}</td>
       <td style="text-align:center;font-weight:600">${r.tiendoHD||'--'}</td>
@@ -944,7 +944,7 @@ function renderXP(){
     const daHtml=das.length===0?`<div style="font-size:10px;color:var(--ink3);font-style:italic">Chưa có dự án</div>`:
       das.slice(0,3).map(d=>{const p=pc(d);const c=COL(p);return`<div class="xda-i"><span class="st ${({TCHT:'g',TCCT:'n',TC00:'r',CBDT:'a'})[d.tt]||''}" style="font-size:8px">${d.tt}</span><span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:10px" title="${d.ten}">${d.ten}</span><div class="xda-pb"><div class="xda-pf" style="width:${Math.min(p??0,100)}%;background:${c.b}"></div></div><span class="xda-p" style="color:${c.t}">${p!==null?p+'%':'--'}</span></div>`;}).join('')+(das.length>3?`<div style="font-size:9px;color:var(--ink3)">…+${das.length-3} DA khác</div>`:'');
     const moTag=mos.length>0?`<span style="font-size:10px;font-weight:600;padding:1px 7px;border-radius:12px;background:var(--brlt);color:var(--brown);margin-left:5px">⛏${mos.length} mỏ</span>`:'';
-    return`<div class="xc" onclick='showXPModal(${JSON.stringify(x)})'>
+    return`<div class="xc" onclick="showXPModal('${x.ten}')">
       <div class="xch"><span class="xcn">${x.ten}</span><span class="xcb">#${x.stt}</span></div>
       <div class="xcbody">
         <div class="xrow"><span class="xlbl">SĐT</span><span class="xval">${x.sdt||'--'}</span></div>
@@ -957,7 +957,8 @@ function renderXP(){
   }).join('')||'<div style="padding:28px;text-align:center;color:var(--ink3);grid-column:1/-1">Không tìm thấy</div>';
 }
 
-function showXPModal(x){
+function showXPModal(ten){
+  const x=allXP.find(xp=>xp.ten===ten)||{ten};
   const das=daForXP(x.ten),mos=moForXP(x.ten),xpObj=allXP.find(xp=>xp.ten===x.ten)||x;
   const dsF=parseInt((x.danso||'0').replace(/\D/g,'')).toLocaleString('vi-VN');
   const gmUrl=xpObj.lat?`https://www.google.com/maps?q=${xpObj.lat},${xpObj.lon}`:'';
@@ -1082,16 +1083,16 @@ function renderAlerts(){
   const alTDY=d.filter(r=>canhBaoHD(r.batdau,r.tiendoHD,r.tt).level==='warning').slice(0,20);
   const alVM=d.filter(r=>r.vuongmac&&r.vuongmac.toLowerCase()!=='không có'&&r.vuongmac.trim()).slice(0,20);
   const alTC=d.filter(r=>r.tt==='TC00'&&r.kh>0).sort((a,b)=>b.kh-a.kh);
-  function ai(r,bc,val){return`<div class="ai" onclick="openDA('${r.ma}',${JSON.stringify(r)})"><span class="bdg ${bc}">${val}</span><span class="ainame" title="${r.ten}">${r.ten}</span><span class="aisub">${r.cb||shP(r.phong)}</span></div>`;}
+  function ai(r,bc,val){return`<div class="ai" onclick="openDA('${r.ma}')"><span class="bdg ${bc}">${val}</span><span class="ainame" title='${r.ten}'>${r.ten}</span><span class="aisub">${r.cb||shP(r.phong)}</span></div>`;}
   document.getElementById('alR').innerHTML=alR.length?alR.map(r=>ai(r,'r',pc(r)!==null?pc(r)+'%':'--')).join(''):`<div class="empty">✓ Không có</div>`;
   document.getElementById('alA').innerHTML=alA.length?alA.map(r=>ai(r,'a',pc(r)!==null?pc(r)+'%':'--')).join(''):`<div class="empty">✓ Không có</div>`;
-  document.getElementById('alG').innerHTML=alG.length?alG.map(r=>`<div class="ai"><span class="bdg g">TCHT</span><span class="ainame" title="${r.ten}">${r.ten}</span><span class="aisub">${r.pgd}</span></div>`).join(''):`<div class="empty">Không có</div>`;
-  function tdAi(r,bc){const cb=canhBaoHD(r.batdau,r.tiendoHD,r.tt);return`<div class="ai" onclick="openDA('${r.ma}',${JSON.stringify(r)})"><span class="bdg ${bc}" style="font-size:9px">${cb.ngayCon!==null?(cb.ngayCon<0?'Quá '+Math.abs(cb.ngayCon)+'N':'Còn '+cb.ngayCon+'N'):'--'}</span><span class="ainame" title="${r.ten}">${r.ten}</span><span class="aisub">${r.cb||'--'}</span></div>`;}
+  document.getElementById('alG').innerHTML=alG.length?alG.map(r=>`<div class="ai"><span class="bdg g">TCHT</span><span class="ainame" title='${r.ten}'>${r.ten}</span><span class="aisub">${r.pgd}</span></div>`).join(''):`<div class="empty">Không có</div>`;
+  function tdAi(r,bc){const cb=canhBaoHD(r.batdau,r.tiendoHD,r.tt);return`<div class="ai" onclick="openDA('${r.ma}')"><span class="bdg ${bc}" style="font-size:9px">${cb.ngayCon!==null?(cb.ngayCon<0?'Quá '+Math.abs(cb.ngayCon)+'N':'Còn '+cb.ngayCon+'N'):'--'}</span><span class="ainame" title='${r.ten}'>${r.ten}</span><span class="aisub">${r.cb||'--'}</span></div>`;}
   document.getElementById('alTDR').innerHTML=alTDR.length?alTDR.map(r=>tdAi(r,'r')).join(''):`<div class="empty">✓ Không có</div>`;
   document.getElementById('alTDO').innerHTML=alTDO.length?alTDO.map(r=>tdAi(r,'o')).join(''):`<div class="empty">✓ Không có</div>`;
   document.getElementById('alTDY').innerHTML=alTDY.length?alTDY.map(r=>tdAi(r,'a')).join(''):`<div class="empty">✓ Không có</div>`;
-  document.getElementById('alVM').innerHTML=alVM.length?alVM.map(r=>`<div class="ai" onclick="openDA('${r.ma}',${JSON.stringify(r)})"><span class="bdg n">VM</span><span class="ainame" title="${r.vuongmac}">${r.ten}</span><span class="aisub" style="color:var(--red)">${r.vuongmac.slice(0,25)}</span></div>`).join(''):`<div class="empty">✓ Không có vướng mắc</div>`;
-  document.getElementById('alTC').innerHTML=alTC.length?alTC.map(r=>`<div class="ai" onclick="openDA('${r.ma}',${JSON.stringify(r)})"><span class="bdg r">TC00</span><span class="ainame" title="${r.ten}">${r.ten}</span><span class="aisub">KH:${MN(r.kh)} tr</span></div>`).join(''):`<div class="empty">✓ Không có</div>`;
+  document.getElementById('alVM').innerHTML=alVM.length?alVM.map(r=>`<div class="ai" onclick="openDA('${r.ma}')"><span class="bdg n">VM</span><span class="ainame" title='${r.vuongmac}'>${r.ten}</span><span class="aisub" style="color:var(--red)">${r.vuongmac.slice(0,25)}</span></div>`).join(''):`<div class="empty">✓ Không có vướng mắc</div>`;
+  document.getElementById('alTC').innerHTML=alTC.length?alTC.map(r=>`<div class="ai" onclick="openDA('${r.ma}')"><span class="bdg r">TC00</span><span class="ainame" title='${r.ten}'>${r.ten}</span><span class="aisub">KH:${MN(r.kh)} tr</span></div>`).join(''):`<div class="empty">✓ Không có</div>`;
   const xpCo=new Set(allDA.map(r=>(r.dia||'').toLowerCase().trim()));
   const xpChua=allXP.filter(x=>!xpCo.has(x.ten.toLowerCase().trim()));
   document.getElementById('xpNone').innerHTML=xpChua.length?xpChua.map(x=>`<span style="background:var(--bg);border:1px solid var(--rule);border-radius:20px;padding:3px 9px;font-size:11px;color:var(--ink2)">${x.ten}</span>`).join(''):`<span style="color:var(--green);font-size:12px">✓ Tất cả xã/phường đều có dự án</span>`;
@@ -1100,6 +1101,8 @@ function renderAlerts(){
 
 // ══ CLICK DA DETAIL ══
 function openDA(ma,r){
+  // Nếu không truyền r, tìm từ allDA
+  if(!r||typeof r==='undefined'){r=allDA.find(x=>x.ma===ma)||{};}
   const p=pc(r),c=COL(p),cbHD=canhBaoHD(r.batdau,r.tiendoHD,r.tt),cbNam=canhBaoNamDA(r.namda,r.tt);
   document.getElementById('mTit').textContent='📁 '+ma+' — '+(r.ten||'').slice(0,55);
   document.getElementById('mBod').innerHTML=`
@@ -1190,7 +1193,7 @@ function renderL(){
     rows.push(`<tr onclick="toggleRow('${r.ma}')" style="cursor:pointer;${isExp?'background:#EEF5FF;font-weight:500':''}">
       <td style="text-align:center;color:var(--blue);font-size:11px">${isExp?'▼':'▶'}</td>
       <td><span class="st n" style="font-size:9px">${r.ma}</span></td>
-      <td class="tdn" title="${r.ten}">${r.ten}</td>
+      <td class="tdn" title='${r.ten}'>${r.ten}</td>
       <td style="font-size:10px;white-space:nowrap">${shP(r.phong)}</td>
       <td style="font-size:10px;white-space:nowrap;color:var(--navy);font-weight:600">${r.cb||'--'}</td>
       <td style="font-size:10px;color:var(--teal);white-space:nowrap">${r.dia||'--'}</td>
@@ -1203,11 +1206,11 @@ function renderL(){
         <span class="${cbHD.cls}" style="font-size:9px;padding:2px 5px;border-radius:10px;display:block">${cbHD.label}</span>
         ${dailyCell}
       </td>
-      <td style="font-size:10px;color:var(--ink3)" title="${r.nthi||''}">${(r.nthi||'--').slice(0,16)}</td>
+      <td style="font-size:10px;color:var(--ink3)" title='${r.nthi||""}'>${(r.nthi||'--').slice(0,16)}</td>
       <td style="font-size:10px;text-align:right;color:${vlDat>0?'var(--brown)':'var(--ink3)'}">${vlFmt(vlDat)}</td>
       <td style="font-size:10px;text-align:right;color:${vlCat>0?'#1E40AF':'var(--ink3)'}">${vlFmt(vlCat)}</td>
       <td style="font-size:10px;text-align:right;color:${vlDa>0?'var(--ink2)':'var(--ink3)'}">${vlFmt(vlDa)}</td>
-      <td style="text-align:center">${hasVM?`<span style="color:var(--red);font-size:14px" title="${r.vuongmac}">⚠</span>`:'<span style="color:var(--green);font-size:12px">✓</span>'}</td>
+      <td style="text-align:center">${hasVM?`<span style="color:var(--red);font-size:14px" title='${r.vuongmac}'>⚠</span>`:'<span style="color:var(--green);font-size:12px">✓</span>'}</td>
     </tr>`);
 
     // Expanded row
@@ -1332,8 +1335,7 @@ function exportCSV(){
     ].join(',');
   });
   const a=document.createElement('a');
-  a.href=URL.createObjectURL(new Blob(['﻿'+[hdr,...rows].join('
-')],{type:'text/csv;charset=utf-8'}));
+  a.href=URL.createObjectURL(new Blob(['﻿'+[hdr,...rows].join('\n')],{type:'text/csv;charset=utf-8'}));
   a.download=`BanQLDA_2026_${new Date().toISOString().slice(0,10)}.csv`;
   a.click();
   toast('📥 Xuất '+arr.length+' DA — '+hdr.length+' cột');
