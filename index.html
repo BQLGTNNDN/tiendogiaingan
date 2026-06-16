@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Dashboard | Ban Quản lý dự án đầu tư xây dựng các công trình giao thông và nông nghiệp Đà Nẵng</title>
+<title>Dashboard | Ban QLDA Giao thông & Nông nghiệp Đà Nẵng</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
 :root{
@@ -337,7 +337,7 @@ footer{text-align:center;padding:13px;font-size:10px;color:var(--ink3);border-to
 <div class="slbl">Cảnh báo tiến độ hợp đồng & tiến độ dự án</div>
 <div class="kg" style="grid-template-columns:repeat(auto-fit,minmax(140px,1fr))">
   <div class="kpi" style="--ac:#075985"><div class="kpi-l">🔵 Hoàn thành</div><div class="kpi-v" id="tdDone" style="color:#075985">--</div><div class="kpi-s">dự án</div></div>
-  <div class="kpi g"><div class="kpi-l">🟢 Bình thường</div><div class="kpi-v" id="tdNormal">--</div><div class="kpi-s">dự án</div></div>
+  <div class="kpi g"><div class="kpi-l">🟢 Bình thường / Chưa TC</div><div class="kpi-v" id="tdNormal">--</div><div class="kpi-s">dự án</div></div>
   <div class="kpi a"><div class="kpi-l">🟡 Cần theo dõi</div><div class="kpi-v" id="tdWarning">--</div><div class="kpi-s">≤90 ngày</div></div>
   <div class="kpi o"><div class="kpi-l">🟠 Nguy cơ chậm</div><div class="kpi-v" id="tdUrgent">--</div><div class="kpi-s">≤30 ngày</div></div>
   <div class="kpi r"><div class="kpi-l">🔴 Quá hạn</div><div class="kpi-v" id="tdOverdue">--</div><div class="kpi-s">quá hạn HĐ</div></div>
@@ -663,14 +663,41 @@ function rnkC(i){return i===0?'g':i===1?'s':i===2?'b':'';}
 const TODAY=new Date(2025,5,16);
 function parseDate(s){s=(s||'').trim();if(!s)return null;const p=s.split(/[\/\-]/);if(p.length===3){if(p[0].length===4)return new Date(+p[0],+p[1]-1,+p[2]);return new Date(+p[2],+p[1]-1,+p[0]);}return null;}
 function canhBaoHD(batdau,tiendoHD,tt){
-  if(tt==='TCHT')return{cls:'td-done',label:'🔵 Hoàn thành',level:'done',ngayCon:null};
-  const d=parseDate(batdau);const days=parseInt(tiendoHD)||0;
-  if(!d||!days)return{cls:'td-unknown',label:'⬜ Chưa có dữ liệu',level:'unknown',ngayCon:null};
-  const ht=new Date(d.getTime()+days*86400000);const con=Math.round((ht-TODAY)/86400000);
-  if(con<0)return{cls:'td-overdue',label:`🔴 Quá hạn ${Math.abs(con)} ngày`,level:'overdue',ngayCon:con};
-  if(con<=30)return{cls:'td-urgent',label:`🟠 Nguy cơ — còn ${con} ngày`,level:'urgent',ngayCon:con};
-  if(con<=90)return{cls:'td-warning',label:`🟡 Cần theo dõi — còn ${con} ngày`,level:'warning',ngayCon:con};
-  return{cls:'td-normal',label:`🟢 Bình thường — còn ${con} ngày`,level:'normal',ngayCon:con};
+  if(tt==='TCHT')return{cls:'td-done',label:'🔵 Hoàn thành',level:'done',ngayCon:null,ngayBD:null,ngayHT:null};
+  const d=parseDate(batdau);
+  const days=parseInt(tiendoHD)||0;
+  if(!d||!days)return{cls:'td-unknown',label:'⬜ Chưa có dữ liệu',level:'unknown',ngayCon:null,ngayBD:null,ngayHT:null};
+
+  const ht=new Date(d.getTime()+days*86400000);
+  // Số ngày còn lại từ HÔM NAY đến ngày HOÀN THÀNH HĐ
+  const conDenHT=Math.round((ht-TODAY)/86400000);
+  // Số ngày đến khi bắt đầu TC (nếu chưa bắt đầu)
+  const denBD=Math.round((d-TODAY)/86400000);
+
+  // Case 1: Chưa đến ngày bắt đầu TC
+  if(denBD>0){
+    return{
+      cls:'td-unknown',
+      label:`⚪ Chưa TC — BD: ${d.toLocaleDateString('vi-VN')} (còn ${denBD} ngày)`,
+      level:'notstarted',
+      ngayCon:conDenHT,  // số ngày từ hôm nay đến ngày HT HĐ
+      ngayBD:d,ngayHT:ht,
+      denBD,
+      conDenHT
+    };
+  }
+
+  // Case 2: Đang thi công (TODAY >= batdau)
+  // Số ngày còn lại của HĐ kể từ HÔM NAY
+  const conHD=Math.round((ht-TODAY)/86400000);
+
+  // Case 3: Quá hạn
+  if(conHD<0)return{cls:'td-overdue',label:`🔴 Quá hạn ${Math.abs(conHD)} ngày`,level:'overdue',ngayCon:conHD,ngayBD:d,ngayHT:ht,conDenHT};
+
+  // Case 4: Đang thi công, cảnh báo theo ngày còn lại
+  if(conHD<=30)return{cls:'td-urgent',label:`🟠 Nguy cơ — còn ${conHD} ngày`,level:'urgent',ngayCon:conHD,ngayBD:d,ngayHT:ht,conDenHT};
+  if(conHD<=90)return{cls:'td-warning',label:`🟡 Cần theo dõi — còn ${conHD} ngày`,level:'warning',ngayCon:conHD,ngayBD:d,ngayHT:ht,conDenHT};
+  return{cls:'td-normal',label:`🟢 Bình thường — còn ${conHD} ngày`,level:'normal',ngayCon:conHD,ngayBD:d,ngayHT:ht,conDenHT};
 }
 function canhBaoNamDA(namda,tt){
   if(tt==='TCHT')return{cls:'td-done',label:'🔵 Hoàn thành',level:'done'};
@@ -891,9 +918,11 @@ function renderTop20(){
 
 // ══ TIẾN ĐỘ ══
 function renderTD(){
-  const d=allDA,counts={done:0,normal:0,warning:0,urgent:0,overdue:0};
+  const d=allDA,counts={done:0,normal:0,warning:0,urgent:0,overdue:0,notstarted:0};
   d.forEach(r=>{const cb=canhBaoHD(r.batdau,r.tiendoHD,r.tt);counts[cb.level]=(counts[cb.level]||0)+1;});
-  S('tdDone',counts.done||0);S('tdNormal',counts.normal||0);S('tdWarning',counts.warning||0);S('tdUrgent',counts.urgent||0);S('tdOverdue',counts.overdue||0);
+  S('tdDone',counts.done||0);
+  S('tdNormal',(counts.normal||0)+(counts.notstarted||0));
+  S('tdWarning',counts.warning||0);S('tdUrgent',counts.urgent||0);S('tdOverdue',counts.overdue||0);
   S('tb5',(counts.overdue+counts.urgent)||0);
   tdData=[...d];applyTD();
 }
@@ -902,7 +931,11 @@ function applyTD(){
   tdFiltered=tdData.filter(r=>{
     if(fP&&r.phong!==fP)return false;if(fCB&&r.cb!==fCB)return false;
     if(fQ&&!r.ten.toLowerCase().includes(fQ))return false;
-    if(fLv){const cb=canhBaoHD(r.batdau,r.tiendoHD,r.tt);if(cb.level!==fLv)return false;}
+    if(fLv){const cb=canhBaoHD(r.batdau,r.tiendoHD,r.tt);
+      // 'normal' option cũng bao gồm 'notstarted'
+      const lvMatch=cb.level===fLv||(fLv==='normal'&&cb.level==='notstarted');
+      if(!lvMatch)return false;
+    }
     return true;
   });
   S('tdCnt',tdFiltered.length);tdPg=1;renderTDTable();
@@ -1170,15 +1203,19 @@ function renderL(){
     const isExp=expandedRows.has(r.ma);
 
     // Tính số ngày còn lại
-    const ngayCon=cbHD.ngayCon;
-    // Số tiền cần GN mỗi ngày để hoàn thành (dựa trên XL còn lại / ngày còn lại)
+    const ngayCon=cbHD.ngayCon;     // ngày còn đến ngày HT HĐ (tính từ hôm nay)
+    const denBD=cbHD.denBD||null;   // ngày còn đến khi bắt đầu TC
+    // Số ngày dùng để tính GN/ngày:
+    // - Chưa TC: dùng conDenHT (tổng HĐ còn lại từ hôm nay)
+    // - Đang TC: dùng ngayCon (HĐ còn lại từ hôm nay)
+    const ngayConGN=(cbHD.level==='notstarted')?(cbHD.conDenHT??ngayCon):ngayCon;
     let dailyCell='';
-    if(ngayCon!==null&&ngayCon>0&&khXl>0&&gnXl<khXl){
+    if(ngayConGN!==null&&ngayConGN>0&&khXl>0&&gnXl<khXl){
       const conLai=khXl-gnXl;
-      const daily=conLai/ngayCon;
-      const dailyFmt=daily>=1e9?TY(daily)+' tỷ/ngày':MN(daily)+' tr/ngày';
-      const urgentDaily=daily>=1e8; // >100tr/ngày là khẩn
-      dailyCell=`<div style="font-size:9px;margin-top:2px;color:${urgentDaily?'var(--red)':'var(--ink3)'}">📌 Cần GN: <b>${dailyFmt}</b></div>`;
+      const daily=conLai/ngayConGN;
+      const dailyFmt=daily>=1e8?TY(daily)+' tỷ/ngày':MN(daily)+' tr/ngày';
+      const urgentDaily=daily>=1e8;
+      dailyCell=`<div style="font-size:9px;margin-top:2px">📌 Cần GN: <b style="color:${urgentDaily?'var(--red)':'var(--amber)'}">${dailyFmt}</b></div>`;
     }else if(ngayCon!==null&&ngayCon<0){
       dailyCell=`<div style="font-size:9px;margin-top:2px;color:var(--red)">⚠ Quá hạn ${Math.abs(ngayCon)} ngày</div>`;
     }
@@ -1218,7 +1255,7 @@ function renderL(){
       const today=TODAY;
       const d=parseDate(r.batdau);
       const ngayBD=d?d.toLocaleDateString('vi-VN'):(r.batdau||'--');
-      const ngayHT=d&&r.tiendoHD?new Date(d.getTime()+r.tiendoHD*86400000).toLocaleDateString('vi-VN'):'--';
+      const ngayHT=cbHD.ngayHT?cbHD.ngayHT.toLocaleDateString('vi-VN'):(d&&r.tiendoHD?new Date(d.getTime()+r.tiendoHD*86400000).toLocaleDateString('vi-VN'):'--');
       const conLaiGN=khXl>gnXl?(khXl-gnXl):0;
       const pctDone=ngayCon!==null&&r.tiendoHD>0?Math.round((r.tiendoHD-Math.max(0,ngayCon))/r.tiendoHD*100):null;
 
@@ -1234,11 +1271,19 @@ function renderL(){
               <span class="exp-val navy">${ngayHT}</span>
             </div>
             <div class="exp-field">
-              <span class="exp-lbl">⏱ Tiến độ HĐ</span>
-              <span class="exp-val">${r.tiendoHD||'--'} ngày${pctDone!==null?' (đã qua '+pctDone+'%)':''}</span>
+              <span class="exp-lbl">⏱ Số ngày HĐ</span>
+              <span class="exp-val">${r.tiendoHD||'--'} ngày</span>
             </div>
             <div class="exp-field">
-              <span class="exp-lbl">⚡ Còn lại theo HĐ</span>
+              <span class="exp-lbl">📍 Trạng thái tiến độ</span>
+              <span class="${cbHD.cls}" style="font-size:10px;padding:2px 8px;border-radius:10px">${cbHD.label}</span>
+            </div>
+            ${cbHD.level==='notstarted'?`<div class="exp-field">
+              <span class="exp-lbl">⏳ Đến ngày bắt đầu TC</span>
+              <span class="exp-val amber">Còn ${denBD} ngày (${new Date(cbHD.ngayBD).toLocaleDateString('vi-VN')})</span>
+            </div>`:''}
+            <div class="exp-field">
+              <span class="exp-lbl">⚡ Còn lại đến HT HĐ</span>
               <span class="exp-val ${ngayCon!==null&&ngayCon<0?'red':ngayCon!==null&&ngayCon<=30?'amber':'green'}">${ngayCon!==null?(ngayCon<0?'Quá hạn '+Math.abs(ngayCon)+' ngày':'Còn '+ngayCon+' ngày'):'--'}</span>
             </div>
             <div class="exp-field">
