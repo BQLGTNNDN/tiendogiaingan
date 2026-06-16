@@ -617,6 +617,7 @@ const MO_STATIC=[
 ];
 
 // ══ CONFIG ══
+const URL_MO_NEW='https://docs.google.com/spreadsheets/d/e/2PACX-1vTpTWjWDJmyRZPjmE_PdPpSDhyDLzFrzWmkFcn3h2BjwXfoKJqoefIWQLzrfd7_rlOpUoDFyyjUM20D/pub?gid=957357812&single=true&output=csv';
 const URL_XP='https://docs.google.com/spreadsheets/d/e/2PACX-1vRAl16k6jz3_ULi7Se9sx-kj2CGlEmQ_wYK4Jg-nF1sLAJOAPr6sB-bhyDIjSp_TA/pub?gid=747744167&single=true&output=csv';
 const URL_TOA='https://docs.google.com/spreadsheets/d/e/2PACX-1vQ1WJe1aZNRjb_E75kJ7LpOcNPHBAmd-_4vOcjPCxjYKZ9mn4uFiwtw8qAvqZ5wFA/pub?gid=176970964&single=true&output=csv';
 const PAGE=25;
@@ -701,6 +702,55 @@ function parseCSVtoDA(txt){
   });
 }
 
+// ══ PARSE CSV → MO OBJECTS ══
+// Cột: STT=0,Loại=1,Tên=2,Xã=3,DT=4,TL=5,Tọa độ=6,GMap=7,TênCũ=8
+function parseCSVtoMo(txt){
+  const LV={KHOANGSAN_DATSANLAP:'Đất san lấp',KHOANGSAN_CAT_SOI:'Cát sỏi',KHOANGSAN_DA:'Đá'};
+  return parseCSV(txt).slice(1).filter(r=>r[0]&&/^\d+$/.test(r[0].trim())&&r[1]&&r[2]).map((r,i)=>{
+    const loai=(r[1]||'').trim();
+    let typeKey='da';
+    if(loai==='KHOANGSAN_DATSANLAP')typeKey='dat';
+    else if(loai==='KHOANGSAN_CAT_SOI')typeKey='cat';
+    // Parse diện tích: "25,4" hoặc "25.4" → 25.4
+    // DT: "25,4" (VN decimal) hoặc "25.4" → 25.4
+    const dtStr=(r[4]||'0').trim().replace(',','.');
+    const dt=parseFloat(dtStr)||0;
+    // Parse trữ lượng VN: "2.000.000" → 2000000, "474.248,50" → 474248
+    const tlRaw=(r[5]||'0').trim();
+    let tlStr=tlRaw;
+    const tlDots=tlStr.split('').filter(x=>x==='.').length;
+    const tlCommas=tlStr.split('').filter(x=>x===',').length;
+    if(tlDots>=2||(tlDots>=1&&tlCommas>=1&&tlStr.indexOf('.')<tlStr.indexOf(','))){
+      tlStr=tlStr.replace(/\./g,'').replace(',','.');
+    }else if(tlDots===1&&tlCommas===0){
+      const af=tlStr.split('.')[1];
+      if(af&&af.length===3)tlStr=tlStr.replace('.','');
+    }
+    const tl=parseFloat(tlStr.replace(/[^\d.]/g,''))||0;
+    // Parse tọa độ: "15.556673,108.373378"
+    const toaStr=(r[6]||'').trim();
+    let lat=null,lon=null;
+    const parts=toaStr.split(',');
+    if(parts.length>=2){
+      const la=parseFloat(parts[0].trim());
+      const lo=parseFloat(parts[1].trim());
+      if(!isNaN(la)&&la>0)lat=la;
+      if(!isNaN(lo)&&lo>0)lon=lo;
+    }
+    // Google Maps link từ tọa độ nếu cột 7 không có link thực
+    const gmapRaw=(r[7]||'').trim();
+    const gmaps=(gmapRaw.startsWith('http'))?gmapRaw:(lat?`https://www.google.com/maps?q=${lat},${lon}`:'');
+    return{
+      id:i+1,loai,typeKey,
+      ten:(r[2]||'').trim(),
+      xa:(r[3]||'').trim(),
+      dt,tl,lat,lon,
+      gmaps,
+      tenCu:(r[8]||'').trim()
+    };
+  });
+}
+
 // ══ INIT ══
 async function init(){
   ld(true,'Đang tải dữ liệu…');
@@ -716,7 +766,17 @@ async function init(){
       else{allDA=[...DA_STATIC];}
     }else{allDA=[...DA_STATIC];}
   }catch(e){allDA=[...DA_STATIC];console.log('Fallback to static');}
-  allMo=[...MO_STATIC];
+  // Fetch mỏ vật liệu realtime
+  const URL_MO_LIVE='https://docs.google.com/spreadsheets/d/e/2PACX-1vTpTWjWDJmyRZPjmE_PdPpSDhyDLzFrzWmkFcn3h2BjwXfoKJqoefIWQLzrfd7_rlOpUoDFyyjUM20D/pub?gid=957357812&single=true&output=csv';
+  try{
+    const rMo=await fetch(URL_MO_LIVE,{cache:'no-store'});
+    if(rMo.ok){
+      const tMo=await rMo.text();
+      const parsedMo=parseCSVtoMo(tMo);
+      if(parsedMo.length>5){allMo=parsedMo;console.log('✅ Mỏ realtime: '+allMo.length);}
+      else{allMo=[...MO_STATIC];}
+    }else{allMo=[...MO_STATIC];}
+  }catch(e){allMo=[...MO_STATIC];console.log('Mỏ fallback static');}
   try{
     const[r2,r3]=await Promise.all([fetch(URL_XP,{cache:'no-store'}),fetch(URL_TOA,{cache:'no-store'})]);
     const[t2,t3]=await Promise.all([r2.text(),r3.text()]);
