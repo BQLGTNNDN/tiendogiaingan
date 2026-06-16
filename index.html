@@ -206,6 +206,22 @@ table.mt td.r{text-align:right;font-variant-numeric:tabular-nums}
 #loader.h{display:none}
 #toast{position:fixed;bottom:20px;right:20px;background:var(--navy);color:#fff;padding:10px 15px;border-radius:8px;font-size:12px;z-index:500;opacity:0;transform:translateY(10px);transition:all .25s;box-shadow:var(--sh2)}
 #toast.s{opacity:1;transform:none}
+/* EXPANDABLE ROW */
+.row-exp{background:var(--bg);border-left:3px solid var(--blue)}
+.row-exp td{padding:0!important}
+.exp-body{padding:10px 14px;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px;font-size:11px}
+.exp-field{display:flex;flex-direction:column;gap:2px}
+.exp-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--ink3)}
+.exp-val{color:var(--ink);font-size:11px}
+.exp-val.red{color:var(--red);font-weight:600}
+.exp-val.green{color:var(--green);font-weight:600}
+.exp-val.amber{color:var(--amber);font-weight:600}
+.exp-val.navy{color:var(--navy);font-weight:600}
+.exp-full{grid-column:1/-1}
+/* TIẾN ĐỘ GN */
+.tdn-wrap{display:flex;align-items:center;gap:6px}
+.tdn-daily{font-size:9px;color:var(--ink3)}
+.alert-daily{font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px}
 footer{text-align:center;padding:13px;font-size:10px;color:var(--ink3);border-top:1px solid var(--rule);background:var(--surf);margin-top:10px}
 </style>
 </head>
@@ -432,19 +448,23 @@ footer{text-align:center;padding:13px;font-size:10px;color:var(--ink3);border-to
     <div class="tw">
       <table class="mt">
         <thead><tr>
-          <th style="width:50px">Mã DA</th>
-          <th style="min-width:210px">Công trình</th>
-          <th style="min-width:85px">Phòng</th>
-          <th style="min-width:100px">Phó GĐ</th>
-          <th style="min-width:100px">Cán bộ PH</th>
-          <th style="min-width:95px">Xã/Phường</th>
+          <th style="width:28px"></th>
+          <th style="width:52px">Mã DA</th>
+          <th style="min-width:200px">Công trình</th>
+          <th style="min-width:80px">Phòng</th>
+          <th style="min-width:95px">Cán bộ PH</th>
+          <th style="min-width:90px">Xã/Phường</th>
           <th style="min-width:55px">TT</th>
-          <th style="min-width:65px">Nguồn</th>
-          <th class="r" style="min-width:80px">KH (tr.đ)</th>
-          <th class="r" style="min-width:75px">GN (tr.đ)</th>
-          <th style="min-width:95px">Tỷ lệ GN</th>
-          <th style="min-width:100px">Cảnh báo TD</th>
-          <th style="min-width:70px">Nhà thầu</th>
+          <th style="min-width:60px">Nguồn</th>
+          <th class="r" style="min-width:78px">KH XL (tr.đ)</th>
+          <th class="r" style="min-width:72px">GN XL (tr.đ)</th>
+          <th style="min-width:90px">Tỷ lệ GN</th>
+          <th style="min-width:135px">⏱ Còn lại / Ngày GN cần</th>
+          <th style="min-width:75px">Nhà thầu TC</th>
+          <th style="min-width:68px">VL Đất</th>
+          <th style="min-width:62px">VL Cát</th>
+          <th style="min-width:62px">VL Đá</th>
+          <th style="min-width:50px">VM</th>
         </tr></thead>
         <tbody id="ltb"></tbody>
       </table>
@@ -693,6 +713,8 @@ function parseCSVtoDA(txt){
       nguon:(r[15]||'').trim().toUpperCase(),
       loai:(r[16]||'').trim(),
       kh,gn,tyle,
+      khXl:N(r[23]),   // Xây lắp - KH
+      gnXl:N(r[26]),   // Xây lắp - GN
       vlDat:N(r[31]),
       vlCat:N(r[32]),
       vlDa:N(r[33]),
@@ -763,9 +785,9 @@ async function init(){
       const tDA=await rDA.text();
       const parsedDA=parseCSVtoDA(tDA);
       if(parsedDA.length>5){allDA=parsedDA;console.log('✅ Realtime: '+allDA.length+' DA');}
-      else{allDA=[...DA_STATIC];}
-    }else{allDA=[...DA_STATIC];}
-  }catch(e){allDA=[...DA_STATIC];console.log('Fallback to static');}
+      else{allDA=DA_STATIC.map(r=>({...r,khXl:r.kh,gnXl:r.gn}));}
+    }else{allDA=DA_STATIC.map(r=>({...r,khXl:r.kh,gnXl:r.gn}));}
+  }catch(e){allDA=DA_STATIC.map(r=>({...r,khXl:r.kh,gnXl:r.gn}));console.log('Fallback to static');}
   // Fetch mỏ vật liệu realtime
   const URL_MO_LIVE='https://docs.google.com/spreadsheets/d/e/2PACX-1vTpTWjWDJmyRZPjmE_PdPpSDhyDLzFrzWmkFcn3h2BjwXfoKJqoefIWQLzrfd7_rlOpUoDFyyjUM20D/pub?gid=957357812&single=true&output=csv';
   try{
@@ -1119,38 +1141,204 @@ function applyL(){
 }
 function rstL(){['lP','lT'].forEach(id=>document.getElementById(id).value='');document.getElementById('lQ').value='';applyL();}
 function srtL(){const s=V('lS'),a=[...listData];if(s==='gn_asc')a.sort((x,y)=>(pc(x)??999)-(pc(y)??999));else if(s==='gn_desc')a.sort((x,y)=>(pc(y)??-1)-(pc(x)??-1));else if(s==='kh_desc')a.sort((x,y)=>y.kh-x.kh);else a.sort((x,y)=>x.ma.localeCompare(y.ma));return a;}
+// Track expanded rows
+const expandedRows=new Set();
+function toggleRow(ma){
+  if(expandedRows.has(ma))expandedRows.delete(ma);
+  else expandedRows.add(ma);
+  renderL();
+}
+window.toggleRow=toggleRow;
+
 function renderL(){
   const arr=srtL(),tot=arr.length,pgs=Math.ceil(tot/PAGE)||1,st=(curPg-1)*PAGE,pg=arr.slice(st,st+PAGE);
   S('pgI',`${curPg}/${pgs}`);S('pgSh',curPg);S('pgTo',pgs);S('pgAll',tot);
   document.getElementById('lPrv').disabled=curPg<=1;document.getElementById('lNxt').disabled=curPg>=pgs;
-  document.getElementById('ltb').innerHTML=pg.map(r=>{
-    const p=pc(r),c=COL(p),cbHD=canhBaoHD(r.batdau,r.tiendoHD,r.tt);
-    return`<tr onclick="openDA('${r.ma}',${JSON.stringify(r)})" style="cursor:pointer">
+
+  const rows=[];
+  pg.forEach(r=>{
+    const p=pc(r);
+    // Dùng XL (xây lắp) để tính tiến độ
+    const khXl=N(r.khXl||r.kh);
+    const gnXl=N(r.gnXl||r.gn);
+    const pXl=khXl>0?Math.round(gnXl/khXl*100):null;
+    const cXl=COL(pXl);
+    const cbHD=canhBaoHD(r.batdau,r.tiendoHD,r.tt);
+    const isExp=expandedRows.has(r.ma);
+
+    // Tính số ngày còn lại
+    const ngayCon=cbHD.ngayCon;
+    // Số tiền cần GN mỗi ngày để hoàn thành (dựa trên XL còn lại / ngày còn lại)
+    let dailyCell='';
+    if(ngayCon!==null&&ngayCon>0&&khXl>0&&gnXl<khXl){
+      const conLai=khXl-gnXl;
+      const daily=conLai/ngayCon;
+      const dailyFmt=daily>=1e9?TY(daily)+' tỷ/ngày':MN(daily)+' tr/ngày';
+      const urgentDaily=daily>=1e8; // >100tr/ngày là khẩn
+      dailyCell=`<div style="font-size:9px;margin-top:2px;color:${urgentDaily?'var(--red)':'var(--ink3)'}">📌 Cần GN: <b>${dailyFmt}</b></div>`;
+    }else if(ngayCon!==null&&ngayCon<0){
+      dailyCell=`<div style="font-size:9px;margin-top:2px;color:var(--red)">⚠ Quá hạn ${Math.abs(ngayCon)} ngày</div>`;
+    }
+
+    // Vật liệu
+    const vlDat=r.vlDat||0,vlCat=r.vlCat||0,vlDa=r.vlDa||0;
+    const vlFmt=v=>v>0?v.toLocaleString('vi-VN'):'--';
+
+    // Vướng mắc
+    const hasVM=r.vuongmac&&r.vuongmac.toLowerCase()!=='không có'&&r.vuongmac.trim();
+
+    rows.push(`<tr onclick="toggleRow('${r.ma}')" style="cursor:pointer;${isExp?'background:#EEF5FF;font-weight:500':''}">
+      <td style="text-align:center;color:var(--blue);font-size:11px">${isExp?'▼':'▶'}</td>
       <td><span class="st n" style="font-size:9px">${r.ma}</span></td>
       <td class="tdn" title="${r.ten}">${r.ten}</td>
       <td style="font-size:10px;white-space:nowrap">${shP(r.phong)}</td>
-      <td style="font-size:10px;white-space:nowrap">${r.pgd||'--'}</td>
       <td style="font-size:10px;white-space:nowrap;color:var(--navy);font-weight:600">${r.cb||'--'}</td>
       <td style="font-size:10px;color:var(--teal);white-space:nowrap">${r.dia||'--'}</td>
       <td>${stB(r.tt)}</td>
       <td><span class="bdg n" style="font-size:9px">${r.nguon}</span></td>
-      <td class="r">${r.kh?MN(r.kh):'--'}</td>
-      <td class="r">${r.gn?MN(r.gn):'--'}</td>
-      <td>${pbRow(p,c)}</td>
-      <td><span class="${cbHD.cls}" style="font-size:9px;padding:2px 5px;border-radius:10px">${cbHD.label.slice(0,20)}</span></td>
-      <td style="font-size:10px;color:var(--ink3)" title="${r.nthi||''}">${(r.nthi||'--').slice(0,18)}</td>
-    </tr>`;
-  }).join('')||'<tr><td colspan="13" style="text-align:center;padding:18px;color:var(--ink3)">Không có dữ liệu</td></tr>';
+      <td class="r" style="font-size:10px">${khXl?MN(khXl):'--'}</td>
+      <td class="r" style="font-size:10px">${gnXl?MN(gnXl):'--'}</td>
+      <td>${pbRow(pXl,cXl)}</td>
+      <td>
+        <span class="${cbHD.cls}" style="font-size:9px;padding:2px 5px;border-radius:10px;display:block">${cbHD.label}</span>
+        ${dailyCell}
+      </td>
+      <td style="font-size:10px;color:var(--ink3)" title="${r.nthi||''}">${(r.nthi||'--').slice(0,16)}</td>
+      <td style="font-size:10px;text-align:right;color:${vlDat>0?'var(--brown)':'var(--ink3)'}">${vlFmt(vlDat)}</td>
+      <td style="font-size:10px;text-align:right;color:${vlCat>0?'#1E40AF':'var(--ink3)'}">${vlFmt(vlCat)}</td>
+      <td style="font-size:10px;text-align:right;color:${vlDa>0?'var(--ink2)':'var(--ink3)'}">${vlFmt(vlDa)}</td>
+      <td style="text-align:center">${hasVM?`<span style="color:var(--red);font-size:14px" title="${r.vuongmac}">⚠</span>`:'<span style="color:var(--green);font-size:12px">✓</span>'}</td>
+    </tr>`);
+
+    // Expanded row
+    if(isExp){
+      const today=TODAY;
+      const d=parseDate(r.batdau);
+      const ngayBD=d?d.toLocaleDateString('vi-VN'):(r.batdau||'--');
+      const ngayHT=d&&r.tiendoHD?new Date(d.getTime()+r.tiendoHD*86400000).toLocaleDateString('vi-VN'):'--';
+      const conLaiGN=khXl>gnXl?(khXl-gnXl):0;
+      const pctDone=ngayCon!==null&&r.tiendoHD>0?Math.round((r.tiendoHD-Math.max(0,ngayCon))/r.tiendoHD*100):null;
+
+      rows.push(`<tr class="row-exp">
+        <td colspan="17">
+          <div class="exp-body">
+            <div class="exp-field">
+              <span class="exp-lbl">📅 Bắt đầu thi công</span>
+              <span class="exp-val navy">${ngayBD}</span>
+            </div>
+            <div class="exp-field">
+              <span class="exp-lbl">📅 Kết thúc HĐ (dự kiến)</span>
+              <span class="exp-val navy">${ngayHT}</span>
+            </div>
+            <div class="exp-field">
+              <span class="exp-lbl">⏱ Tiến độ HĐ</span>
+              <span class="exp-val">${r.tiendoHD||'--'} ngày${pctDone!==null?' (đã qua '+pctDone+'%)':''}</span>
+            </div>
+            <div class="exp-field">
+              <span class="exp-lbl">⚡ Còn lại theo HĐ</span>
+              <span class="exp-val ${ngayCon!==null&&ngayCon<0?'red':ngayCon!==null&&ngayCon<=30?'amber':'green'}">${ngayCon!==null?(ngayCon<0?'Quá hạn '+Math.abs(ngayCon)+' ngày':'Còn '+ngayCon+' ngày'):'--'}</span>
+            </div>
+            <div class="exp-field">
+              <span class="exp-lbl">💰 KH XL (tr.đ)</span>
+              <span class="exp-val">${khXl?MN(khXl):'--'}</span>
+            </div>
+            <div class="exp-field">
+              <span class="exp-lbl">✅ GN XL (tr.đ)</span>
+              <span class="exp-val green">${gnXl?MN(gnXl):'--'}</span>
+            </div>
+            <div class="exp-field">
+              <span class="exp-lbl">⏳ Còn lại cần GN (tr.đ)</span>
+              <span class="exp-val ${conLaiGN>0?'amber':''}">${conLaiGN?MN(conLaiGN):'Đã đủ'}</span>
+            </div>
+            ${ngayCon!==null&&ngayCon>0&&conLaiGN>0?`<div class="exp-field">
+              <span class="exp-lbl">📌 Cần GN mỗi ngày</span>
+              <span class="exp-val red">${conLaiGN/ngayCon>=1e8?TY(conLaiGN/ngayCon)+' tỷ/ngày':MN(conLaiGN/ngayCon)+' tr.đ/ngày'}</span>
+            </div>`:''}
+            <div class="exp-field">
+              <span class="exp-lbl">🏗 TV Thiết kế</span>
+              <span class="exp-val">${r.tvtk||'--'}</span>
+            </div>
+            <div class="exp-field">
+              <span class="exp-lbl">🔨 Nhà thầu TC</span>
+              <span class="exp-val">${r.nthi||'--'}</span>
+            </div>
+            <div class="exp-field">
+              <span class="exp-lbl">👁 TV Giám sát</span>
+              <span class="exp-val">${r.tvgs||'--'}</span>
+            </div>
+            <div class="exp-field">
+              <span class="exp-lbl">🧱 VL Đất san lấp</span>
+              <span class="exp-val ${vlDat>0?'amber':''}">${vlFmt(vlDat)} m³</span>
+            </div>
+            <div class="exp-field">
+              <span class="exp-lbl">🪨 VL Cát</span>
+              <span class="exp-val" style="color:#1E40AF">${vlFmt(vlCat)} m³</span>
+            </div>
+            <div class="exp-field">
+              <span class="exp-lbl">⚫ VL Đá</span>
+              <span class="exp-val">${vlFmt(vlDa)} m³</span>
+            </div>
+            ${hasVM?`<div class="exp-field exp-full">
+              <span class="exp-lbl" style="color:var(--red)">⚠ Khó khăn, vướng mắc</span>
+              <span class="exp-val red">${r.vuongmac}</span>
+            </div>`:''}
+            ${r.ghichu&&r.ghichu!=='...'?`<div class="exp-field exp-full">
+              <span class="exp-lbl">📝 Ghi chú</span>
+              <span class="exp-val">${r.ghichu}</span>
+            </div>`:''}
+          </div>
+        </td>
+      </tr>`);
+    }
+  });
+
+  document.getElementById('ltb').innerHTML=rows.join('')||'<tr><td colspan="17" style="text-align:center;padding:18px;color:var(--ink3)">Không có dữ liệu</td></tr>';
 }
 function chgPg(d){curPg+=d;renderL();}
 function exportCSV(){
   const arr=srtL();
-  const hdr=['Mã DA','Công trình','Phòng','Phó GĐ','Cán bộ phụ trách','Xã/Phường','TT','Nguồn vốn','TV Thiết kế','Nhà thầu TC','TV Giám sát','Nhà thầu khác','Bắt đầu TC','Tiến độ HĐ (ngày)','Năm DA','KH Vốn (tr.đ)','GN (tr.đ)','Tỷ lệ GN%','CB Tiến độ HĐ','CB Năm DA','VL Đất (m³)','VL Cát (m³)','VL Đá (m³)','Vướng mắc','Ghi chú'];
-  const rows=arr.map(r=>[r.ma,`"${r.ten}"`,r.phong,r.pgd,r.cb||'',r.dia,r.tt+(TT_L[r.tt]?' - '+TT_L[r.tt]:''),r.nguon,r.tvtk||'',r.nthi||'',r.tvgs||'',r.ntkhac||'',r.batdau||'',r.tiendoHD||'',r.namda||'',r.kh?Math.round(r.kh/1e6):'',r.gn?Math.round(r.gn/1e6):'',pc(r)!==null?pc(r)+'%':'',canhBaoHD(r.batdau,r.tiendoHD,r.tt).label,canhBaoNamDA(r.namda,r.tt).label,r.vlDat||0,r.vlCat||0,r.vlDa||0,`"${r.vuongmac}"`,`"${r.ghichu}"`].join(','));
-  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\uFEFF'+[hdr,...rows].join('\n')],{type:'text/csv;charset=utf-8'}));a.download=`BanQLDA_2026_${new Date().toISOString().slice(0,10)}.csv`;a.click();toast('📥 Xuất '+arr.length+' DA');
+  const hdr=[
+    'Mã DA','Công trình','Phòng','Phó GĐ','Cán bộ phụ trách','Xã/Phường','TT','Nguồn vốn',
+    'TV Thiết kế','Nhà thầu TC','TV Giám sát','Nhà thầu khác',
+    'Bắt đầu TC','Tiến độ HĐ (ngày)','Ngày HT HĐ dự kiến','Còn lại (ngày)','CB Tiến độ HĐ',
+    'Năm DA','CB Năm DA',
+    'KH XL (tr.đ)','GN XL (tr.đ)','TL GN XL%','Còn GN XL (tr.đ)','Cần GN/ngày (tr.đ)',
+    'KH Tổng (tr.đ)','GN Tổng (tr.đ)','TL GN Tổng%',
+    'VL Đất (m³)','VL Cát (m³)','VL Đá (m³)','Vướng mắc','Ghi chú'
+  ];
+  const rows=arr.map(r=>{
+    const cbHD=canhBaoHD(r.batdau,r.tiendoHD,r.tt);
+    const cbNam=canhBaoNamDA(r.namda,r.tt);
+    const ngayCon=cbHD.ngayCon;
+    const d=parseDate(r.batdau);
+    const ngayHT=d&&r.tiendoHD?new Date(d.getTime()+r.tiendoHD*86400000).toLocaleDateString('vi-VN'):'';
+    const khXl=r.khXl||r.kh,gnXl=r.gnXl||r.gn;
+    const conLai=khXl>gnXl?khXl-gnXl:0;
+    const daily=ngayCon>0&&conLai>0?Math.round(conLai/ngayCon/1e6*100)/100:0;
+    const pXl=khXl>0?Math.round(gnXl/khXl*100):null;
+    return [
+      r.ma,`"${r.ten}"`,r.phong,r.pgd,r.cb||'',r.dia,
+      r.tt+(TT_L[r.tt]?' - '+TT_L[r.tt]:''),r.nguon,
+      `"${r.tvtk||''}"`,`"${r.nthi||''}"`,`"${r.tvgs||''}"`,`"${r.ntkhac||''}"`,
+      r.batdau||'',r.tiendoHD||'',ngayHT,
+      ngayCon!==null?ngayCon:'',cbHD.label,
+      r.namda||'',cbNam.label,
+      khXl?Math.round(khXl/1e6):'',gnXl?Math.round(gnXl/1e6):'',
+      pXl!==null?pXl+'%':'',conLai?Math.round(conLai/1e6):'',daily||'',
+      r.kh?Math.round(r.kh/1e6):'',r.gn?Math.round(r.gn/1e6):'',
+      pc(r)!==null?pc(r)+'%':'',
+      r.vlDat||0,r.vlCat||0,r.vlDa||0,
+      `"${r.vuongmac||''}"`,`"${r.ghichu||''}"`
+    ].join(',');
+  });
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob(['﻿'+[hdr,...rows].join('
+')],{type:'text/csv;charset=utf-8'}));
+  a.download=`BanQLDA_2026_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  toast('📥 Xuất '+arr.length+' DA — '+hdr.length+' cột');
 }
 
-// ══ TABS ══
 function sw(id,el){
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
