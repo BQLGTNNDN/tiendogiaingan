@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Tiến độ giải ngân| Ban Quản lý dự án đầu tư xây dựng các công trình giao thông và nông nghiệp Đà Nẵng</title>
+<title>Dashboard | Ban QLDA Giao thông & Nông nghiệp Đà Nẵng</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
 :root{
@@ -177,7 +177,7 @@ table.mt td.r{text-align:right;font-variant-numeric:tabular-nums}
 .mo-filter-btn.dat.on{background:#92400E;border-color:#92400E}
 .mo-filter-btn.cat.on{background:#1E40AF;border-color:#1E40AF}
 .mo-filter-btn.da.on{background:#374151;border-color:#374151}
-.mo-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+.mo-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:16px}
 @media(max-width:900px){.mo-stats{grid-template-columns:repeat(2,1fr)}}
 /* MODAL */
 .modal-ov{position:fixed;inset:0;background:rgba(13,27,42,.6);z-index:400;display:flex;align-items:center;justify-content:center;padding:16px}
@@ -217,7 +217,7 @@ footer{text-align:center;padding:14px;font-size:10px;color:var(--ink3);border-to
     <div class="seal">🏛️</div>
     <div class="brand-txt">
       <strong>BAN QUẢN LÝ DỰ ÁN ĐẦU TƯ XÂY DỰNG CÁC CÔNG TRÌNH GIAO THÔNG VÀ NÔNG NGHIỆP ĐÀ NẴNG</strong>
-      <span>Báo cáo Giải Ngân Vốn Đầu Tư Công — Kết nối trực tiếp · Năm kế hoạch 2026</span>
+      <span>Dashboard Giải Ngân Vốn Đầu Tư Công — Kết nối trực tiếp Google Sheets · Năm kế hoạch 2026</span>
     </div>
   </div>
   <div class="tr">
@@ -313,9 +313,11 @@ footer{text-align:center;padding:14px;font-size:10px;color:var(--ink3);border-to
   <div class="slbl">Danh sách Mỏ Vật liệu — Theo QĐ990 và QĐ854</div>
   <div class="mo-stats">
     <div class="kpi br"><div class="kpi-l">Tổng số mỏ</div><div class="kpi-v" id="moTong">--</div><div class="kpi-s">điểm quy hoạch</div></div>
-    <div class="kpi" style="--ac:#92400E"><div class="kpi-l">Đất san lấp</div><div class="kpi-v" id="moDat" style="color:#92400E">--</div><div class="kpi-s">mỏ</div></div>
-    <div class="kpi" style="--ac:#1E40AF"><div class="kpi-l">Cát sỏi</div><div class="kpi-v" id="moCat" style="color:#1E40AF">--</div><div class="kpi-s">mỏ</div></div>
-    <div class="kpi" style="--ac:#374151"><div class="kpi-l">Đá</div><div class="kpi-v" id="moDa" style="color:#374151">--</div><div class="kpi-s">mỏ</div></div>
+    <div class="kpi br"><div class="kpi-l">Tổng trữ lượng</div><div class="kpi-v" id="moTongTL" style="font-size:16px">--</div><div class="kpi-s">triệu m³</div></div>
+    <div class="kpi br"><div class="kpi-l">Tổng diện tích</div><div class="kpi-v" id="moTongDT" style="font-size:16px">--</div><div class="kpi-s">ha</div></div>
+    <div class="kpi" style="--ac:#92400E"><div class="kpi-l">🟤 Đất san lấp</div><div class="kpi-v" id="moDat" style="color:#92400E;font-size:13px">--</div><div class="kpi-s">mỏ · trữ lượng</div></div>
+    <div class="kpi" style="--ac:#1E40AF"><div class="kpi-l">🔵 Cát sỏi</div><div class="kpi-v" id="moCat" style="color:#1E40AF;font-size:13px">--</div><div class="kpi-s">mỏ · trữ lượng</div></div>
+    <div class="kpi" style="--ac:#374151"><div class="kpi-l">⚫ Đá</div><div class="kpi-v" id="moDa" style="color:#374151;font-size:13px">--</div><div class="kpi-s">mỏ · trữ lượng</div></div>
   </div>
   <div class="fb" style="margin-bottom:14px">
     <label>🔍 LỌC</label>
@@ -330,6 +332,34 @@ footer{text-align:center;padding:14px;font-size:10px;color:var(--ink3);border-to
     <div class="fc"><b id="moCnt">0</b> mỏ</div>
   </div>
   <div class="mo-grid" id="moGrid"></div>
+  <div class="slbl" style="margin-top:1.5rem">Thống kê trữ lượng theo xã/phường (top 10)</div>
+  <div class="g2">
+    <div class="card">
+      <div class="chead"><span class="dot" style="background:var(--amber)"></span>Trữ lượng theo xã/phường (triệu m³)</div>
+      <div style="position:relative;height:280px"><canvas id="cMoXP" role="img" aria-label="Biểu đồ trữ lượng mỏ theo xã phường">Xã Bà Nà dẫn đầu 17,3 triệu m³</canvas></div>
+    </div>
+    <div class="card">
+      <div class="chead"><span class="dot" style="background:var(--brown)"></span>Tỷ trọng trữ lượng theo loại khoáng sản</div>
+      <div style="position:relative;height:180px"><canvas id="cMoPie" role="img" aria-label="Biểu đồ tròn trữ lượng 3 loại">Đá 44%, Đất san lấp 39%, Cát sỏi 17%</canvas></div>
+      <div style="margin-top:12px">
+        <div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:0.5px solid var(--rule);font-size:11px">
+          <span style="width:10px;height:10px;border-radius:2px;background:#BA7517;flex-shrink:0"></span>
+          <span style="flex:1;color:var(--ink2)">Đất san lấp — 10 mỏ</span>
+          <span style="font-weight:600;color:var(--ink)">23,04 triệu m³ (39%)</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:0.5px solid var(--rule);font-size:11px">
+          <span style="width:10px;height:10px;border-radius:2px;background:#378ADD;flex-shrink:0"></span>
+          <span style="flex:1;color:var(--ink2)">Cát sỏi — 12 mỏ</span>
+          <span style="font-weight:600;color:var(--ink)">9,91 triệu m³ (17%)</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;padding:5px 0;font-size:11px">
+          <span style="width:10px;height:10px;border-radius:2px;background:#888780;flex-shrink:0"></span>
+          <span style="flex:1;color:var(--ink2)">Đá — 23 mỏ</span>
+          <span style="font-weight:600;color:var(--ink)">25,88 triệu m³ (44%)</span>
+        </div>
+      </div>
+    </div>
+  </div>
 </div></div>
 
 <!-- ══ DANH SÁCH ══ -->
@@ -525,34 +555,78 @@ async function loadAll(){
     });
     allToa=toaRows;
 
-    // Parse mỏ vật liệu
-    // Cột: Loại khoáng sản | Tên điểm QH | Xã/phường | Diện tích (ha) | Trữ lượng (m3) | Tọa độ | Googlemap | Tên cũ
-    const moRows=parseCSV(t4).slice(1).filter(r=>r[1]&&r[1].trim());
-    allMo=moRows.map((r,i)=>{
-      const loai=(r[0]||'').trim();
-      let typeKey='da';
-      if(loai.toLowerCase().includes('đất')||loai.toLowerCase().includes('san lấp'))typeKey='dat';
-      else if(loai.toLowerCase().includes('cát')||loai.toLowerCase().includes('sỏi'))typeKey='cat';
-      // Parse tọa độ từ cột 5 (có thể dạng "15.123, 108.456" hoặc "15.123,108.456")
-      const toaStr=(r[5]||'').trim();
-      let mLat=null,mLon=null;
-      const toaParts=toaStr.split(/[,;\s]+/).filter(Boolean);
-      if(toaParts.length>=2){
-        const la=parseFloat(toaParts[0].replace(',','.'));
-        const lo=parseFloat(toaParts[1].replace(',','.'));
-        if(!isNaN(la)&&!isNaN(lo)){mLat=la;mLon=lo;}
-      }
-      return{
-        id:i,loai,typeKey,
-        ten:(r[1]||'').trim(),
-        xa:(r[2]||'').trim(),
-        dientich:(r[3]||'').trim(),
-        truluong:(r[4]||'').trim(),
-        toaStr,lat:mLat,lon:mLon,
-        gmaps:(r[6]||'').trim(),
-        tenCu:(r[7]||'').trim(),
-      };
-    });
+    // Dữ liệu mỏ vật liệu thực tế (45 mỏ theo QĐ990 và QĐ854)
+    const MO_STATIC=[
+  {id:1,loai:'KHOANGSAN_DATSANLAP',typeKey:'dat',ten:'PN-BS07',xa:'xã Chiên Đàn',dt:20,tl:2000000,lat:15.556673,lon:108.373378,gmaps:'https://www.google.com/maps?q=15.556673,108.373378',tenCu:'Khu vực Hòn Dền, xã Tam Vinh, huyện Phú Ninh, tỉnh Quảng Nam'},
+  {id:2,loai:'KHOANGSAN_DATSANLAP',typeKey:'dat',ten:'TB65',xa:'xã Thăng Phú',dt:8,tl:1100000,lat:15.629931,lon:108.370233,gmaps:'https://www.google.com/maps?q=15.629931,108.370233',tenCu:'Núi Rừng Động, thôn Bình Xá, xã Bình Quế, huyện Thăng Bình, Quảng Nam'},
+  {id:3,loai:'KHOANGSAN_DATSANLAP',typeKey:'dat',ten:'QS113',xa:'xã Xuân Phú',dt:26,tl:2600000,lat:15.784603,lon:108.272439,gmaps:'https://www.google.com/maps?q=15.784603,108.272439',tenCu:'Gò Cây Đa, thôn Mỹ Hòa Tây, xã Quế Xuân 2, huyện Quế Sơn, Quảng Nam'},
+  {id:4,loai:'KHOANGSAN_DATSANLAP',typeKey:'dat',ten:'DX-BS02',xa:'xã Duy Xuyên',dt:25.4,tl:2500000,lat:15.792916,lon:108.246111,gmaps:'https://www.google.com/maps?q=15.792916,108.246111',tenCu:'Núi Gò Phan, thôn An Hòa, xã Duy Trung, huyện Duy Xuyên, Quảng Nam'},
+  {id:5,loai:'KHOANGSAN_DATSANLAP',typeKey:'dat',ten:'DL-BS09',xa:'xã Đại Lộc',dt:21,tl:2000000,lat:15.910205,lon:108.092588,gmaps:'https://www.google.com/maps?q=15.910205,108.092588',tenCu:'Thôn Đại An, xã Đại Nghĩa, huyện Đại Lộc, Quảng Nam'},
+  {id:6,loai:'KHOANGSAN_DATSANLAP',typeKey:'dat',ten:'QH.4 (ĐSL)',xa:'xã Bà Nà',dt:114.4,tl:11440000,lat:16.067542,lon:108.055310,gmaps:'https://www.google.com/maps?q=16.067542,108.055310',tenCu:'Xã Hòa Ninh, huyện Hòa Vang, Đà Nẵng cũ'},
+  {id:7,loai:'KHOANGSAN_CAT_SOI',typeKey:'cat',ten:'NS08',xa:'xã Quế Phước',dt:33.95,tl:849000,lat:15.681907,lon:108.010864,gmaps:'https://www.google.com/maps?q=15.681907,108.010864',tenCu:'Bến Đông An, Thôn Đông An, xã Quế Phước, Quảng Nam'},
+  {id:8,loai:'KHOANGSAN_CAT_SOI',typeKey:'cat',ten:'NS15',xa:'xã Quế Phước',dt:36.6,tl:732000,lat:15.698002,lon:108.026550,gmaps:'https://www.google.com/maps?q=15.698002,108.026550',tenCu:'Sông Thu Bồn, thôn Xuân Hòa, Phước Ninh, Quảng Nam'},
+  {id:9,loai:'KHOANGSAN_CAT_SOI',typeKey:'cat',ten:'DX2B',xa:'xã Thu Bồn',dt:8.68,tl:324000,lat:15.842046,lon:108.118213,gmaps:'https://www.google.com/maps?q=15.842046,108.118213',tenCu:'Thôn Phú Lạc, xã Duy Hòa, huyện Duy Xuyên, Quảng Nam'},
+  {id:10,loai:'KHOANGSAN_CAT_SOI',typeKey:'cat',ten:'DX09',xa:'xã Nam Phước',dt:36.5,tl:1095000,lat:15.841728,lon:108.113768,gmaps:'https://www.google.com/maps?q=15.841728,108.113768',tenCu:'Nam Cầu Đen, Thị trấn Nam Phước, huyện Duy Xuyên, Quảng Nam'},
+  {id:11,loai:'KHOANGSAN_CAT_SOI',typeKey:'cat',ten:'DX-BS12',xa:'xã Duy Xuyên',dt:30,tl:1200000,lat:15.834152,lon:108.197320,gmaps:'https://www.google.com/maps?q=15.834152,108.197320',tenCu:'Thôn Chiêm Sơn, xã Duy Trinh, huyện Duy Xuyên, Quảng Nam'},
+  {id:12,loai:'KHOANGSAN_CAT_SOI',typeKey:'cat',ten:'DB6',xa:'xã Gò Nổi',dt:13.1,tl:260000,lat:15.870893,lon:108.213032,gmaps:'https://www.google.com/maps?q=15.870893,108.213032',tenCu:'Thôn Tân Bình - xã Điện Trung, thôn Nhị Dinh, xã Điện Phước, Điện Bàn, Quảng Nam'},
+  {id:13,loai:'KHOANGSAN_CAT_SOI',typeKey:'cat',ten:'DB7',xa:'xã Gò Nổi',dt:35.1,tl:700000,lat:15.869652,lon:108.160506,gmaps:'https://www.google.com/maps?q=15.869652,108.160506',tenCu:'Thôn Phú Văn, xã Điện Quang, thôn Thanh An, xã Điện Hồng, Điện Bàn, Quảng Nam'},
+  {id:14,loai:'KHOANGSAN_CAT_SOI',typeKey:'cat',ten:'DL19',xa:'xã Đại Lộc',dt:15,tl:600000,lat:15.845688,lon:108.118061,gmaps:'https://www.google.com/maps?q=15.845688,108.118061',tenCu:'Thôn Giao Thủy, xã Đại An, huyện Đại Lộc, Quảng Nam'},
+  {id:15,loai:'KHOANGSAN_CAT_SOI',typeKey:'cat',ten:'DL13',xa:'xã Hà Nha',dt:49,tl:1960000,lat:15.859034,lon:107.974882,gmaps:'https://www.google.com/maps?q=15.859034,107.974882',tenCu:'Thôn 15, Đại Lãnh, Thôn Hà Vy, Đại Hồng, huyện Đại Lộc, Quảng Nam'},
+  {id:16,loai:'KHOANGSAN_CAT_SOI',typeKey:'cat',ten:'DL6',xa:'xã Vu Gia',dt:37,tl:1880000,lat:15.868471,lon:108.061591,gmaps:'https://www.google.com/maps?q=15.868471,108.061591',tenCu:'Thôn Ấp Bắc (Tây An), xã Đại Minh, huyện Đại Lộc, Quảng Nam'},
+  {id:17,loai:'KHOANGSAN_CAT_SOI',typeKey:'cat',ten:'DL7B',xa:'xã Đại Lộc',dt:3,tl:118000,lat:15.844092,lon:108.121615,gmaps:'https://www.google.com/maps?q=15.844092,108.121615',tenCu:'Thôn 1, xã Đại Hòa, huyện Đại Lộc, Quảng Nam'},
+  {id:18,loai:'KHOANGSAN_DA',typeKey:'da',ten:'NT2A-ĐC',xa:'xã Núi Thành',dt:4.18,tl:2687449,lat:15.380200,lon:108.703236,gmaps:'https://www.google.com/maps?q=15.380200,108.703236',tenCu:'Khu vực mở rộng mỏ đá Granitogneis thôn Hòa Vân, xã Tam Nghĩa, huyện Núi Thành'},
+  {id:19,loai:'KHOANGSAN_DATSANLAP',typeKey:'dat',ten:'NT2A-ĐC',xa:'xã Núi Thành',dt:4.18,tl:199684,lat:15.380200,lon:108.703236,gmaps:'https://www.google.com/maps?q=15.380200,108.703236',tenCu:'Khu vực mở rộng mỏ đá Granitogneis thôn Hòa Vân, xã Tam Nghĩa, huyện Núi Thành'},
+  {id:20,loai:'KHOANGSAN_DA',typeKey:'da',ten:'NT8A',xa:'xã Núi Thành',dt:6.63,tl:4087865,lat:15.382444,lon:108.698468,gmaps:'https://www.google.com/maps?q=15.382444,108.698468',tenCu:'Khu vực mở rộng mỏ đá Tây Hòa Vân, xã Tam Nghĩa, huyện Núi Thành'},
+  {id:21,loai:'KHOANGSAN_DATSANLAP',typeKey:'dat',ten:'NT8A',xa:'xã Núi Thành',dt:6.63,tl:410683,lat:15.382444,lon:108.698468,gmaps:'https://www.google.com/maps?q=15.382444,108.698468',tenCu:'Khu vực mở rộng mỏ đá Tây Hòa Vân, xã Tam Nghĩa, huyện Núi Thành'},
+  {id:22,loai:'KHOANGSAN_DA',typeKey:'da',ten:'QH.8 - Hốc Khế 1',xa:'xã Bà Nà',dt:3.5,tl:721364,lat:16.029755,lon:108.134760,gmaps:'https://www.google.com/maps?q=16.029755,108.134760',tenCu:'Mỏ Hốc Khế 1, xã Bà Nà'},
+  {id:23,loai:'KHOANGSAN_DA',typeKey:'da',ten:'QH.8 - Hốc Khế',xa:'xã Bà Nà',dt:3.5,tl:552702,lat:16.028935,lon:108.133450,gmaps:'https://www.google.com/maps?q=16.028935,108.133450',tenCu:'Mỏ Hốc Khế, xã Bà Nà'},
+  {id:24,loai:'KHOANGSAN_DA',typeKey:'da',ten:'QH.13 - Hòa Tiến',xa:'xã Hòa Tiến',dt:5,tl:1501650,lat:15.954976,lon:108.109815,gmaps:'https://www.google.com/maps?q=15.954976,108.109815',tenCu:'Mỏ đá làm VLXD thông thường tại thôn Phước Sơn, xã Hoà Tiến'},
+  {id:25,loai:'KHOANGSAN_DA',typeKey:'da',ten:'DL18B',xa:'xã Hà Nha',dt:5,tl:1383457,lat:15.877961,lon:107.990292,gmaps:'https://www.google.com/maps?q=15.877961,107.990292',tenCu:'Mỏ đá thôn Vĩnh Phước, xã Đại Đồng, huyện Đại Lộc, Quảng Nam'},
+  {id:26,loai:'KHOANGSAN_DA',typeKey:'da',ten:'QH.8 - Hố Bạc 3',xa:'xã Bà Nà',dt:7,tl:1032869,lat:16.034683,lon:108.148039,gmaps:'https://www.google.com/maps?q=16.034683,108.148039',tenCu:'Mỏ đá Hố Bạc 3, xã Bà Nà'},
+  {id:27,loai:'KHOANGSAN_DA',typeKey:'da',ten:'DX78',xa:'xã Duy Xuyên',dt:3.1016,tl:741308,lat:15.794050,lon:108.235902,gmaps:'https://www.google.com/maps?q=15.794050,108.235902',tenCu:'Mỏ đá thôn An Trung, xã Duy Trung, huyện Duy Xuyên, Quảng Nam'},
+  {id:28,loai:'KHOANGSAN_DA',typeKey:'da',ten:'DX9B',xa:'xã Duy Xuyên',dt:2.8671,tl:598799,lat:15.793310,lon:108.239728,gmaps:'https://www.google.com/maps?q=15.793310,108.239728',tenCu:'Mỏ đá thôn An Trung, xã Duy Trung, huyện Duy Xuyên, Quảng Nam'},
+  {id:29,loai:'KHOANGSAN_DA',typeKey:'da',ten:'DG1B',xa:'xã Sông Kôn',dt:1.45,tl:262668,lat:15.975966,lon:107.854782,gmaps:'https://www.google.com/maps?q=15.975966,107.854782',tenCu:'Mỏ đá ĐG1B thôn Aliêng RaVắh, xã A Ting, huyện Đông Giang, Quảng Nam'},
+  {id:30,loai:'KHOANGSAN_DA',typeKey:'da',ten:'PN4A',xa:'xã Phú Ninh',dt:1.92,tl:239708,lat:15.539666,lon:108.409982,gmaps:'https://www.google.com/maps?q=15.539666,108.409982',tenCu:'Mỏ đá khối phố Tân Phú, thị trấn Phú Thịnh, huyện Phú Ninh, Quảng Nam'},
+  {id:31,loai:'KHOANGSAN_DA',typeKey:'da',ten:'NT8A - Tây Hòa Vân',xa:'xã Núi Thành',dt:7.7,tl:5818427,lat:15.382122,lon:108.699864,gmaps:'https://www.google.com/maps?q=15.382122,108.699864',tenCu:'Mỏ đá Tây Hòa Vân, xã Tam Nghĩa, huyện Núi Thành, Quảng Nam'},
+  {id:32,loai:'KHOANGSAN_DATSANLAP',typeKey:'dat',ten:'NT8A - Tây Hòa Vân',xa:'xã Núi Thành',dt:7.7,tl:469943,lat:15.382122,lon:108.699864,gmaps:'https://www.google.com/maps?q=15.382122,108.699864',tenCu:'Mỏ đá Tây Hòa Vân, xã Tam Nghĩa, huyện Núi Thành, Quảng Nam'},
+  {id:33,loai:'KHOANGSAN_DA',typeKey:'da',ten:'NT3A-ĐC - Suối Mơ',xa:'xã Núi Thành',dt:3.8,tl:945964,lat:15.384738,lon:108.688148,gmaps:'https://www.google.com/maps?q=15.384738,108.688148',tenCu:'Mỏ đá Suối Mơ, thôn Đông Yên, xã Tam Nghĩa, huyện Núi Thành, Quảng Nam'},
+  {id:34,loai:'KHOANGSAN_DATSANLAP',typeKey:'dat',ten:'NT3A-ĐC - Suối Mơ',xa:'xã Núi Thành',dt:3.8,tl:318493,lat:15.384738,lon:108.688148,gmaps:'https://www.google.com/maps?q=15.384738,108.688148',tenCu:'Mỏ đá Suối Mơ, thôn Đông Yên, xã Tam Nghĩa, huyện Núi Thành, Quảng Nam'},
+  {id:35,loai:'KHOANGSAN_DA',typeKey:'da',ten:'QH.8 - Hốc Khế II',xa:'xã Bà Nà',dt:6.96,tl:774414,lat:16.029652,lon:108.136685,gmaps:'https://www.google.com/maps?q=16.029652,108.136685',tenCu:'Mỏ Hốc Khế II, xã Bà Nà'},
+  {id:36,loai:'KHOANGSAN_DA',typeKey:'da',ten:'QH.8 - Hố Bạc',xa:'xã Bà Nà',dt:6.96,tl:474248,lat:16.033530,lon:108.145888,gmaps:'https://www.google.com/maps?q=16.033530,108.145888',tenCu:'Mỏ Hố Bạc, xã Bà Nà'},
+  {id:37,loai:'KHOANGSAN_DA',typeKey:'da',ten:'QH.8 - Hố Bạc II',xa:'xã Bà Nà',dt:4.5,tl:363630,lat:16.031692,lon:108.142940,gmaps:'https://www.google.com/maps?q=16.031692,108.142940',tenCu:'Mỏ Hố Bạc II, xã Bà Nà'},
+  {id:38,loai:'KHOANGSAN_DA',typeKey:'da',ten:'QH.8 - Hố Trầu',xa:'xã Bà Nà',dt:9.7,tl:823298,lat:16.030199,lon:108.139115,gmaps:'https://www.google.com/maps?q=16.030199,108.139115',tenCu:'Mỏ Hố Trầu, xã Bà Nà'},
+  {id:39,loai:'KHOANGSAN_DA',typeKey:'da',ten:'QH.13 - Phước Nhân',xa:'xã Hòa Tiến',dt:5,tl:325000,lat:15.957634,lon:108.109624,gmaps:'https://www.google.com/maps?q=15.957634,108.109624',tenCu:'Mỏ đá Phước Nhân, xã Hoà Tiến'},
+  {id:40,loai:'KHOANGSAN_DA',typeKey:'da',ten:'QH.5 - Trường Bản',xa:'phường Hòa Khánh',dt:9.47,tl:1000000,lat:16.049152,lon:108.112610,gmaps:'https://www.google.com/maps?q=16.049152,108.112610',tenCu:'Mỏ đá Trường Bản, phường Hoà Khánh'},
+  {id:41,loai:'KHOANGSAN_DA',typeKey:'da',ten:'QH.6 - Sơn Phước',xa:'xã Bà Nà',dt:9.7,tl:724976,lat:16.049169,lon:108.079918,gmaps:'https://www.google.com/maps?q=16.049169,108.079918',tenCu:'Mỏ đá Sơn Phước, xã Bà Nà'},
+  {id:42,loai:'KHOANGSAN_DA',typeKey:'da',ten:'QH.6 - Hố Mùn 2',xa:'phường Hòa Khánh',dt:4,tl:426717,lat:16.040017,lon:108.089062,gmaps:'https://www.google.com/maps?q=16.040017,108.089062',tenCu:'Mỏ Hố Mùn 2, phường Hòa Khánh'},
+  {id:43,loai:'KHOANGSAN_DA',typeKey:'da',ten:'QH.8 - Phước Thuận',xa:'xã Bà Nà',dt:10,tl:357500,lat:16.029888,lon:108.150721,gmaps:'https://www.google.com/maps?q=16.029888,108.150721',tenCu:'Mỏ đá Phước Thuận, xã Bà Nà'},
+  {id:44,loai:'KHOANGSAN_DA',typeKey:'da',ten:'QH.8 - Suối Mơ II',xa:'xã Bà Nà',dt:3.07345,tl:34000,lat:16.029014,lon:108.154261,gmaps:'https://www.google.com/maps?q=16.029014,108.154261',tenCu:'Mỏ Suối Mơ II, xã Bà Nà'},
+  {id:45,loai:'KHOANGSAN_CAT_SOI',typeKey:'cat',ten:'DL1B',xa:'xã Vu Gia',dt:3,tl:191145,lat:15.860739,lon:108.051832,gmaps:'https://www.google.com/maps?q=15.860739,108.051832',tenCu:'Mỏ DL1B xã Vu Gia - Dự án cải tạo, nâng cấp QL 14D - QĐ854'}
+];
+
+    // Thử tải từ Google Sheets CSV, fallback về dữ liệu tĩnh
+    try{
+      const moRows=parseCSV(t4).slice(1).filter(r=>r[1]&&r[1].trim()&&r[0]&&r[0].startsWith('KHOANGSAN'));
+      if(moRows.length>5){
+        allMo=moRows.map((r,i)=>{
+          const loai=(r[0]||'').trim();
+          let typeKey='da';
+          if(loai==='KHOANGSAN_DATSANLAP')typeKey='dat';
+          else if(loai==='KHOANGSAN_CAT_SOI')typeKey='cat';
+          else if(loai==='KHOANGSAN_DA')typeKey='da';
+          const toaStr=(r[5]||'').trim();
+          let mLat=null,mLon=null;
+          const toaParts=toaStr.split(/[,;\s]+/).filter(Boolean);
+          if(toaParts.length>=2){const la=parseFloat(toaParts[0]);const lo=parseFloat(toaParts[1]);if(!isNaN(la)&&!isNaN(lo)){mLat=la;mLon=lo;}}
+          return{id:i,loai,typeKey,ten:(r[1]||'').trim(),xa:(r[2]||'').trim(),
+            dt:parseFloat((r[3]||'0').replace(',','.'))||0,
+            tl:N(r[4]||'0'),
+            lat:mLat,lon:mLon,
+            gmaps:(r[6]||'').includes('http')?(r[6]||''):(mLat?`https://www.google.com/maps?q=${mLat},${mLon}`:''),
+            tenCu:(r[7]||'').trim()};
+        });
+      }else{allMo=[...MO_STATIC];}
+    }catch(e){allMo=[...MO_STATIC];}
 
     // Populate XP filter cho mỏ
     const moXPs=[...new Set(allMo.map(m=>m.xa).filter(Boolean))].sort();
@@ -569,6 +643,7 @@ async function loadAll(){
     popFilters();applyF();
     renderXP();renderTop20();renderAlerts();
     moFiltered=[...allMo];renderMo();renderMoKPI();
+    setTimeout(renderMoCharts,100);
     toast('✅ '+allDA.length+' dự án · '+allXP.length+' xã/phường · '+allMo.length+' mỏ vật liệu');
   }catch(e){
     toast('⚠ Lỗi tải dữ liệu: '+e.message);
@@ -735,7 +810,7 @@ function showXPMo(x){
   let moHtml='';
   if(xpObj.lat&&mos.length>0){
     moHtml='<hr style="margin:11px 0;border:none;border-top:1px solid var(--rule)"><b style="font-size:11px;color:var(--brown)">⛏ Mỏ vật liệu trong địa bàn</b>';
-    moHtml+=mos.map(m=>`<div style="margin-top:6px;padding:7px;background:#FDF8F3;border-radius:6px;font-size:11px;border-left:3px solid var(--brown)"><div style="font-weight:600;color:var(--brown)">${m.ten} (${m.loai})</div><div style="font-size:10px;color:var(--ink2);margin-top:2px">Diện tích: ${m.dientich} ha · Trữ lượng: ${m.truluong} m³</div>${m.gmaps?`<a href="${m.gmaps}" target="_blank" class="mo-map">📍 Google Maps</a>`:''}</div>`).join('');
+    moHtml+=mos.map(m=>`<div style="margin-top:6px;padding:7px;background:#FDF8F3;border-radius:6px;font-size:11px;border-left:3px solid var(--brown)"><div style="font-weight:600;color:var(--brown)">${m.ten} (${m.loai})</div><div style="font-size:10px;color:var(--ink2);margin-top:2px">Diện tích: ${m.dt?m.dt.toFixed(2):'--'} ha · Trữ lượng: ${(m.tl>=1e6?(m.tl/1e6).toFixed(3)+' triệu m³':m.tl.toLocaleString('vi-VN')+' m³')}</div>${m.gmaps?`<a href="${m.gmaps}" target="_blank" class="mo-map">📍 Google Maps</a>`:''}</div>`).join('');
   }
   // Cự ly đến tất cả mỏ nếu có tọa độ
   let distHtml='';
@@ -768,10 +843,18 @@ window.closeMo=closeMo;window.closeMoBtn=closeMoBtn;
 
 // ── MỎ VẬT LIỆU ──
 function renderMoKPI(){
+  const dat=allMo.filter(m=>m.typeKey==='dat');
+  const cat=allMo.filter(m=>m.typeKey==='cat');
+  const da=allMo.filter(m=>m.typeKey==='da');
+  const sumTL=arr=>arr.reduce((s,m)=>s+(m.tl||0),0);
+  const sumDT=arr=>arr.reduce((s,m)=>s+(m.dt||0),0);
+  const fmt=v=>v>=1e6?(v/1e6).toFixed(2)+' tr.m³':v.toLocaleString('vi-VN')+' m³';
   document.getElementById('moTong').textContent=allMo.length;
-  document.getElementById('moDat').textContent=allMo.filter(m=>m.typeKey==='dat').length;
-  document.getElementById('moCat').textContent=allMo.filter(m=>m.typeKey==='cat').length;
-  document.getElementById('moDa').textContent=allMo.filter(m=>m.typeKey==='da').length;
+  document.getElementById('moTongTL').textContent=fmt(sumTL(allMo));
+  document.getElementById('moTongDT').textContent=sumDT(allMo).toFixed(1)+' ha';
+  document.getElementById('moDat').textContent=dat.length+' mỏ · '+fmt(sumTL(dat));
+  document.getElementById('moCat').textContent=cat.length+' mỏ · '+fmt(sumTL(cat));
+  document.getElementById('moDa').textContent=da.length+' mỏ · '+fmt(sumTL(da));
 }
 function filterMo(type){
   moType=type;
@@ -789,11 +872,16 @@ function renderMo(){
     return true;
   });
   document.getElementById('moCnt').textContent=moFiltered.length;
+  renderMoKPI();
+  const LOAI_LABEL={'KHOANGSAN_DATSANLAP':'Đất san lấp','KHOANGSAN_CAT_SOI':'Cát sỏi','KHOANGSAN_DA':'Đá'};
   const typeLabel={dat:'🟤 Đất san lấp',cat:'🔵 Cát sỏi',da:'⚫ Đá'};
   const typeCls={dat:'dat',cat:'cat',da:'da'};
   document.getElementById('moGrid').innerHTML=moFiltered.map(m=>{
     const gUrl=m.gmaps||(m.lat?`https://www.google.com/maps?q=${m.lat},${m.lon}`:'');
-    const toaDisp=m.lat?`${m.lat.toFixed(4)}, ${m.lon.toFixed(4)}`:m.toaStr||'--';
+    const toaDisp=m.lat?`${m.lat.toFixed(5)}, ${m.lon.toFixed(5)}`:(m.toaStr||'--');
+    const tlNum=m.tl||0;
+    const dtNum=m.dt||0;
+    const tlDisp=tlNum>=1e6?(tlNum/1e6).toFixed(3)+' triệu m³':tlNum.toLocaleString('vi-VN')+' m³';
     return`<div class="mo-card" onclick='showMoModal(${m.id})'>
       <div class="mo-head">
         <span class="mo-name" title="${m.ten}">${m.ten}</span>
@@ -801,11 +889,11 @@ function renderMo(){
       </div>
       <div class="mo-body">
         <div class="mo-row"><span class="mo-lbl">Xã/Phường</span><span class="mo-val" style="color:var(--teal);font-weight:600">${m.xa||'--'}</span></div>
-        <div class="mo-row"><span class="mo-lbl">Diện tích</span><span class="mo-val">${m.dientich||'--'} ha</span></div>
-        <div class="mo-row"><span class="mo-lbl">Trữ lượng</span><span class="mo-val">${m.truluong||'--'} m³</span></div>
-        <div class="mo-row"><span class="mo-lbl">Tọa độ</span><span class="mo-val">${toaDisp}</span></div>
-        ${m.tenCu?`<div class="mo-row"><span class="mo-lbl">Tên cũ</span><span class="mo-val" style="color:var(--ink3);font-style:italic">${m.tenCu}</span></div>`:''}
-        ${gUrl?`<a href="${gUrl}" target="_blank" class="mo-map" onclick="event.stopPropagation()">📍 Xem Google Maps</a>`:''}
+        <div class="mo-row"><span class="mo-lbl">Diện tích</span><span class="mo-val">${dtNum?dtNum.toFixed(2):'--'} ha</span></div>
+        <div class="mo-row"><span class="mo-lbl">Trữ lượng</span><span class="mo-val" style="font-weight:600;color:var(--amber)">${tlDisp}</span></div>
+        <div class="mo-row"><span class="mo-lbl">Tọa độ</span><span class="mo-val" style="font-size:10px">${toaDisp}</span></div>
+        ${m.tenCu?`<div class="mo-row"><span class="mo-lbl">Tên gọi cũ</span><span class="mo-val" style="color:var(--ink3);font-size:10px;font-style:italic">${m.tenCu}</span></div>`:''}
+        ${gUrl?`<a href="${gUrl}" target="_blank" class="mo-map" onclick="event.stopPropagation()">📍 Xem trên Maps</a>`:''}
       </div>
     </div>`;
   }).join('')||'<div style="grid-column:1/-1;padding:32px;text-align:center;color:var(--ink3)">Không tìm thấy mỏ nào</div>';
@@ -814,6 +902,9 @@ function renderMo(){
 function showMoModal(id){
   const m=allMo.find(x=>x.id===id);if(!m)return;
   const gUrl=m.gmaps||(m.lat?`https://www.google.com/maps?q=${m.lat},${m.lon}`:'');
+  const tlNum=m.tl||0;
+  const tlDisp=tlNum>=1e6?(tlNum/1e6).toFixed(3)+' triệu m³':tlNum.toLocaleString('vi-VN')+' m³';
+  const dtDisp=m.dt?m.dt.toFixed(2)+' ha':'--';
   // Tìm các XP gần mỏ này (nếu có tọa độ)
   let nearXP='';
   if(m.lat){
@@ -836,17 +927,63 @@ function showMoModal(id){
   }
   document.getElementById('mTit').textContent='⛏ '+m.ten;
   document.getElementById('mBod').innerHTML=`
-    <div class="ir"><span class="il">Loại khoáng sản</span><span class="iv">${m.loai}</span></div>
+    <div class="ir"><span class="il">Loại khoáng sản</span><span class="iv">${{'KHOANGSAN_DATSANLAP':'Đất san lấp','KHOANGSAN_CAT_SOI':'Cát sỏi','KHOANGSAN_DA':'Đá'}[m.loai]||m.loai}</span></div>
     <div class="ir"><span class="il">Xã/Phường</span><span class="iv" style="color:var(--teal);font-weight:600">${m.xa||'--'}</span></div>
-    <div class="ir"><span class="il">Diện tích mỏ</span><span class="iv">${m.dientich||'--'} ha</span></div>
-    <div class="ir"><span class="il">Trữ lượng dự kiến</span><span class="iv">${m.truluong||'--'} m³</span></div>
-    <div class="ir"><span class="il">Tọa độ mỏ</span><span class="iv">${m.toaStr||'--'}</span></div>
+    <div class="ir"><span class="il">Diện tích mỏ</span><span class="iv">${dtDisp}</span></div>
+    <div class="ir"><span class="il">Trữ lượng dự kiến</span><span class="iv" style="font-weight:600;color:var(--amber)">${tlDisp}</span></div>
+    <div class="ir"><span class="il">Tọa độ mỏ</span><span class="iv">${m.lat?m.lat.toFixed(5)+', '+m.lon.toFixed(5):(m.toaStr||'--')}</span></div>
     ${m.tenCu?`<div class="ir"><span class="il">Tên gọi cũ</span><span class="iv" style="color:var(--ink3)">${m.tenCu}</span></div>`:''}
     <div class="ir"><span class="il">Google Maps</span><span class="iv">${gUrl?`<a href="${gUrl}" target="_blank" class="mo-map">📍 Mở Google Maps</a>`:'Chưa có tọa độ'}</span></div>
     ${nearXP}`;
   document.getElementById('modalOv').classList.remove('h');
 }
 window.showMoModal=showMoModal;
+
+// ── BIỂU ĐỒ MỎ VẬT LIỆU ──
+function renderMoCharts(){
+  if(!allMo.length)return;
+  // Tổng hợp theo xã
+  const xm={};
+  allMo.forEach(m=>{
+    if(!m.xa)return;
+    if(!xm[m.xa])xm[m.xa]={tl:0,cnt:0};
+    xm[m.xa].tl+=(m.tl||0);xm[m.xa].cnt++;
+  });
+  const topXa=Object.entries(xm).sort((a,b)=>b[1].tl-a[1].tl).slice(0,10);
+  // Chart XP
+  const cvXP=document.getElementById('cMoXP');
+  if(cvXP){
+    if(charts.cMoXP)charts.cMoXP.destroy();
+    charts.cMoXP=new Chart(cvXP,{
+      type:'bar',
+      data:{labels:topXa.map(e=>e[0]),datasets:[{
+        data:topXa.map(e=>+(e[1].tl/1e6).toFixed(3)),
+        backgroundColor:topXa.map((_,i)=>i<3?'#C8720A':'rgba(200,114,10,.45)'),
+        borderRadius:4,borderSkipped:false
+      }]},
+      options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.raw+' triệu m³ ('+topXa[c.dataIndex][1].cnt+' mỏ)'}}},
+        scales:{x:{grid:{color:'rgba(0,0,0,.06)'},ticks:{font:{size:9},callback:v=>v+'tr'}},y:{grid:{display:false},ticks:{font:{size:9}}}}}
+    });
+  }
+  // Pie
+  const cvPie=document.getElementById('cMoPie');
+  if(cvPie){
+    const dat=allMo.filter(m=>m.typeKey==='dat').reduce((s,m)=>s+(m.tl||0),0);
+    const cat=allMo.filter(m=>m.typeKey==='cat').reduce((s,m)=>s+(m.tl||0),0);
+    const da=allMo.filter(m=>m.typeKey==='da').reduce((s,m)=>s+(m.tl||0),0);
+    if(charts.cMoPie)charts.cMoPie.destroy();
+    charts.cMoPie=new Chart(cvPie,{
+      type:'doughnut',
+      data:{labels:['Đất san lấp','Cát sỏi','Đá'],
+        datasets:[{data:[+(dat/1e6).toFixed(3),+(cat/1e6).toFixed(3),+(da/1e6).toFixed(3)],
+          backgroundColor:['#BA7517','#378ADD','#888780'],borderWidth:2,
+          borderColor:'rgba(0,0,0,.05)',hoverOffset:4}]},
+      options:{responsive:true,maintainAspectRatio:false,cutout:'62%',
+        plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.label}: ${c.raw} triệu m³`}}}}
+    });
+  }
+}
 
 // ── ALERTS ──
 function renderAlerts(){
@@ -916,6 +1053,7 @@ function sw(id,el){
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
   el.classList.add('on');document.getElementById('panel-'+id).classList.add('on');
   if(id==='list'){listData=[...allDA.filter(r=>r.tt!=='QUYH')];document.getElementById('lCnt').textContent=listData.length;renderL();}
+  if(id==='mo'){setTimeout(renderMoCharts,50);}
 }
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('s');setTimeout(()=>t.classList.remove('s'),3500);}
 window.addEventListener('DOMContentLoaded',()=>{loadAll();setInterval(loadAll,30*60*1000);});
