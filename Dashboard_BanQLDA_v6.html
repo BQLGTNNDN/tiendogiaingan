@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Dashboard | Ban QLDA Giao thông & Nông nghiệp Đà Nẵng</title>
+<title>Tổng thể Tiến độ giải ngân | Ban Quản lý dự án đầu tư xây dựng các công trình giao thông và nông nghiệp Đà Nẵng</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
 :root{
@@ -206,6 +206,22 @@ table.mt td.r{text-align:right;font-variant-numeric:tabular-nums}
 #loader.h{display:none}
 #toast{position:fixed;bottom:20px;right:20px;background:var(--navy);color:#fff;padding:10px 15px;border-radius:8px;font-size:12px;z-index:500;opacity:0;transform:translateY(10px);transition:all .25s;box-shadow:var(--sh2)}
 #toast.s{opacity:1;transform:none}
+/* EXPANDABLE ROW */
+.row-exp{background:var(--bg);border-left:3px solid var(--blue)}
+.row-exp td{padding:0!important}
+.exp-body{padding:10px 14px;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px;font-size:11px}
+.exp-field{display:flex;flex-direction:column;gap:2px}
+.exp-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--ink3)}
+.exp-val{color:var(--ink);font-size:11px}
+.exp-val.red{color:var(--red);font-weight:600}
+.exp-val.green{color:var(--green);font-weight:600}
+.exp-val.amber{color:var(--amber);font-weight:600}
+.exp-val.navy{color:var(--navy);font-weight:600}
+.exp-full{grid-column:1/-1}
+/* TIẾN ĐỘ GN */
+.tdn-wrap{display:flex;align-items:center;gap:6px}
+.tdn-daily{font-size:9px;color:var(--ink3)}
+.alert-daily{font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px}
 footer{text-align:center;padding:13px;font-size:10px;color:var(--ink3);border-top:1px solid var(--rule);background:var(--surf);margin-top:10px}
 </style>
 </head>
@@ -224,7 +240,7 @@ footer{text-align:center;padding:13px;font-size:10px;color:var(--ink3);border-to
     <div class="seal">🏛️</div>
     <div class="brand-txt">
       <strong>BAN QUẢN LÝ DỰ ÁN ĐẦU TƯ XÂY DỰNG CÁC CÔNG TRÌNH GIAO THÔNG VÀ NÔNG NGHIỆP ĐÀ NẴNG</strong>
-      <span>Dashboard Giải Ngân & Tiến Độ · Năm Kế Hoạch 2026 · Dữ liệu 16/06/2025</span>
+      <span>Báo cáo Giải Ngân & Tiến Độ · Năm Kế Hoạch 2026 · Dữ liệu 16/06/2025</span>
     </div>
   </div>
   <div class="tr">
@@ -237,11 +253,11 @@ footer{text-align:center;padding:13px;font-size:10px;color:var(--ink3);border-to
 </header>
 
 <nav class="tabs">
-  <div class="tab on"  onclick="sw('dash',this)">📊 Dashboard <span class="tbdg b" id="tb1">--</span></div>
+  <div class="tab on"  onclick="sw('dash',this)">📊 Dashboard</div>
   <div class="tab"     onclick="sw('top',this)">🏆 Top 20</div>
   <div class="tab"     onclick="sw('tiendo',this)">⏱ Tiến độ <span class="tbdg o" id="tb5">--</span></div>
   <div class="tab"     onclick="sw('xa',this)">🗺 Xã/Phường <span class="tbdg b" id="tb2">--</span></div>
-  <div class="tab"     onclick="sw('mo',this)">⛏ Mỏ Vật liệu <span class="tbdg br" id="tb4">--</span></div>
+  <div class="tab"     onclick="sw('mo',this)">⛏ Mỏ Vật liệu</div>
   <div class="tab"     onclick="sw('list',this)">📋 Danh sách DA</div>
   <div class="tab"     onclick="sw('alert',this)">🚨 Cảnh báo <span class="tbdg r" id="tb3">--</span></div>
 </nav>
@@ -264,7 +280,6 @@ footer{text-align:center;padding:13px;font-size:10px;color:var(--ink3);border-to
   <select class="fs" id="fX" onchange="applyF()"><option value="">Tất cả Xã/Phường</option></select>
   <input class="fi" id="fQ" type="text" placeholder="🔍 Tìm tên dự án…" oninput="applyF()">
   <button class="bRst" onclick="rstF()">✕ Xóa</button>
-  <div class="fc">Lọc: <b id="fCnt">0</b>/<b id="fTot">0</b> DA</div>
 </div>
 <div class="slbl">KPI — Báo cáo giải ngân đến thời điểm hiện tại · Năm kế hoạch 2026</div>
 <div class="kg">
@@ -321,7 +336,7 @@ footer{text-align:center;padding:13px;font-size:10px;color:var(--ink3);border-to
 <div class="slbl">Cảnh báo tiến độ hợp đồng & tiến độ dự án</div>
 <div class="kg" style="grid-template-columns:repeat(auto-fit,minmax(140px,1fr))">
   <div class="kpi" style="--ac:#075985"><div class="kpi-l">🔵 Hoàn thành</div><div class="kpi-v" id="tdDone" style="color:#075985">--</div><div class="kpi-s">dự án</div></div>
-  <div class="kpi g"><div class="kpi-l">🟢 Bình thường</div><div class="kpi-v" id="tdNormal">--</div><div class="kpi-s">dự án</div></div>
+  <div class="kpi g"><div class="kpi-l">🟢 Bình thường / Chưa TC</div><div class="kpi-v" id="tdNormal">--</div><div class="kpi-s">dự án</div></div>
   <div class="kpi a"><div class="kpi-l">🟡 Cần theo dõi</div><div class="kpi-v" id="tdWarning">--</div><div class="kpi-s">≤90 ngày</div></div>
   <div class="kpi o"><div class="kpi-l">🟠 Nguy cơ chậm</div><div class="kpi-v" id="tdUrgent">--</div><div class="kpi-s">≤30 ngày</div></div>
   <div class="kpi r"><div class="kpi-l">🔴 Quá hạn</div><div class="kpi-v" id="tdOverdue">--</div><div class="kpi-s">quá hạn HĐ</div></div>
@@ -377,7 +392,7 @@ footer{text-align:center;padding:13px;font-size:10px;color:var(--ink3);border-to
 <div class="panel" id="panel-mo"><div class="wrap">
   <div class="slbl">Danh sách Mỏ Vật liệu — Theo QĐ990 và QĐ854</div>
   <div class="mo-stats">
-    <div class="kpi br"><div class="kpi-l">Tổng số mỏ</div><div class="kpi-v" id="moTong">45</div><div class="kpi-s">điểm quy hoạch</div></div>
+    <div class="kpi br"><div class="kpi-l">Tổng số mỏ</div><div class="kpi-v" id="moTong">45</div><div class="kpi-s">điểm quy hoạch đã giao cho BQL</div></div>
     <div class="kpi br"><div class="kpi-l">Tổng trữ lượng</div><div class="kpi-v" id="moTongTL" style="font-size:15px">58,83 tr.m³</div><div class="kpi-s">3 loại khoáng sản</div></div>
     <div class="kpi br"><div class="kpi-l">Tổng diện tích</div><div class="kpi-v" id="moTongDT" style="font-size:15px">663 ha</div><div class="kpi-s">diện tích quy hoạch</div></div>
     <div class="kpi" style="--ac:#92400E"><div class="kpi-l">🟤 Đất san lấp</div><div class="kpi-v" id="moDat" style="color:#92400E;font-size:13px">--</div><div class="kpi-s">mỏ · trữ lượng</div></div>
@@ -432,19 +447,23 @@ footer{text-align:center;padding:13px;font-size:10px;color:var(--ink3);border-to
     <div class="tw">
       <table class="mt">
         <thead><tr>
-          <th style="width:50px">Mã DA</th>
-          <th style="min-width:210px">Công trình</th>
-          <th style="min-width:85px">Phòng</th>
-          <th style="min-width:100px">Phó GĐ</th>
-          <th style="min-width:100px">Cán bộ PH</th>
-          <th style="min-width:95px">Xã/Phường</th>
+          <th style="width:28px"></th>
+          <th style="width:52px">Mã DA</th>
+          <th style="min-width:200px">Công trình</th>
+          <th style="min-width:80px">Phòng</th>
+          <th style="min-width:95px">Cán bộ PH</th>
+          <th style="min-width:90px">Xã/Phường</th>
           <th style="min-width:55px">TT</th>
-          <th style="min-width:65px">Nguồn</th>
-          <th class="r" style="min-width:80px">KH (tr.đ)</th>
-          <th class="r" style="min-width:75px">GN (tr.đ)</th>
-          <th style="min-width:95px">Tỷ lệ GN</th>
-          <th style="min-width:100px">Cảnh báo TD</th>
-          <th style="min-width:70px">Nhà thầu</th>
+          <th style="min-width:60px">Nguồn</th>
+          <th class="r" style="min-width:78px">KH XL (tr.đ)</th>
+          <th class="r" style="min-width:72px">GN XL (tr.đ)</th>
+          <th style="min-width:90px">Tỷ lệ GN</th>
+          <th style="min-width:135px">⏱ Còn lại / Ngày GN cần</th>
+          <th style="min-width:75px">Nhà thầu TC</th>
+          <th style="min-width:68px">VL Đất</th>
+          <th style="min-width:62px">VL Cát</th>
+          <th style="min-width:62px">VL Đá</th>
+          <th style="min-width:50px">VM</th>
         </tr></thead>
         <tbody id="ltb"></tbody>
       </table>
@@ -480,7 +499,7 @@ footer{text-align:center;padding:13px;font-size:10px;color:var(--ink3);border-to
   </div>
 </div></div>
 
-<footer>🏛️ Ban Quản lý Dự án Đầu tư Xây dựng các Công trình Giao thông và Nông nghiệp Đà Nẵng &nbsp;·&nbsp; Dashboard v6.0 · KH 2026 · CSV 16/06/2025 · 81 dự án · 45 mỏ vật liệu · 93 Xã/Phường</footer>
+  <footer>🏛️ Ban Quản lý Dự án Đầu tư Xây dựng các Công trình Giao thông và Nông nghiệp Đà Nẵng &nbsp;·&nbsp; QLDA2026 v6.0 · KH 2026 · DATA 06/2025 </footer>
 <script>
 // ══ DỮ LIỆU TĨNH TỪ CSV 16/06/2025 ══
 const DA_STATIC=[
@@ -617,6 +636,7 @@ const MO_STATIC=[
 ];
 
 // ══ CONFIG ══
+const URL_MO_NEW='https://docs.google.com/spreadsheets/d/e/2PACX-1vTpTWjWDJmyRZPjmE_PdPpSDhyDLzFrzWmkFcn3h2BjwXfoKJqoefIWQLzrfd7_rlOpUoDFyyjUM20D/pub?gid=957357812&single=true&output=csv';
 const URL_XP='https://docs.google.com/spreadsheets/d/e/2PACX-1vRAl16k6jz3_ULi7Se9sx-kj2CGlEmQ_wYK4Jg-nF1sLAJOAPr6sB-bhyDIjSp_TA/pub?gid=747744167&single=true&output=csv';
 const URL_TOA='https://docs.google.com/spreadsheets/d/e/2PACX-1vQ1WJe1aZNRjb_E75kJ7LpOcNPHBAmd-_4vOcjPCxjYKZ9mn4uFiwtw8qAvqZ5wFA/pub?gid=176970964&single=true&output=csv';
 const PAGE=25;
@@ -642,14 +662,41 @@ function rnkC(i){return i===0?'g':i===1?'s':i===2?'b':'';}
 const TODAY=new Date(2025,5,16);
 function parseDate(s){s=(s||'').trim();if(!s)return null;const p=s.split(/[\/\-]/);if(p.length===3){if(p[0].length===4)return new Date(+p[0],+p[1]-1,+p[2]);return new Date(+p[2],+p[1]-1,+p[0]);}return null;}
 function canhBaoHD(batdau,tiendoHD,tt){
-  if(tt==='TCHT')return{cls:'td-done',label:'🔵 Hoàn thành',level:'done',ngayCon:null};
-  const d=parseDate(batdau);const days=parseInt(tiendoHD)||0;
-  if(!d||!days)return{cls:'td-unknown',label:'⬜ Chưa có dữ liệu',level:'unknown',ngayCon:null};
-  const ht=new Date(d.getTime()+days*86400000);const con=Math.round((ht-TODAY)/86400000);
-  if(con<0)return{cls:'td-overdue',label:`🔴 Quá hạn ${Math.abs(con)} ngày`,level:'overdue',ngayCon:con};
-  if(con<=30)return{cls:'td-urgent',label:`🟠 Nguy cơ — còn ${con} ngày`,level:'urgent',ngayCon:con};
-  if(con<=90)return{cls:'td-warning',label:`🟡 Cần theo dõi — còn ${con} ngày`,level:'warning',ngayCon:con};
-  return{cls:'td-normal',label:`🟢 Bình thường — còn ${con} ngày`,level:'normal',ngayCon:con};
+  if(tt==='TCHT')return{cls:'td-done',label:'🔵 Hoàn thành',level:'done',ngayCon:null,ngayBD:null,ngayHT:null};
+  const d=parseDate(batdau);
+  const days=parseInt(tiendoHD)||0;
+  if(!d||!days)return{cls:'td-unknown',label:'⬜ Chưa có dữ liệu',level:'unknown',ngayCon:null,ngayBD:null,ngayHT:null};
+
+  const ht=new Date(d.getTime()+days*86400000);
+  // Số ngày còn lại từ HÔM NAY đến ngày HOÀN THÀNH HĐ
+  const conDenHT=Math.round((ht-TODAY)/86400000);
+  // Số ngày đến khi bắt đầu TC (nếu chưa bắt đầu)
+  const denBD=Math.round((d-TODAY)/86400000);
+
+  // Case 1: Chưa đến ngày bắt đầu TC
+  if(denBD>0){
+    return{
+      cls:'td-unknown',
+      label:`⚪ Chưa TC — BD: ${d.toLocaleDateString('vi-VN')} (còn ${denBD} ngày)`,
+      level:'notstarted',
+      ngayCon:conDenHT,  // số ngày từ hôm nay đến ngày HT HĐ
+      ngayBD:d,ngayHT:ht,
+      denBD,
+      conDenHT
+    };
+  }
+
+  // Case 2: Đang thi công (TODAY >= batdau)
+  // Số ngày còn lại của HĐ kể từ HÔM NAY
+  const conHD=Math.round((ht-TODAY)/86400000);
+
+  // Case 3: Quá hạn
+  if(conHD<0)return{cls:'td-overdue',label:`🔴 Quá hạn ${Math.abs(conHD)} ngày`,level:'overdue',ngayCon:conHD,ngayBD:d,ngayHT:ht,conDenHT};
+
+  // Case 4: Đang thi công, cảnh báo theo ngày còn lại
+  if(conHD<=30)return{cls:'td-urgent',label:`🟠 Nguy cơ — còn ${conHD} ngày`,level:'urgent',ngayCon:conHD,ngayBD:d,ngayHT:ht,conDenHT};
+  if(conHD<=90)return{cls:'td-warning',label:`🟡 Cần theo dõi — còn ${conHD} ngày`,level:'warning',ngayCon:conHD,ngayBD:d,ngayHT:ht,conDenHT};
+  return{cls:'td-normal',label:`🟢 Bình thường — còn ${conHD} ngày`,level:'normal',ngayCon:conHD,ngayBD:d,ngayHT:ht,conDenHT};
 }
 function canhBaoNamDA(namda,tt){
   if(tt==='TCHT')return{cls:'td-done',label:'🔵 Hoàn thành',level:'done'};
@@ -692,11 +739,62 @@ function parseCSVtoDA(txt){
       nguon:(r[15]||'').trim().toUpperCase(),
       loai:(r[16]||'').trim(),
       kh,gn,tyle,
+      khXl:N(r[23]),   // Xây lắp - KH
+      gnXl:N(r[26]),   // Xây lắp - GN
       vlDat:N(r[31]),
       vlCat:N(r[32]),
       vlDa:N(r[33]),
       vuongmac:(r[34]||'').trim(),
       ghichu:(r[35]||'...').trim()
+    };
+  });
+}
+
+// ══ PARSE CSV → MO OBJECTS ══
+// Cột: STT=0,Loại=1,Tên=2,Xã=3,DT=4,TL=5,Tọa độ=6,GMap=7,TênCũ=8
+function parseCSVtoMo(txt){
+  const LV={KHOANGSAN_DATSANLAP:'Đất san lấp',KHOANGSAN_CAT_SOI:'Cát sỏi',KHOANGSAN_DA:'Đá'};
+  return parseCSV(txt).slice(1).filter(r=>r[0]&&/^\d+$/.test(r[0].trim())&&r[1]&&r[2]).map((r,i)=>{
+    const loai=(r[1]||'').trim();
+    let typeKey='da';
+    if(loai==='KHOANGSAN_DATSANLAP')typeKey='dat';
+    else if(loai==='KHOANGSAN_CAT_SOI')typeKey='cat';
+    // Parse diện tích: "25,4" hoặc "25.4" → 25.4
+    // DT: "25,4" (VN decimal) hoặc "25.4" → 25.4
+    const dtStr=(r[4]||'0').trim().replace(',','.');
+    const dt=parseFloat(dtStr)||0;
+    // Parse trữ lượng VN: "2.000.000" → 2000000, "474.248,50" → 474248
+    const tlRaw=(r[5]||'0').trim();
+    let tlStr=tlRaw;
+    const tlDots=tlStr.split('').filter(x=>x==='.').length;
+    const tlCommas=tlStr.split('').filter(x=>x===',').length;
+    if(tlDots>=2||(tlDots>=1&&tlCommas>=1&&tlStr.indexOf('.')<tlStr.indexOf(','))){
+      tlStr=tlStr.replace(/\./g,'').replace(',','.');
+    }else if(tlDots===1&&tlCommas===0){
+      const af=tlStr.split('.')[1];
+      if(af&&af.length===3)tlStr=tlStr.replace('.','');
+    }
+    const tl=parseFloat(tlStr.replace(/[^\d.]/g,''))||0;
+    // Parse tọa độ: "15.556673,108.373378"
+    const toaStr=(r[6]||'').trim();
+    let lat=null,lon=null;
+    const parts=toaStr.split(',');
+    if(parts.length>=2){
+      const la=parseFloat(parts[0].trim());
+      const lo=parseFloat(parts[1].trim());
+      if(!isNaN(la)&&la>0)lat=la;
+      if(!isNaN(lo)&&lo>0)lon=lo;
+    }
+    // Google Maps link từ tọa độ nếu cột 7 không có link thực
+    const gmapRaw=(r[7]||'').trim();
+    const gmaps=(gmapRaw.startsWith('http'))?gmapRaw:(lat?`https://www.google.com/maps?q=${lat},${lon}`:'');
+    return{
+      id:i+1,loai,typeKey,
+      ten:(r[2]||'').trim(),
+      xa:(r[3]||'').trim(),
+      dt,tl,lat,lon,
+      gmaps,
+      tenCu:(r[8]||'').trim()
     };
   });
 }
@@ -713,10 +811,20 @@ async function init(){
       const tDA=await rDA.text();
       const parsedDA=parseCSVtoDA(tDA);
       if(parsedDA.length>5){allDA=parsedDA;console.log('✅ Realtime: '+allDA.length+' DA');}
-      else{allDA=[...DA_STATIC];}
-    }else{allDA=[...DA_STATIC];}
-  }catch(e){allDA=[...DA_STATIC];console.log('Fallback to static');}
-  allMo=[...MO_STATIC];
+      else{allDA=DA_STATIC.map(r=>({...r,khXl:r.kh,gnXl:r.gn}));}
+    }else{allDA=DA_STATIC.map(r=>({...r,khXl:r.kh,gnXl:r.gn}));}
+  }catch(e){allDA=DA_STATIC.map(r=>({...r,khXl:r.kh,gnXl:r.gn}));console.log('Fallback to static');}
+  // Fetch mỏ vật liệu realtime
+  const URL_MO_LIVE='https://docs.google.com/spreadsheets/d/e/2PACX-1vTpTWjWDJmyRZPjmE_PdPpSDhyDLzFrzWmkFcn3h2BjwXfoKJqoefIWQLzrfd7_rlOpUoDFyyjUM20D/pub?gid=957357812&single=true&output=csv';
+  try{
+    const rMo=await fetch(URL_MO_LIVE,{cache:'no-store'});
+    if(rMo.ok){
+      const tMo=await rMo.text();
+      const parsedMo=parseCSVtoMo(tMo);
+      if(parsedMo.length>5){allMo=parsedMo;console.log('✅ Mỏ realtime: '+allMo.length);}
+      else{allMo=[...MO_STATIC];}
+    }else{allMo=[...MO_STATIC];}
+  }catch(e){allMo=[...MO_STATIC];console.log('Mỏ fallback static');}
   try{
     const[r2,r3]=await Promise.all([fetch(URL_XP,{cache:'no-store'}),fetch(URL_TOA,{cache:'no-store'})]);
     const[t2,t3]=await Promise.all([r2.text(),r3.text()]);
@@ -802,16 +910,18 @@ function renderTop20(){
   const bigKH=[...d].filter(r=>r.kh>0).sort((a,b)=>b.kh-a.kh).slice(0,20);
   const xm={};d.forEach(r=>{if(r.dia){if(!xm[r.dia])xm[r.dia]={cnt:0,gn:0,kh:0};xm[r.dia].cnt++;xm[r.dia].gn+=r.gn;xm[r.dia].kh+=r.kh;}});
   const topXP=Object.entries(xm).sort((a,b)=>b[1].kh-a[1].kh).slice(0,20);
-  function fillT(id,rows,valFn){document.querySelector(`#${id} tbody`).innerHTML=rows.map((r,i)=>{const p=pc(r);const c=COL(p);return`<tr><td class="rnk ${rnkC(i)}">${i+1}</td><td class="tnm" title="${r.ten}">${r.ten}</td><td style="font-size:10px;white-space:nowrap">${r.cb||'--'}</td><td class="r">${valFn(r)}</td><td>${pbRow(p,c)}</td></tr>`;}).join('');}
+  function fillT(id,rows,valFn){document.querySelector(`#${id} tbody`).innerHTML=rows.map((r,i)=>{const p=pc(r);const c=COL(p);return`<tr><td class="rnk ${rnkC(i)}">${i+1}</td><td class="tnm" title='${r.ten}'>${r.ten}</td><td style="font-size:10px;white-space:nowrap">${r.cb||'--'}</td><td class="r">${valFn(r)}</td><td>${pbRow(p,c)}</td></tr>`;}).join('');}
   fillT('tLow',low,r=>r.kh?MN(r.kh):'--');fillT('tHigh',high,r=>r.gn?MN(r.gn):'--');fillT('tKH',bigKH,r=>r.kh?MN(r.kh):'--');
   document.querySelector('#tXP tbody').innerHTML=topXP.map(([xp,v],i)=>{const p=v.kh>0?Math.round(v.gn/v.kh*100):null;const c=COL(p);return`<tr><td class="rnk ${rnkC(i)}">${i+1}</td><td style="font-weight:600;color:var(--teal)">${xp}</td><td class="r">${v.cnt}</td><td class="r" style="font-weight:700;color:var(--navy)">${TY(v.kh)}</td><td class="r" style="color:var(--green)">${TY(v.gn)}</td><td>${pbRow(p,c)}</td></tr>`;}).join('');
 }
 
 // ══ TIẾN ĐỘ ══
 function renderTD(){
-  const d=allDA,counts={done:0,normal:0,warning:0,urgent:0,overdue:0};
+  const d=allDA,counts={done:0,normal:0,warning:0,urgent:0,overdue:0,notstarted:0};
   d.forEach(r=>{const cb=canhBaoHD(r.batdau,r.tiendoHD,r.tt);counts[cb.level]=(counts[cb.level]||0)+1;});
-  S('tdDone',counts.done||0);S('tdNormal',counts.normal||0);S('tdWarning',counts.warning||0);S('tdUrgent',counts.urgent||0);S('tdOverdue',counts.overdue||0);
+  S('tdDone',counts.done||0);
+  S('tdNormal',(counts.normal||0)+(counts.notstarted||0));
+  S('tdWarning',counts.warning||0);S('tdUrgent',counts.urgent||0);S('tdOverdue',counts.overdue||0);
   S('tb5',(counts.overdue+counts.urgent)||0);
   tdData=[...d];applyTD();
 }
@@ -820,7 +930,11 @@ function applyTD(){
   tdFiltered=tdData.filter(r=>{
     if(fP&&r.phong!==fP)return false;if(fCB&&r.cb!==fCB)return false;
     if(fQ&&!r.ten.toLowerCase().includes(fQ))return false;
-    if(fLv){const cb=canhBaoHD(r.batdau,r.tiendoHD,r.tt);if(cb.level!==fLv)return false;}
+    if(fLv){const cb=canhBaoHD(r.batdau,r.tiendoHD,r.tt);
+      // 'normal' option cũng bao gồm 'notstarted'
+      const lvMatch=cb.level===fLv||(fLv==='normal'&&cb.level==='notstarted');
+      if(!lvMatch)return false;
+    }
     return true;
   });
   S('tdCnt',tdFiltered.length);tdPg=1;renderTDTable();
@@ -832,9 +946,9 @@ function renderTDTable(){
   document.getElementById('tdPrv').disabled=tdPg<=1;document.getElementById('tdNxt').disabled=tdPg>=pgs;
   document.getElementById('tdTbody').innerHTML=pg.map(r=>{
     const cbHD=canhBaoHD(r.batdau,r.tiendoHD,r.tt);const cbNam=canhBaoNamDA(r.namda,r.tt);
-    return`<tr onclick="openDA('${r.ma}',${JSON.stringify(r)})" style="cursor:pointer">
+    return`<tr onclick="openDA('${r.ma}')" style="cursor:pointer">
       <td><span class="st n" style="font-size:9px">${r.ma}</span></td>
-      <td class="tdn" title="${r.ten}">${r.ten}</td>
+      <td class="tdn" title='${r.ten}'>${r.ten}</td>
       <td style="font-size:10px;white-space:nowrap">${r.cb||'--'}</td>
       <td style="font-size:10px;text-align:center">${r.batdau||'--'}</td>
       <td style="text-align:center;font-weight:600">${r.tiendoHD||'--'}</td>
@@ -862,7 +976,7 @@ function renderXP(){
     const daHtml=das.length===0?`<div style="font-size:10px;color:var(--ink3);font-style:italic">Chưa có dự án</div>`:
       das.slice(0,3).map(d=>{const p=pc(d);const c=COL(p);return`<div class="xda-i"><span class="st ${({TCHT:'g',TCCT:'n',TC00:'r',CBDT:'a'})[d.tt]||''}" style="font-size:8px">${d.tt}</span><span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:10px" title="${d.ten}">${d.ten}</span><div class="xda-pb"><div class="xda-pf" style="width:${Math.min(p??0,100)}%;background:${c.b}"></div></div><span class="xda-p" style="color:${c.t}">${p!==null?p+'%':'--'}</span></div>`;}).join('')+(das.length>3?`<div style="font-size:9px;color:var(--ink3)">…+${das.length-3} DA khác</div>`:'');
     const moTag=mos.length>0?`<span style="font-size:10px;font-weight:600;padding:1px 7px;border-radius:12px;background:var(--brlt);color:var(--brown);margin-left:5px">⛏${mos.length} mỏ</span>`:'';
-    return`<div class="xc" onclick='showXPModal(${JSON.stringify(x)})'>
+    return`<div class="xc" onclick="showXPModal('${x.ten}')">
       <div class="xch"><span class="xcn">${x.ten}</span><span class="xcb">#${x.stt}</span></div>
       <div class="xcbody">
         <div class="xrow"><span class="xlbl">SĐT</span><span class="xval">${x.sdt||'--'}</span></div>
@@ -875,7 +989,8 @@ function renderXP(){
   }).join('')||'<div style="padding:28px;text-align:center;color:var(--ink3);grid-column:1/-1">Không tìm thấy</div>';
 }
 
-function showXPModal(x){
+function showXPModal(ten){
+  const x=allXP.find(xp=>xp.ten===ten)||{ten};
   const das=daForXP(x.ten),mos=moForXP(x.ten),xpObj=allXP.find(xp=>xp.ten===x.ten)||x;
   const dsF=parseInt((x.danso||'0').replace(/\D/g,'')).toLocaleString('vi-VN');
   const gmUrl=xpObj.lat?`https://www.google.com/maps?q=${xpObj.lat},${xpObj.lon}`:'';
@@ -945,7 +1060,7 @@ function renderMo(){
         <div class="mo-row"><span class="mo-lbl">Diện tích</span><span class="mo-val">${m.dt?m.dt.toFixed(2)+' ha':'--'}</span></div>
         <div class="mo-row"><span class="mo-lbl">Trữ lượng</span><span class="mo-val" style="font-weight:600;color:var(--amber)">${tlD}</span></div>
         <div class="mo-row"><span class="mo-lbl">Tọa độ</span><span class="mo-val" style="font-size:10px">${m.lat?`${m.lat.toFixed(5)}, ${m.lon.toFixed(5)}`:'--'}</span></div>
-        ${m.tenCu?`<div class="mo-row"><span class="mo-lbl">Tên gọi cũ</span><span class="mo-val" style="color:var(--ink3);font-size:10px;font-style:italic">${m.tenCu}</span></div>`:''}
+        ${m.tenCu?`<div class="mo-row"><span class="mo-lbl">Cung cấp cho công trình </span><span class="mo-val" style="color:var(--ink3);font-size:10px;font-style:italic">${m.tenCu}</span></div>`:''}
         ${gUrl?`<a href="${gUrl}" target="_blank" class="mo-map" onclick="event.stopPropagation()">📍 Xem Maps</a>`:''}
       </div>
     </div>`;
@@ -972,7 +1087,7 @@ function showMoModal(id){
     <div class="ir"><span class="il">Diện tích mỏ</span><span class="iv">${m.dt?m.dt.toFixed(2)+' ha':'--'}</span></div>
     <div class="ir"><span class="il">Trữ lượng dự kiến</span><span class="iv" style="font-weight:600;color:var(--amber)">${tlD}</span></div>
     <div class="ir"><span class="il">Tọa độ mỏ</span><span class="iv">${m.lat?m.lat.toFixed(5)+', '+m.lon.toFixed(5):'--'}</span></div>
-    ${m.tenCu?`<div class="ir"><span class="il">Tên gọi cũ</span><span class="iv" style="color:var(--ink3)">${m.tenCu}</span></div>`:''}
+    ${m.tenCu?`<div class="ir"><span class="il">Cung cấp cho công trình</span><span class="iv" style="color:var(--ink3)">${m.tenCu}</span></div>`:''}
     <div class="ir"><span class="il">Google Maps</span><span class="iv">${gUrl?`<a href="${gUrl}" target="_blank" class="mo-map">📍 Mở Maps</a>`:'Chưa có'}</span></div>
     ${nearXP}`;
   document.getElementById('modalOv').classList.remove('h');
@@ -1000,16 +1115,16 @@ function renderAlerts(){
   const alTDY=d.filter(r=>canhBaoHD(r.batdau,r.tiendoHD,r.tt).level==='warning').slice(0,20);
   const alVM=d.filter(r=>r.vuongmac&&r.vuongmac.toLowerCase()!=='không có'&&r.vuongmac.trim()).slice(0,20);
   const alTC=d.filter(r=>r.tt==='TC00'&&r.kh>0).sort((a,b)=>b.kh-a.kh);
-  function ai(r,bc,val){return`<div class="ai" onclick="openDA('${r.ma}',${JSON.stringify(r)})"><span class="bdg ${bc}">${val}</span><span class="ainame" title="${r.ten}">${r.ten}</span><span class="aisub">${r.cb||shP(r.phong)}</span></div>`;}
+  function ai(r,bc,val){return`<div class="ai" onclick="openDA('${r.ma}')"><span class="bdg ${bc}">${val}</span><span class="ainame" title='${r.ten}'>${r.ten}</span><span class="aisub">${r.cb||shP(r.phong)}</span></div>`;}
   document.getElementById('alR').innerHTML=alR.length?alR.map(r=>ai(r,'r',pc(r)!==null?pc(r)+'%':'--')).join(''):`<div class="empty">✓ Không có</div>`;
   document.getElementById('alA').innerHTML=alA.length?alA.map(r=>ai(r,'a',pc(r)!==null?pc(r)+'%':'--')).join(''):`<div class="empty">✓ Không có</div>`;
-  document.getElementById('alG').innerHTML=alG.length?alG.map(r=>`<div class="ai"><span class="bdg g">TCHT</span><span class="ainame" title="${r.ten}">${r.ten}</span><span class="aisub">${r.pgd}</span></div>`).join(''):`<div class="empty">Không có</div>`;
-  function tdAi(r,bc){const cb=canhBaoHD(r.batdau,r.tiendoHD,r.tt);return`<div class="ai" onclick="openDA('${r.ma}',${JSON.stringify(r)})"><span class="bdg ${bc}" style="font-size:9px">${cb.ngayCon!==null?(cb.ngayCon<0?'Quá '+Math.abs(cb.ngayCon)+'N':'Còn '+cb.ngayCon+'N'):'--'}</span><span class="ainame" title="${r.ten}">${r.ten}</span><span class="aisub">${r.cb||'--'}</span></div>`;}
+  document.getElementById('alG').innerHTML=alG.length?alG.map(r=>`<div class="ai"><span class="bdg g">TCHT</span><span class="ainame" title='${r.ten}'>${r.ten}</span><span class="aisub">${r.pgd}</span></div>`).join(''):`<div class="empty">Không có</div>`;
+  function tdAi(r,bc){const cb=canhBaoHD(r.batdau,r.tiendoHD,r.tt);return`<div class="ai" onclick="openDA('${r.ma}')"><span class="bdg ${bc}" style="font-size:9px">${cb.ngayCon!==null?(cb.ngayCon<0?'Quá '+Math.abs(cb.ngayCon)+'N':'Còn '+cb.ngayCon+'N'):'--'}</span><span class="ainame" title='${r.ten}'>${r.ten}</span><span class="aisub">${r.cb||'--'}</span></div>`;}
   document.getElementById('alTDR').innerHTML=alTDR.length?alTDR.map(r=>tdAi(r,'r')).join(''):`<div class="empty">✓ Không có</div>`;
   document.getElementById('alTDO').innerHTML=alTDO.length?alTDO.map(r=>tdAi(r,'o')).join(''):`<div class="empty">✓ Không có</div>`;
   document.getElementById('alTDY').innerHTML=alTDY.length?alTDY.map(r=>tdAi(r,'a')).join(''):`<div class="empty">✓ Không có</div>`;
-  document.getElementById('alVM').innerHTML=alVM.length?alVM.map(r=>`<div class="ai" onclick="openDA('${r.ma}',${JSON.stringify(r)})"><span class="bdg n">VM</span><span class="ainame" title="${r.vuongmac}">${r.ten}</span><span class="aisub" style="color:var(--red)">${r.vuongmac.slice(0,25)}</span></div>`).join(''):`<div class="empty">✓ Không có vướng mắc</div>`;
-  document.getElementById('alTC').innerHTML=alTC.length?alTC.map(r=>`<div class="ai" onclick="openDA('${r.ma}',${JSON.stringify(r)})"><span class="bdg r">TC00</span><span class="ainame" title="${r.ten}">${r.ten}</span><span class="aisub">KH:${MN(r.kh)} tr</span></div>`).join(''):`<div class="empty">✓ Không có</div>`;
+  document.getElementById('alVM').innerHTML=alVM.length?alVM.map(r=>`<div class="ai" onclick="openDA('${r.ma}')"><span class="bdg n">VM</span><span class="ainame" title='${r.vuongmac}'>${r.ten}</span><span class="aisub" style="color:var(--red)">${r.vuongmac.slice(0,25)}</span></div>`).join(''):`<div class="empty">✓ Không có vướng mắc</div>`;
+  document.getElementById('alTC').innerHTML=alTC.length?alTC.map(r=>`<div class="ai" onclick="openDA('${r.ma}')"><span class="bdg r">TC00</span><span class="ainame" title='${r.ten}'>${r.ten}</span><span class="aisub">KH:${MN(r.kh)} tr</span></div>`).join(''):`<div class="empty">✓ Không có</div>`;
   const xpCo=new Set(allDA.map(r=>(r.dia||'').toLowerCase().trim()));
   const xpChua=allXP.filter(x=>!xpCo.has(x.ten.toLowerCase().trim()));
   document.getElementById('xpNone').innerHTML=xpChua.length?xpChua.map(x=>`<span style="background:var(--bg);border:1px solid var(--rule);border-radius:20px;padding:3px 9px;font-size:11px;color:var(--ink2)">${x.ten}</span>`).join(''):`<span style="color:var(--green);font-size:12px">✓ Tất cả xã/phường đều có dự án</span>`;
@@ -1018,6 +1133,8 @@ function renderAlerts(){
 
 // ══ CLICK DA DETAIL ══
 function openDA(ma,r){
+  // Nếu không truyền r, tìm từ allDA
+  if(!r||typeof r==='undefined'){r=allDA.find(x=>x.ma===ma)||{};}
   const p=pc(r),c=COL(p),cbHD=canhBaoHD(r.batdau,r.tiendoHD,r.tt),cbNam=canhBaoNamDA(r.namda,r.tt);
   document.getElementById('mTit').textContent='📁 '+ma+' — '+(r.ten||'').slice(0,55);
   document.getElementById('mBod').innerHTML=`
@@ -1059,38 +1176,215 @@ function applyL(){
 }
 function rstL(){['lP','lT'].forEach(id=>document.getElementById(id).value='');document.getElementById('lQ').value='';applyL();}
 function srtL(){const s=V('lS'),a=[...listData];if(s==='gn_asc')a.sort((x,y)=>(pc(x)??999)-(pc(y)??999));else if(s==='gn_desc')a.sort((x,y)=>(pc(y)??-1)-(pc(x)??-1));else if(s==='kh_desc')a.sort((x,y)=>y.kh-x.kh);else a.sort((x,y)=>x.ma.localeCompare(y.ma));return a;}
+// Track expanded rows
+const expandedRows=new Set();
+function toggleRow(ma){
+  if(expandedRows.has(ma))expandedRows.delete(ma);
+  else expandedRows.add(ma);
+  renderL();
+}
+window.toggleRow=toggleRow;
+
 function renderL(){
   const arr=srtL(),tot=arr.length,pgs=Math.ceil(tot/PAGE)||1,st=(curPg-1)*PAGE,pg=arr.slice(st,st+PAGE);
   S('pgI',`${curPg}/${pgs}`);S('pgSh',curPg);S('pgTo',pgs);S('pgAll',tot);
   document.getElementById('lPrv').disabled=curPg<=1;document.getElementById('lNxt').disabled=curPg>=pgs;
-  document.getElementById('ltb').innerHTML=pg.map(r=>{
-    const p=pc(r),c=COL(p),cbHD=canhBaoHD(r.batdau,r.tiendoHD,r.tt);
-    return`<tr onclick="openDA('${r.ma}',${JSON.stringify(r)})" style="cursor:pointer">
+
+  const rows=[];
+  pg.forEach(r=>{
+    const p=pc(r);
+    // Dùng XL (xây lắp) để tính tiến độ
+    const khXl=N(r.khXl||r.kh);
+    const gnXl=N(r.gnXl||r.gn);
+    const pXl=khXl>0?Math.round(gnXl/khXl*100):null;
+    const cXl=COL(pXl);
+    const cbHD=canhBaoHD(r.batdau,r.tiendoHD,r.tt);
+    const isExp=expandedRows.has(r.ma);
+
+    // Tính số ngày còn lại
+    const ngayCon=cbHD.ngayCon;     // ngày còn đến ngày HT HĐ (tính từ hôm nay)
+    const denBD=cbHD.denBD||null;   // ngày còn đến khi bắt đầu TC
+    // Số ngày dùng để tính GN/ngày:
+    // - Chưa TC: dùng conDenHT (tổng HĐ còn lại từ hôm nay)
+    // - Đang TC: dùng ngayCon (HĐ còn lại từ hôm nay)
+    const ngayConGN=(cbHD.level==='notstarted')?(cbHD.conDenHT??ngayCon):ngayCon;
+    let dailyCell='';
+    if(ngayConGN!==null&&ngayConGN>0&&khXl>0&&gnXl<khXl){
+      const conLai=khXl-gnXl;
+      const daily=conLai/ngayConGN;
+      const dailyFmt=daily>=1e8?TY(daily)+' tỷ/ngày':MN(daily)+' tr/ngày';
+      const urgentDaily=daily>=1e8;
+      dailyCell=`<div style="font-size:9px;margin-top:2px">📌 Cần GN: <b style="color:${urgentDaily?'var(--red)':'var(--amber)'}">${dailyFmt}</b></div>`;
+    }else if(ngayCon!==null&&ngayCon<0){
+      dailyCell=`<div style="font-size:9px;margin-top:2px;color:var(--red)">⚠ Quá hạn ${Math.abs(ngayCon)} ngày</div>`;
+    }
+
+    // Vật liệu
+    const vlDat=r.vlDat||0,vlCat=r.vlCat||0,vlDa=r.vlDa||0;
+    const vlFmt=v=>v>0?v.toLocaleString('vi-VN'):'--';
+
+    // Vướng mắc
+    const hasVM=r.vuongmac&&r.vuongmac.toLowerCase()!=='không có'&&r.vuongmac.trim();
+
+    rows.push(`<tr onclick="toggleRow('${r.ma}')" style="cursor:pointer;${isExp?'background:#EEF5FF;font-weight:500':''}">
+      <td style="text-align:center;color:var(--blue);font-size:11px">${isExp?'▼':'▶'}</td>
       <td><span class="st n" style="font-size:9px">${r.ma}</span></td>
-      <td class="tdn" title="${r.ten}">${r.ten}</td>
+      <td class="tdn" title='${r.ten}'>${r.ten}</td>
       <td style="font-size:10px;white-space:nowrap">${shP(r.phong)}</td>
-      <td style="font-size:10px;white-space:nowrap">${r.pgd||'--'}</td>
       <td style="font-size:10px;white-space:nowrap;color:var(--navy);font-weight:600">${r.cb||'--'}</td>
       <td style="font-size:10px;color:var(--teal);white-space:nowrap">${r.dia||'--'}</td>
       <td>${stB(r.tt)}</td>
       <td><span class="bdg n" style="font-size:9px">${r.nguon}</span></td>
-      <td class="r">${r.kh?MN(r.kh):'--'}</td>
-      <td class="r">${r.gn?MN(r.gn):'--'}</td>
-      <td>${pbRow(p,c)}</td>
-      <td><span class="${cbHD.cls}" style="font-size:9px;padding:2px 5px;border-radius:10px">${cbHD.label.slice(0,20)}</span></td>
-      <td style="font-size:10px;color:var(--ink3)" title="${r.nthi||''}">${(r.nthi||'--').slice(0,18)}</td>
-    </tr>`;
-  }).join('')||'<tr><td colspan="13" style="text-align:center;padding:18px;color:var(--ink3)">Không có dữ liệu</td></tr>';
+      <td class="r" style="font-size:10px">${khXl?MN(khXl):'--'}</td>
+      <td class="r" style="font-size:10px">${gnXl?MN(gnXl):'--'}</td>
+      <td>${pbRow(pXl,cXl)}</td>
+      <td>
+        <span class="${cbHD.cls}" style="font-size:9px;padding:2px 5px;border-radius:10px;display:block">${cbHD.label}</span>
+        ${dailyCell}
+      </td>
+      <td style="font-size:10px;color:var(--ink3)" title='${r.nthi||""}'>${(r.nthi||'--').slice(0,16)}</td>
+      <td style="font-size:10px;text-align:right;color:${vlDat>0?'var(--brown)':'var(--ink3)'}">${vlFmt(vlDat)}</td>
+      <td style="font-size:10px;text-align:right;color:${vlCat>0?'#1E40AF':'var(--ink3)'}">${vlFmt(vlCat)}</td>
+      <td style="font-size:10px;text-align:right;color:${vlDa>0?'var(--ink2)':'var(--ink3)'}">${vlFmt(vlDa)}</td>
+      <td style="text-align:center">${hasVM?`<span style="color:var(--red);font-size:14px" title='${r.vuongmac}'>⚠</span>`:'<span style="color:var(--green);font-size:12px">✓</span>'}</td>
+    </tr>`);
+
+    // Expanded row
+    if(isExp){
+      const today=TODAY;
+      const d=parseDate(r.batdau);
+      const ngayBD=d?d.toLocaleDateString('vi-VN'):(r.batdau||'--');
+      const ngayHT=cbHD.ngayHT?cbHD.ngayHT.toLocaleDateString('vi-VN'):(d&&r.tiendoHD?new Date(d.getTime()+r.tiendoHD*86400000).toLocaleDateString('vi-VN'):'--');
+      const conLaiGN=khXl>gnXl?(khXl-gnXl):0;
+      const pctDone=ngayCon!==null&&r.tiendoHD>0?Math.round((r.tiendoHD-Math.max(0,ngayCon))/r.tiendoHD*100):null;
+
+      rows.push(`<tr class="row-exp">
+        <td colspan="17">
+          <div class="exp-body">
+            <div class="exp-field">
+              <span class="exp-lbl">📅 Bắt đầu thi công</span>
+              <span class="exp-val navy">${ngayBD}</span>
+            </div>
+            <div class="exp-field">
+              <span class="exp-lbl">📅 Kết thúc HĐ (dự kiến)</span>
+              <span class="exp-val navy">${ngayHT}</span>
+            </div>
+            <div class="exp-field">
+              <span class="exp-lbl">⏱ Số ngày HĐ</span>
+              <span class="exp-val">${r.tiendoHD||'--'} ngày</span>
+            </div>
+            <div class="exp-field">
+              <span class="exp-lbl">📍 Trạng thái tiến độ</span>
+              <span class="${cbHD.cls}" style="font-size:10px;padding:2px 8px;border-radius:10px">${cbHD.label}</span>
+            </div>
+            ${cbHD.level==='notstarted'?`<div class="exp-field">
+              <span class="exp-lbl">⏳ Đến ngày bắt đầu TC</span>
+              <span class="exp-val amber">Còn ${denBD} ngày (${new Date(cbHD.ngayBD).toLocaleDateString('vi-VN')})</span>
+            </div>`:''}
+            <div class="exp-field">
+              <span class="exp-lbl">⚡ Còn lại đến HT HĐ</span>
+              <span class="exp-val ${ngayCon!==null&&ngayCon<0?'red':ngayCon!==null&&ngayCon<=30?'amber':'green'}">${ngayCon!==null?(ngayCon<0?'Quá hạn '+Math.abs(ngayCon)+' ngày':'Còn '+ngayCon+' ngày'):'--'}</span>
+            </div>
+            <div class="exp-field">
+              <span class="exp-lbl">💰 KH XL (tr.đ)</span>
+              <span class="exp-val">${khXl?MN(khXl):'--'}</span>
+            </div>
+            <div class="exp-field">
+              <span class="exp-lbl">✅ GN XL (tr.đ)</span>
+              <span class="exp-val green">${gnXl?MN(gnXl):'--'}</span>
+            </div>
+            <div class="exp-field">
+              <span class="exp-lbl">⏳ Còn lại cần GN (tr.đ)</span>
+              <span class="exp-val ${conLaiGN>0?'amber':''}">${conLaiGN?MN(conLaiGN):'Đã đủ'}</span>
+            </div>
+            ${ngayCon!==null&&ngayCon>0&&conLaiGN>0?`<div class="exp-field">
+              <span class="exp-lbl">📌 Cần GN mỗi ngày</span>
+              <span class="exp-val red">${conLaiGN/ngayCon>=1e8?TY(conLaiGN/ngayCon)+' tỷ/ngày':MN(conLaiGN/ngayCon)+' tr.đ/ngày'}</span>
+            </div>`:''}
+            <div class="exp-field">
+              <span class="exp-lbl">🏗 TV Thiết kế</span>
+              <span class="exp-val">${r.tvtk||'--'}</span>
+            </div>
+            <div class="exp-field">
+              <span class="exp-lbl">🔨 Nhà thầu TC</span>
+              <span class="exp-val">${r.nthi||'--'}</span>
+            </div>
+            <div class="exp-field">
+              <span class="exp-lbl">👁 TV Giám sát</span>
+              <span class="exp-val">${r.tvgs||'--'}</span>
+            </div>
+            <div class="exp-field">
+              <span class="exp-lbl">🧱 VL Đất san lấp</span>
+              <span class="exp-val ${vlDat>0?'amber':''}">${vlFmt(vlDat)} m³</span>
+            </div>
+            <div class="exp-field">
+              <span class="exp-lbl">🪨 VL Cát</span>
+              <span class="exp-val" style="color:#1E40AF">${vlFmt(vlCat)} m³</span>
+            </div>
+            <div class="exp-field">
+              <span class="exp-lbl">⚫ VL Đá</span>
+              <span class="exp-val">${vlFmt(vlDa)} m³</span>
+            </div>
+            ${hasVM?`<div class="exp-field exp-full">
+              <span class="exp-lbl" style="color:var(--red)">⚠ Khó khăn, vướng mắc</span>
+              <span class="exp-val red">${r.vuongmac}</span>
+            </div>`:''}
+            ${r.ghichu&&r.ghichu!=='...'?`<div class="exp-field exp-full">
+              <span class="exp-lbl">📝 Ghi chú</span>
+              <span class="exp-val">${r.ghichu}</span>
+            </div>`:''}
+          </div>
+        </td>
+      </tr>`);
+    }
+  });
+
+  document.getElementById('ltb').innerHTML=rows.join('')||'<tr><td colspan="17" style="text-align:center;padding:18px;color:var(--ink3)">Không có dữ liệu</td></tr>';
 }
 function chgPg(d){curPg+=d;renderL();}
 function exportCSV(){
   const arr=srtL();
-  const hdr=['Mã DA','Công trình','Phòng','Phó GĐ','Cán bộ phụ trách','Xã/Phường','TT','Nguồn vốn','TV Thiết kế','Nhà thầu TC','TV Giám sát','Nhà thầu khác','Bắt đầu TC','Tiến độ HĐ (ngày)','Năm DA','KH Vốn (tr.đ)','GN (tr.đ)','Tỷ lệ GN%','CB Tiến độ HĐ','CB Năm DA','VL Đất (m³)','VL Cát (m³)','VL Đá (m³)','Vướng mắc','Ghi chú'];
-  const rows=arr.map(r=>[r.ma,`"${r.ten}"`,r.phong,r.pgd,r.cb||'',r.dia,r.tt+(TT_L[r.tt]?' - '+TT_L[r.tt]:''),r.nguon,r.tvtk||'',r.nthi||'',r.tvgs||'',r.ntkhac||'',r.batdau||'',r.tiendoHD||'',r.namda||'',r.kh?Math.round(r.kh/1e6):'',r.gn?Math.round(r.gn/1e6):'',pc(r)!==null?pc(r)+'%':'',canhBaoHD(r.batdau,r.tiendoHD,r.tt).label,canhBaoNamDA(r.namda,r.tt).label,r.vlDat||0,r.vlCat||0,r.vlDa||0,`"${r.vuongmac}"`,`"${r.ghichu}"`].join(','));
-  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\uFEFF'+[hdr,...rows].join('\n')],{type:'text/csv;charset=utf-8'}));a.download=`BanQLDA_2026_${new Date().toISOString().slice(0,10)}.csv`;a.click();toast('📥 Xuất '+arr.length+' DA');
+  const hdr=[
+    'Mã DA','Công trình','Phòng','Phó GĐ','Cán bộ phụ trách','Xã/Phường','TT','Nguồn vốn',
+    'TV Thiết kế','Nhà thầu TC','TV Giám sát','Nhà thầu khác',
+    'Bắt đầu TC','Tiến độ HĐ (ngày)','Ngày HT HĐ dự kiến','Còn lại (ngày)','CB Tiến độ HĐ',
+    'Năm DA','CB Năm DA',
+    'KH XL (tr.đ)','GN XL (tr.đ)','TL GN XL%','Còn GN XL (tr.đ)','Cần GN/ngày (tr.đ)',
+    'KH Tổng (tr.đ)','GN Tổng (tr.đ)','TL GN Tổng%',
+    'VL Đất (m³)','VL Cát (m³)','VL Đá (m³)','Vướng mắc','Ghi chú'
+  ];
+  const rows=arr.map(r=>{
+    const cbHD=canhBaoHD(r.batdau,r.tiendoHD,r.tt);
+    const cbNam=canhBaoNamDA(r.namda,r.tt);
+    const ngayCon=cbHD.ngayCon;
+    const d=parseDate(r.batdau);
+    const ngayHT=d&&r.tiendoHD?new Date(d.getTime()+r.tiendoHD*86400000).toLocaleDateString('vi-VN'):'';
+    const khXl=r.khXl||r.kh,gnXl=r.gnXl||r.gn;
+    const conLai=khXl>gnXl?khXl-gnXl:0;
+    const daily=ngayCon>0&&conLai>0?Math.round(conLai/ngayCon/1e6*100)/100:0;
+    const pXl=khXl>0?Math.round(gnXl/khXl*100):null;
+    return [
+      r.ma,`"${r.ten}"`,r.phong,r.pgd,r.cb||'',r.dia,
+      r.tt+(TT_L[r.tt]?' - '+TT_L[r.tt]:''),r.nguon,
+      `"${r.tvtk||''}"`,`"${r.nthi||''}"`,`"${r.tvgs||''}"`,`"${r.ntkhac||''}"`,
+      r.batdau||'',r.tiendoHD||'',ngayHT,
+      ngayCon!==null?ngayCon:'',cbHD.label,
+      r.namda||'',cbNam.label,
+      khXl?Math.round(khXl/1e6):'',gnXl?Math.round(gnXl/1e6):'',
+      pXl!==null?pXl+'%':'',conLai?Math.round(conLai/1e6):'',daily||'',
+      r.kh?Math.round(r.kh/1e6):'',r.gn?Math.round(r.gn/1e6):'',
+      pc(r)!==null?pc(r)+'%':'',
+      r.vlDat||0,r.vlCat||0,r.vlDa||0,
+      `"${r.vuongmac||''}"`,`"${r.ghichu||''}"`
+    ].join(',');
+  });
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob(['﻿'+[hdr,...rows].join('\n')],{type:'text/csv;charset=utf-8'}));
+  a.download=`BanQLDA_2026_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  toast('📥 Xuất '+arr.length+' DA — '+hdr.length+' cột');
 }
 
-// ══ TABS ══
 function sw(id,el){
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
