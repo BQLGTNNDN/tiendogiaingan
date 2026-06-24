@@ -1061,7 +1061,7 @@ function renderMo(){
         <div class="mo-row"><span class="mo-lbl">Diện tích</span><span class="mo-val">${m.dt?m.dt.toFixed(2)+' ha':'--'}</span></div>
         <div class="mo-row"><span class="mo-lbl">Trữ lượng</span><span class="mo-val" style="font-weight:600;color:var(--amber)">${tlD}</span></div>
         <div class="mo-row"><span class="mo-lbl">Tọa độ</span><span class="mo-val" style="font-size:10px">${m.lat?`${m.lat.toFixed(5)}, ${m.lon.toFixed(5)}`:'--'}</span></div>
-        ${m.tenCu?`<div class="mo-row"><span class="mo-lbl">Tên gọi cũ</span><span class="mo-val" style="color:var(--ink3);font-size:10px;font-style:italic">${m.tenCu}</span></div>`:''}
+        ${m.tenCu?`<div class="mo-row"><span class="mo-lbl">Cung cấp cho công trình </span><span class="mo-val" style="color:var(--ink3);font-size:10px;font-style:italic">${m.tenCu}</span></div>`:''}
         ${gUrl?`<a href="${gUrl}" target="_blank" class="mo-map" onclick="event.stopPropagation()">📍 Xem Maps</a>`:''}
       </div>
     </div>`;
@@ -1088,7 +1088,7 @@ function showMoModal(id){
     <div class="ir"><span class="il">Diện tích mỏ</span><span class="iv">${m.dt?m.dt.toFixed(2)+' ha':'--'}</span></div>
     <div class="ir"><span class="il">Trữ lượng dự kiến</span><span class="iv" style="font-weight:600;color:var(--amber)">${tlD}</span></div>
     <div class="ir"><span class="il">Tọa độ mỏ</span><span class="iv">${m.lat?m.lat.toFixed(5)+', '+m.lon.toFixed(5):'--'}</span></div>
-    ${m.tenCu?`<div class="ir"><span class="il">Tên gọi cũ</span><span class="iv" style="color:var(--ink3)">${m.tenCu}</span></div>`:''}
+    ${m.tenCu?`<div class="ir"><span class="il">Cung cấp cho công trình</span><span class="iv" style="color:var(--ink3)">${m.tenCu}</span></div>`:''}
     <div class="ir"><span class="il">Google Maps</span><span class="iv">${gUrl?`<a href="${gUrl}" target="_blank" class="mo-map">📍 Mở Maps</a>`:'Chưa có'}</span></div>
     ${nearXP}`;
   document.getElementById('modalOv').classList.remove('h');
