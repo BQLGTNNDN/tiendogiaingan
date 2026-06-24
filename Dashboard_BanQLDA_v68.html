@@ -1,0 +1,1600 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dashboard | Ban QLDA Giao thông & Nông nghiệp Đà Nẵng</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root{
+  --navy:#1B3A6B;--blue:#2E5FA3;--blt:#D6E4F7;
+  --teal:#0B6E6E;--tlt:#D0EFEF;
+  --green:#1A6B3C;--glt:#D4F0E0;
+  --amber:#C8720A;--alt:#FDF0DC;
+  --red:#B52A2A;--rlt:#FDEAEA;
+  --orange:#C05000;--olt:#FEF0E0;
+  --purple:#5B2D8E;--plt:#EDE7F6;
+  --brown:#6B3A2A;--brlt:#F5E6DF;
+  --ink:#0D1B2A;--ink2:#3D4F5C;--ink3:#7A8C96;
+  --bg:#EEF2F7;--surf:#fff;--rule:#DDE3EA;
+  --r:8px;--r2:12px;
+  --sh:0 2px 10px rgba(13,27,42,.09);--sh2:0 6px 20px rgba(13,27,42,.15);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:13px;line-height:1.5}
+/* TOPBAR */
+.topbar{background:linear-gradient(135deg,#0f2447 0%,var(--navy) 60%,#1e4d8c 100%);padding:0 20px;height:58px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:300;box-shadow:0 3px 16px rgba(0,0,0,.3)}
+.brand{display:flex;align-items:center;gap:12px}
+.seal{width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.15);border:2px solid rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.brand-txt strong{font-size:11.5px;font-weight:700;color:#fff;display:block;line-height:1.3}
+.brand-txt span{font-size:10px;color:rgba(255,255,255,.65)}
+.tr{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.chip{display:flex;align-items:center;gap:5px;padding:3px 9px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:20px;font-size:10px;color:rgba(255,255,255,.85);white-space:nowrap}
+.chip b{color:#7DD3FC}
+.btnR{padding:6px 13px;background:var(--amber);border:none;color:#fff;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:5px;transition:background .2s}
+.btnR:hover{background:#a55e08}
+.btnR.spin svg{animation:rot 1s linear infinite}
+@keyframes rot{to{transform:rotate(360deg)}}
+/* TABS */
+.tabs{background:var(--surf);border-bottom:2px solid var(--rule);display:flex;padding:0 14px;position:sticky;top:58px;z-index:200;box-shadow:0 1px 6px rgba(0,0,0,.06);overflow-x:auto;gap:0}
+.tab{padding:9px 13px;font-size:11px;font-weight:600;color:var(--ink3);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .18s;white-space:nowrap;display:flex;align-items:center;gap:5px;flex-shrink:0}
+.tab:hover{color:var(--navy)}.tab.on{color:var(--navy);border-bottom-color:var(--navy)}
+.tbdg{padding:1px 6px;border-radius:10px;font-size:10px;font-weight:700}
+.tbdg.b{background:var(--blt);color:var(--navy)}.tbdg.r{background:var(--rlt);color:var(--red)}
+.tbdg.o{background:var(--olt);color:var(--orange)}.tbdg.br{background:var(--brlt);color:var(--brown)}
+/* LAYOUT */
+.wrap{max-width:1700px;margin:0 auto;padding:14px 18px 28px}
+.panel{display:none}.panel.on{display:block}
+.slbl{display:flex;align-items:center;gap:8px;font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--ink3);margin-bottom:10px}
+.slbl::after{content:'';flex:1;height:1px;background:var(--rule)}
+/* FILTER */
+.fb{background:var(--surf);border:1px solid var(--rule);border-radius:var(--r2);padding:9px 13px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px;box-shadow:var(--sh)}
+.fb label{font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.5px}
+select.fs{padding:5px 22px 5px 8px;border:1.5px solid var(--rule);border-radius:6px;font-size:11px;color:var(--ink);background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%237A8C96'/%3E%3C/svg%3E") no-repeat right 7px center;appearance:none;min-width:136px;cursor:pointer}
+select.fs:focus{outline:none;border-color:var(--blue)}
+input.fi{padding:5px 9px;border:1.5px solid var(--rule);border-radius:6px;font-size:11px;color:var(--ink);min-width:180px}
+input.fi:focus{outline:none;border-color:var(--blue)}
+.bRst{padding:5px 9px;background:var(--bg);border:1.5px solid var(--rule);border-radius:6px;font-size:11px;color:var(--ink2);cursor:pointer}
+.bRst:hover{background:var(--rule)}
+.fc{margin-left:auto;font-size:11px;font-weight:600;color:var(--navy);background:var(--blt);padding:3px 10px;border-radius:20px}
+/* KPI */
+.kg{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:9px;margin-bottom:14px}
+.kpi{background:var(--surf);border-radius:var(--r2);border:1px solid var(--rule);box-shadow:var(--sh);padding:12px 13px 10px;position:relative;overflow:hidden;transition:transform .18s,box-shadow .18s}
+.kpi:hover{transform:translateY(-2px);box-shadow:var(--sh2)}
+.kpi::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--ac,var(--blue));border-radius:var(--r2) var(--r2) 0 0}
+.kpi.g{--ac:var(--green)}.kpi.a{--ac:var(--amber)}.kpi.r{--ac:var(--red)}.kpi.t{--ac:var(--teal)}.kpi.p{--ac:var(--purple)}.kpi.o{--ac:var(--orange)}.kpi.br{--ac:var(--brown)}
+.kpi-l{font-size:9px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--ink3);margin-bottom:4px}
+.kpi-v{font-size:20px;font-weight:800;line-height:1;margin-bottom:2px}
+.kpi.g .kpi-v{color:var(--green)}.kpi.a .kpi-v{color:var(--amber)}.kpi.r .kpi-v{color:var(--red)}.kpi.t .kpi-v{color:var(--teal)}.kpi.p .kpi-v{color:var(--purple)}.kpi.o .kpi-v{color:var(--orange)}.kpi.br .kpi-v{color:var(--brown)}
+.kpi-s{font-size:10px;color:var(--ink3)}
+/* GRIDS */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-bottom:11px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:11px;margin-bottom:11px}
+.g4{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:11px;margin-bottom:11px}
+@media(max-width:900px){.g2,.g3{grid-template-columns:1fr}}
+/* CARD */
+.card{background:var(--surf);border:1px solid var(--rule);border-radius:var(--r2);box-shadow:var(--sh);padding:14px 16px}
+.chead{font-size:11px;font-weight:700;color:var(--ink2);margin-bottom:10px;padding-bottom:7px;border-bottom:1px solid var(--rule);display:flex;align-items:center;gap:7px}
+.dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.ch{position:relative;height:200px}
+.ch-md{position:relative;height:240px}
+.ch-lg{position:relative;height:280px}
+/* TABLE */
+.tcard{background:var(--surf);border:1px solid var(--rule);border-radius:var(--r2);box-shadow:var(--sh);overflow:hidden}
+.tw{overflow-x:auto;max-height:calc(100vh - 220px);overflow-y:auto}
+table.mt{width:100%;border-collapse:collapse;font-size:11px;min-width:920px}
+table.mt thead tr th{position:sticky;top:0;z-index:5;background:var(--navy);padding:8px 10px;text-align:left;color:#fff;font-weight:600;white-space:nowrap;font-size:10px}
+table.mt th.r{text-align:right}
+table.mt tbody tr{border-bottom:1px solid var(--bg);transition:background .12s}
+table.mt tbody tr:hover{background:#EBF3FB}
+table.mt td{padding:6px 10px;vertical-align:middle}
+table.mt td.r{text-align:right;font-variant-numeric:tabular-nums}
+.tdn{max-width:210px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* TOP TABLE */
+.t20{width:100%;border-collapse:collapse;font-size:11px}
+.t20 thead tr th{padding:7px 9px;background:var(--navy);color:#fff;font-weight:600;text-align:left;font-size:10px;white-space:nowrap}
+.t20 th.r{text-align:right}
+.t20 tbody tr{border-bottom:1px solid var(--bg);transition:background .12s}
+.t20 tbody tr:hover{background:#EBF3FB}
+.t20 td{padding:6px 9px;vertical-align:middle}
+.t20 td.r{text-align:right;font-variant-numeric:tabular-nums}
+.tnm{max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rnk{font-weight:800;color:var(--ink3);text-align:center;width:22px}
+.rnk.g{color:#B8860B}.rnk.s{color:var(--ink3)}.rnk.b{color:#8B5E3C}
+/* PROGRESS */
+.pb{display:flex;align-items:center;gap:5px;min-width:80px}
+.pbt{flex:1;height:6px;background:var(--bg);border-radius:3px;overflow:hidden}
+.pbf{height:100%;border-radius:3px}
+.pbp{font-size:10px;font-weight:700;min-width:28px;text-align:right}
+/* BADGES */
+.st{display:inline-flex;padding:2px 7px;border-radius:20px;font-size:9px;font-weight:700;white-space:nowrap}
+.st.g{background:var(--glt);color:var(--green)}.st.a{background:var(--alt);color:var(--amber)}
+.st.r{background:var(--rlt);color:var(--red)}.st.n{background:var(--blt);color:var(--navy)}
+.st.o{background:var(--olt);color:var(--orange)}
+/* CẢNH BÁO TIẾN ĐỘ */
+.td-done{background:#E0F2FE;color:#075985;font-weight:700}
+.td-normal{background:var(--glt);color:var(--green);font-weight:700}
+.td-warning{background:var(--alt);color:var(--amber);font-weight:700}
+.td-urgent{background:var(--olt);color:var(--orange);font-weight:700}
+.td-overdue{background:var(--rlt);color:var(--red);font-weight:700}
+.td-unknown{background:var(--bg);color:var(--ink3)}
+/* ALERTS */
+.ag{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-bottom:11px}
+@media(max-width:900px){.ag{grid-template-columns:1fr}}
+.ac{background:var(--surf);border:1px solid var(--rule);border-radius:var(--r2);box-shadow:var(--sh);overflow:hidden}
+.ah{padding:9px 12px;font-size:11px;font-weight:700;color:#fff;display:flex;align-items:center;gap:7px}
+.ah.r{background:var(--red)}.ah.a{background:var(--amber)}.ah.t{background:var(--teal)}
+.ah.g{background:var(--green)}.ah.o{background:var(--orange)}.ah.navy{background:var(--navy)}
+.al{padding:2px 0;max-height:400px;overflow-y:auto}
+.ai{display:flex;align-items:center;gap:7px;padding:6px 12px;border-bottom:1px solid var(--bg);font-size:11px;transition:background .12s;cursor:pointer}
+.ai:hover{background:var(--bg)}.ai:last-child{border-bottom:none}
+.ainame{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500}
+.aisub{font-size:10px;color:var(--ink3);flex-shrink:0;max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bdg{padding:2px 7px;border-radius:12px;font-size:10px;font-weight:700;flex-shrink:0;white-space:nowrap}
+.bdg.r{background:var(--rlt);color:var(--red)}.bdg.a{background:var(--alt);color:var(--amber)}
+.bdg.g{background:var(--glt);color:var(--green)}.bdg.n{background:var(--blt);color:var(--navy)}
+.bdg.o{background:var(--olt);color:var(--orange)}
+.empty{padding:14px;text-align:center;color:var(--ink3);font-size:11px}
+/* TABLE FOOTER */
+.tf{display:flex;align-items:center;justify-content:space-between;padding:8px 13px;background:var(--bg);border-top:1px solid var(--rule);font-size:11px;color:var(--ink2);flex-wrap:wrap;gap:8px}
+.pgb{padding:4px 10px;border:1.5px solid var(--rule);border-radius:6px;background:#fff;font-size:11px;color:var(--ink2);cursor:pointer;transition:all .15s}
+.pgb:hover:not(:disabled){background:var(--navy);color:#fff;border-color:var(--navy)}
+.pgb:disabled{opacity:.4;cursor:default}
+.bcsv{padding:5px 10px;background:var(--green);border:none;color:#fff;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer}
+.bcsv:hover{background:#14522e}
+/* VẬT LIỆU DA */
+.vl-row{display:flex;gap:8px;margin-top:5px;flex-wrap:wrap}
+.vl-chip{display:inline-flex;align-items:center;gap:4px;padding:2px 9px;border-radius:12px;font-size:10px;font-weight:600}
+.vl-dat{background:#FAEEDA;color:#633806}
+.vl-cat{background:#DBEAFE;color:#1E40AF}
+.vl-da{background:#F1EFE8;color:#444441}
+/* XÃ PHƯỜNG */
+.xsearch{width:100%;max-width:400px;padding:7px 12px;border:1.5px solid var(--rule);border-radius:8px;font-size:12px;margin-bottom:12px}
+.xsearch:focus{outline:none;border-color:var(--blue)}
+.xgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:10px}
+.xc{background:var(--surf);border:1px solid var(--rule);border-radius:var(--r2);box-shadow:var(--sh);overflow:hidden;cursor:pointer;transition:box-shadow .18s,transform .18s}
+.xc:hover{box-shadow:var(--sh2);transform:translateY(-2px)}
+.xch{padding:9px 12px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--bg)}
+.xcn{font-weight:700;font-size:12px;color:var(--navy)}
+.xcb{font-size:10px;font-weight:700;padding:2px 7px;background:var(--blt);color:var(--navy);border-radius:12px}
+.xcbody{padding:7px 12px;font-size:11px;color:var(--ink2);display:flex;flex-direction:column;gap:3px}
+.xrow{display:flex;gap:7px}
+.xlbl{color:var(--ink3);font-size:10px;width:70px;flex-shrink:0;padding-top:1px}
+.xval{color:var(--ink);flex:1;font-size:10px}
+.xtag{font-size:10px;font-weight:600;padding:1px 7px;border-radius:12px;background:var(--tlt);color:var(--teal);display:inline-flex}
+.xda-l{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--ink3);margin-bottom:3px;margin-top:5px;padding-top:5px;border-top:1px solid var(--bg)}
+.xda-i{display:flex;align-items:center;gap:5px;padding:2px 0;font-size:10px;border-bottom:1px solid var(--bg)}
+.xda-i:last-child{border-bottom:none}
+.xda-pb{flex:1;height:4px;background:var(--bg);border-radius:2px;overflow:hidden}
+.xda-pf{height:100%;border-radius:2px}
+.xda-p{font-size:9px;font-weight:700;min-width:28px;text-align:right}
+/* MỎ */
+.mo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px}
+.mo-card{background:var(--surf);border:1px solid var(--rule);border-radius:var(--r2);box-shadow:var(--sh);overflow:hidden;cursor:pointer;transition:box-shadow .18s,transform .18s}
+.mo-card:hover{box-shadow:var(--sh2);transform:translateY(-2px)}
+.mo-head{padding:9px 13px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--bg)}
+.mo-name{font-weight:700;font-size:12px;color:var(--navy);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mo-type{font-size:10px;font-weight:700;padding:2px 8px;border-radius:12px;flex-shrink:0;margin-left:8px}
+.mo-type.dat{background:#FAEEDA;color:#633806}
+.mo-type.cat{background:#DBEAFE;color:#1E40AF}
+.mo-type.da{background:#F1EFE8;color:#444441}
+.mo-body{padding:8px 13px;display:flex;flex-direction:column;gap:4px;font-size:11px;color:var(--ink2)}
+.mo-row{display:flex;gap:7px}
+.mo-lbl{color:var(--ink3);font-size:10px;width:90px;flex-shrink:0;padding-top:1px}
+.mo-val{color:var(--ink);flex:1;font-size:10px}
+.mo-map{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;color:var(--blue);padding:2px 8px;border:1px solid var(--blt);border-radius:12px;text-decoration:none;margin-top:3px;background:#fff}
+.mo-map:hover{background:var(--blt)}
+.mo-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:9px;margin-bottom:14px}
+/* MODAL */
+.modal-ov{position:fixed;inset:0;background:rgba(13,27,42,.6);z-index:400;display:flex;align-items:center;justify-content:center;padding:16px}
+.modal-ov.h{display:none}
+.modal-box{background:var(--surf);border-radius:var(--r2);box-shadow:var(--sh2);max-width:680px;width:100%;max-height:88vh;overflow-y:auto}
+.modal-head{padding:13px 17px;border-bottom:1px solid var(--rule);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--surf);z-index:1}
+.modal-head h3{font-size:13px;font-weight:700;color:var(--navy)}
+.mbtn{background:none;border:none;font-size:18px;cursor:pointer;color:var(--ink3);line-height:1}
+.modal-body{padding:14px 17px}
+.ir{display:flex;gap:10px;padding:6px 0;border-bottom:1px solid var(--bg);font-size:12px}
+.ir:last-child{border-bottom:none}
+.il{color:var(--ink3);font-size:11px;min-width:140px;flex-shrink:0}
+.iv{color:var(--ink);font-weight:500;flex:1}
+.ir-section{margin-top:10px;padding-top:8px;border-top:2px solid var(--rule)}
+.ir-sec-title{font-size:11px;font-weight:700;color:var(--navy);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px}
+/* LOADER & TOAST */
+#loader{position:fixed;inset:0;background:rgba(13,27,42,.88);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;color:#fff;z-index:9999}
+.ring{width:44px;height:44px;border:3px solid rgba(255,255,255,.2);border-top-color:#7DD3FC;border-radius:50%;animation:rot 1s linear infinite}
+#loader p{font-size:13px;opacity:.8}
+#loader.h{display:none}
+#toast{position:fixed;bottom:20px;right:20px;background:var(--navy);color:#fff;padding:10px 15px;border-radius:8px;font-size:12px;z-index:500;opacity:0;transform:translateY(10px);transition:all .25s;box-shadow:var(--sh2)}
+#toast.s{opacity:1;transform:none}
+/* EXPANDABLE ROW */
+.row-exp{background:var(--bg);border-left:3px solid var(--blue)}
+.row-exp td{padding:0!important}
+.exp-body{padding:10px 14px;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px;font-size:11px}
+.exp-field{display:flex;flex-direction:column;gap:2px}
+.exp-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--ink3)}
+.exp-val{color:var(--ink);font-size:11px}
+.exp-val.red{color:var(--red);font-weight:600}
+.exp-val.green{color:var(--green);font-weight:600}
+.exp-val.amber{color:var(--amber);font-weight:600}
+.exp-val.navy{color:var(--navy);font-weight:600}
+.exp-full{grid-column:1/-1}
+/* TIẾN ĐỘ GN */
+.tdn-wrap{display:flex;align-items:center;gap:6px}
+.tdn-daily{font-size:9px;color:var(--ink3)}
+.alert-daily{font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px}
+footer{text-align:center;padding:13px;font-size:10px;color:var(--ink3);border-top:1px solid var(--rule);background:var(--surf);margin-top:10px}
+
+/* LOGIN SCREEN - GOOGLE */
+#loginScreen{position:fixed;inset:0;background:linear-gradient(135deg,#0a1628 0%,#1B3A6B 60%,#1e4d8c 100%);z-index:99999;display:flex;align-items:center;justify-content:center;padding:16px}
+#loginScreen.h{display:none}
+.login-box{background:rgba(255,255,255,.07);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.15);border-radius:16px;padding:36px 40px;max-width:400px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.5);text-align:center}
+.login-logo{width:64px;height:64px;border-radius:50%;background:rgba(255,255,255,.12);border:2px solid rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 16px}
+.login-title{font-size:13px;font-weight:700;color:#fff;margin-bottom:4px;line-height:1.5}
+.login-sub{font-size:11px;color:rgba(255,255,255,.5);margin-bottom:28px;line-height:1.5}
+.login-divider{border:none;border-top:1px solid rgba(255,255,255,.12);margin:20px 0}
+.login-err{background:rgba(181,42,42,.25);border:1px solid rgba(181,42,42,.5);border-radius:8px;padding:10px 14px;font-size:11px;color:#FCA5A5;margin-top:14px;display:none;line-height:1.5}
+.login-err.s{display:block}
+.login-footer{margin-top:22px;font-size:10px;color:rgba(255,255,255,.25);line-height:1.6}
+.login-loading{color:rgba(255,255,255,.6);font-size:12px;margin-top:14px;display:none}
+.login-loading.s{display:block}
+/* Center Google button */
+#g_id_signin{display:flex;justify-content:center;margin-top:4px}
+@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+</style>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body>
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo">🏛️</div>
+    <div class="login-title">BAN QUẢN LÝ DỰ ÁN<br>GIAO THÔNG &amp; NÔNG NGHIỆP ĐÀ NẴNG</div>
+    <div class="login-sub">Hệ thống Báo cáo Giải Ngân &amp; Tiến Độ · KH 2026<br>Đăng nhập bằng tài khoản Google được cấp quyền</div>
+    <hr class="login-divider">
+    <!-- Google Sign-In Button -->
+    <div id="g_id_onload"
+      data-client_id="532346952448-g96goj4pacl285blr3pep9k0shbhjel1.apps.googleusercontent.com"
+      data-callback="handleGoogleLogin"
+      data-auto_prompt="false">
+    </div>
+    <div class="g_id_signin"
+      data-type="standard"
+      data-size="large"
+      data-theme="filled_blue"
+      data-text="signin_with"
+      data-shape="rectangular"
+      data-logo_alignment="left"
+      data-width="300">
+    </div>
+    <div class="login-loading" id="loginLoading">⏳ Đang xác thực…</div>
+    <div class="login-err" id="loginErr"></div>
+    <div class="login-footer">
+      Chỉ tài khoản được cấp quyền mới có thể đăng nhập<br>
+      © Ban QLDA Giao thông &amp; Nông nghiệp Đà Nẵng · 2026
+    </div>
+  </div>
+</div>
+
+<div id="loader"><div class="ring"></div><p id="ldMsg">Đang tải dữ liệu…</p></div>
+<div id="toast"></div>
+<div class="modal-ov h" id="modalOv" onclick="closeMo(event)">
+  <div class="modal-box">
+    <div class="modal-head"><h3 id="mTit"></h3><button class="mbtn" onclick="closeMoBtn()">✕</button></div>
+    <div class="modal-body" id="mBod"></div>
+  </div>
+</div>
+
+<header class="topbar">
+  <div class="brand">
+    <div class="seal">🏛️</div>
+    <div class="brand-txt">
+      <strong>BAN QUẢN LÝ DỰ ÁN ĐẦU TƯ XÂY DỰNG CÁC CÔNG TRÌNH GIAO THÔNG VÀ NÔNG NGHIỆP ĐÀ NẴNG</strong>
+      <span>Dashboard Giải Ngân & Tiến Độ · Năm Kế Hoạch 2026 · Dữ liệu 16/06/2025</span>
+    </div>
+  </div>
+  <div class="tr">
+    <div class="chip">Cập nhật: <b id="upd">--</b></div>
+    <div class="chip">KH: <b>2026</b></div>
+    <button class="btnR" onclick="init()" id="btnRef">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>Làm mới
+    </button>
+  </div>
+</header>
+
+<nav class="tabs">
+  <div class="tab on"  onclick="sw('dash',this)">📊 Báo cáo</div>
+  <div class="tab"     onclick="sw('top',this)">🏆 Top 20</div>
+  <div class="tab"     onclick="sw('tiendo',this)">⏱ Tiến độ <span class="tbdg o" id="tb5">--</span></div>
+  <div class="tab"     onclick="sw('xa',this)">🗺 Xã/Phường <span class="tbdg b" id="tb2">--</span></div>
+  <div class="tab"     onclick="sw('mo',this)">⛏ Mỏ Vật liệu</div>
+  <div class="tab"     onclick="sw('list',this)">📋 Danh sách DA</div>
+  <div class="tab"     onclick="sw('alert',this)">🚨 Cảnh báo <span class="tbdg r" id="tb3">--</span></div>
+</nav>
+
+<!-- ══ DASHBOARD ══ -->
+<div class="panel on" id="panel-dash"><div class="wrap">
+<div class="fb">
+  <label>🔍 LỌC</label>
+  <select class="fs" id="fP" onchange="applyF()"><option value="">Tất cả Phòng ĐHGS</option>
+    <option>Phòng Điều hành - Giám sát 1</option><option>Phòng Điều hành - Giám sát 2</option>
+    <option>Phòng Điều hành - Giám sát 3</option><option>Phòng Điều hành - Giám sát 4</option></select>
+  <select class="fs" id="fG" onchange="applyF()"><option value="">Tất cả Phó GĐ</option></select>
+  <select class="fs" id="fCB" onchange="applyF()"><option value="">Tất cả Cán bộ</option></select>
+  <select class="fs" id="fN" onchange="applyF()"><option value="">Tất cả Nguồn vốn</option>
+    <option value="NSTP">Ngân sách TP</option><option value="NSTW">Ngân sách TW</option>
+    <option value="VODA">Vốn ODA</option><option value="VAFD">Vốn nước ngoài</option></select>
+  <select class="fs" id="fT" onchange="applyF()"><option value="">Tất cả Tình trạng</option>
+    <option value="TCHT">TCHT - Hoàn thành</option><option value="TCCT">TCCT - Đang thi công</option>
+    <option value="TC00">TC00 - Chưa thi công</option><option value="CBDT">CBDT - Chuẩn bị ĐT</option></select>
+  <select class="fs" id="fX" onchange="applyF()"><option value="">Tất cả Xã/Phường</option></select>
+  <input class="fi" id="fQ" type="text" placeholder="🔍 Tìm tên dự án…" oninput="applyF()">
+  <button class="bRst" onclick="rstF()">✕ Xóa</button>
+  <div class="fc">Lọc: <b id="fCnt">0</b>/<b id="fTot">0</b> dòng</div>
+</div>
+<div class="slbl">KPI — Báo cáo giải ngân đến thời điểm hiện tại · Năm kế hoạch 2026</div>
+<div class="kg">
+  <div class="kpi t"><div class="kpi-l">Tổng dự án</div><div class="kpi-v" id="k1">--</div><div class="kpi-s" id="k1sub">dự án</div></div>
+  <div class="kpi"><div class="kpi-l">KH Vốn 2026</div><div class="kpi-v" id="k2">--</div><div class="kpi-s">tỷ đồng</div></div>
+  <div class="kpi g"><div class="kpi-l">Đã Giải Ngân</div><div class="kpi-v" id="k3">--</div><div class="kpi-s">tỷ đồng</div></div>
+  <div class="kpi" id="kK4"><div class="kpi-l">Tỷ lệ GN</div><div class="kpi-v" id="k4">--</div><div class="kpi-s">% kế hoạch</div></div>
+  <div class="kpi a"><div class="kpi-l">Chưa GN</div><div class="kpi-v" id="k5">--</div><div class="kpi-s">tỷ đồng</div></div>
+  <div class="kpi g"><div class="kpi-l">Hoàn thành</div><div class="kpi-v" id="k6">--</div><div class="kpi-s">dự án TCHT</div></div>
+  <div class="kpi r"><div class="kpi-l">Quá hạn / Nguy cơ</div><div class="kpi-v" id="k7">--</div><div class="kpi-s">dự án</div></div>
+  <div class="kpi p"><div class="kpi-l">Xã/Phường có DA</div><div class="kpi-v" id="k8">--</div><div class="kpi-s">/ 93 xã phường</div></div>
+</div>
+<div class="slbl">Nhu cầu vật liệu tổng hợp</div>
+<div class="g3">
+  <div class="kpi br"><div class="kpi-l">Đất san lấp</div><div class="kpi-v" id="kVlDat" style="font-size:16px">--</div><div class="kpi-s">m³ (toàn bộ DA)</div></div>
+  <div class="kpi" style="--ac:#1E40AF"><div class="kpi-l">Cát</div><div class="kpi-v" id="kVlCat" style="font-size:16px;color:#1E40AF">--</div><div class="kpi-s">m³ (toàn bộ DA)</div></div>
+  <div class="kpi"><div class="kpi-l">Đá</div><div class="kpi-v" id="kVlDa" style="font-size:16px">--</div><div class="kpi-s">m³ (toàn bộ DA)</div></div>
+</div>
+<div class="slbl">Phân tích giải ngân theo đơn vị</div>
+<div class="g3">
+  <div class="card"><div class="chead"><span class="dot" style="background:var(--teal)"></span>Theo Phòng ĐHGS</div><div class="ch"><canvas id="cP" role="img" aria-label="Giải ngân theo phòng ĐHGS">Biểu đồ giải ngân theo phòng</canvas></div></div>
+  <div class="card"><div class="chead"><span class="dot" style="background:var(--navy)"></span>Theo Phó Giám đốc</div><div class="ch"><canvas id="cG" role="img" aria-label="Giải ngân theo Phó GĐ">Biểu đồ giải ngân theo PGĐ</canvas></div></div>
+  <div class="card"><div class="chead"><span class="dot" style="background:var(--amber)"></span>Tỷ trọng Nguồn vốn</div><div class="ch"><canvas id="cN" role="img" aria-label="Nguồn vốn">Biểu đồ nguồn vốn</canvas></div></div>
+</div>
+<div class="g2">
+  <div class="card"><div class="chead"><span class="dot" style="background:var(--green)"></span>KH Vốn vs Giải ngân theo Phòng (tỷ đ)</div><div class="ch-md"><canvas id="cCmp" role="img" aria-label="So sánh KH vs GN">So sánh</canvas></div></div>
+  <div class="card"><div class="chead"><span class="dot" style="background:var(--red)"></span>Tỷ lệ GN/KH từng Phòng (%)</div><div class="ch-md"><canvas id="cTL" role="img" aria-label="Tỷ lệ GN">Tỷ lệ</canvas></div></div>
+</div>
+<div class="g2">
+  <div class="card"><div class="chead"><span class="dot" style="background:var(--purple)"></span>Tình trạng dự án</div><div class="ch-md"><canvas id="cTT" role="img" aria-label="Tình trạng DA">Tình trạng</canvas></div></div>
+  <div class="card"><div class="chead"><span class="dot" style="background:var(--teal)"></span>Top 10 Xã/Phường — Số dự án</div><div class="ch-md"><canvas id="cXPcnt" role="img" aria-label="Top xã phường">Top XP</canvas></div></div>
+</div>
+</div></div>
+
+<!-- ══ TOP 20 ══ -->
+<div class="panel" id="panel-top"><div class="wrap">
+<div class="slbl">Bảng xếp hạng Top 20</div>
+<div class="g2">
+  <div class="card"><div class="chead"><span class="dot" style="background:var(--red)"></span>🔴 Top 20 Giải ngân THẤP nhất</div>
+    <div style="overflow-x:auto"><table class="t20" id="tLow"><thead><tr><th style="width:22px">#</th><th>Công trình</th><th>Cán bộ</th><th class="r">KH (tr.đ)</th><th style="min-width:82px">Tỷ lệ</th></tr></thead><tbody></tbody></table></div></div>
+  <div class="card"><div class="chead"><span class="dot" style="background:var(--green)"></span>🚀 Top 20 Giải ngân NHANH nhất</div>
+    <div style="overflow-x:auto"><table class="t20" id="tHigh"><thead><tr><th style="width:22px">#</th><th>Công trình</th><th>Cán bộ</th><th class="r">GN (tr.đ)</th><th style="min-width:82px">Tỷ lệ</th></tr></thead><tbody></tbody></table></div></div>
+</div>
+<div class="g2">
+  <div class="card"><div class="chead"><span class="dot" style="background:var(--navy)"></span>💰 Top 20 KH Vốn LỚN nhất</div>
+    <div style="overflow-x:auto"><table class="t20" id="tKH"><thead><tr><th style="width:22px">#</th><th>Công trình</th><th>Cán bộ</th><th class="r">KH (tr.đ)</th><th style="min-width:82px">Tỷ lệ</th></tr></thead><tbody></tbody></table></div></div>
+  <div class="card"><div class="chead"><span class="dot" style="background:var(--amber)"></span>🗺 Top 20 Xã/Phường — KH Vốn</div>
+    <div style="overflow-x:auto"><table class="t20" id="tXP"><thead><tr><th style="width:22px">#</th><th>Xã/Phường</th><th class="r">dòng</th><th class="r">KH (tỷ)</th><th class="r">GN (tỷ)</th><th style="min-width:76px">Tỷ lệ</th></tr></thead><tbody></tbody></table></div></div>
+</div>
+</div></div>
+
+<!-- ══ TIẾN ĐỘ ══ -->
+<div class="panel" id="panel-tiendo"><div class="wrap">
+<div class="slbl">Cảnh báo tiến độ hợp đồng & tiến độ dự án</div>
+<div class="kg" style="grid-template-columns:repeat(auto-fit,minmax(140px,1fr))">
+  <div class="kpi" style="--ac:#075985"><div class="kpi-l">🔵 Hoàn thành</div><div class="kpi-v" id="tdDone" style="color:#075985">--</div><div class="kpi-s">dự án</div></div>
+  <div class="kpi g"><div class="kpi-l">🟢 Bình thường / Chưa TC</div><div class="kpi-v" id="tdNormal">--</div><div class="kpi-s">dự án</div></div>
+  <div class="kpi a"><div class="kpi-l">🟡 Cần theo dõi</div><div class="kpi-v" id="tdWarning">--</div><div class="kpi-s">≤90 ngày</div></div>
+  <div class="kpi o"><div class="kpi-l">🟠 Nguy cơ chậm</div><div class="kpi-v" id="tdUrgent">--</div><div class="kpi-s">≤30 ngày</div></div>
+  <div class="kpi r"><div class="kpi-l">🔴 Quá hạn</div><div class="kpi-v" id="tdOverdue">--</div><div class="kpi-s">quá hạn HĐ</div></div>
+</div>
+<div class="fb">
+  <label>🔍 LỌC</label>
+  <select class="fs" id="tdFP" onchange="applyTD()"><option value="">Tất cả Phòng</option>
+    <option>Phòng Điều hành - Giám sát 1</option><option>Phòng Điều hành - Giám sát 2</option>
+    <option>Phòng Điều hành - Giám sát 3</option><option>Phòng Điều hành - Giám sát 4</option></select>
+  <select class="fs" id="tdFCB" onchange="applyTD()"><option value="">Tất cả Cán bộ</option></select>
+  <select class="fs" id="tdFLv" onchange="applyTD()"><option value="">Tất cả mức cảnh báo</option>
+    <option value="done">🔵 Hoàn thành</option><option value="normal">🟢 Bình thường</option>
+    <option value="warning">🟡 Cần theo dõi</option><option value="urgent">🟠 Nguy cơ chậm</option>
+    <option value="overdue">🔴 Quá hạn</option></select>
+  <input class="fi" id="tdFQ" type="text" placeholder="🔍 Tìm tên dự án…" oninput="applyTD()">
+  <button class="bRst" onclick="rstTD()">✕ Xóa</button>
+  <div class="fc"><b id="tdCnt">0</b> dự án</div>
+</div>
+<div class="tcard">
+  <div class="tw">
+    <table class="mt">
+      <thead><tr>
+        <th style="width:64px">Mã DA</th>
+        <th style="min-width:200px">Công trình</th>
+        <th style="min-width:100px">Cán bộ</th>
+        <th style="min-width:80px">Bắt đầu TC</th>
+        <th style="min-width:65px">HĐ (ngày)</th>
+        <th style="min-width:160px">Cảnh báo HĐ</th>
+        <th style="min-width:90px">Năm DA</th>
+        <th style="min-width:120px">CB Năm DA</th>
+        <th style="min-width:80px">TT</th>
+      </tr></thead>
+      <tbody id="tdTbody"></tbody>
+    </table>
+  </div>
+  <div class="tf">
+    <div><button class="pgb" id="tdPrv" onclick="chgTDPg(-1)">◀</button>
+      <span style="margin:0 9px;font-weight:600" id="tdPgI">--</span>
+      <button class="pgb" id="tdNxt" onclick="chgTDPg(1)">▶</button></div>
+    <div>Trang <b id="tdPgSh">-</b>/<b id="tdPgTo">-</b></div>
+  </div>
+</div>
+</div></div>
+
+<!-- ══ XÃ PHƯỜNG ══ -->
+<div class="panel" id="panel-xa"><div class="wrap">
+  <div class="slbl">93 Xã/Phường — Thông tin liên lạc, Dự án & Tọa độ</div>
+  <input class="xsearch" type="text" placeholder="🔍 Tìm xã/phường, địa chỉ, chủ tịch…" id="xpQ" oninput="renderXP()">
+  <div class="xgrid" id="xpGrid"></div>
+</div></div>
+
+<!-- ══ MỎ VẬT LIỆU ══ -->
+<div class="panel" id="panel-mo"><div class="wrap">
+  <div class="slbl">Danh sách Mỏ Vật liệu — Theo QĐ990 và QĐ854</div>
+  <div class="mo-stats">
+    <div class="kpi br"><div class="kpi-l">Tổng số mỏ</div><div class="kpi-v" id="moTong">32</div><div class="kpi-s">điểm quy hoạch</div></div>
+    <div class="kpi br"><div class="kpi-l">Tổng trữ lượng</div><div class="kpi-v" id="moTongTL" style="font-size:15px">58,83 tr.m³</div><div class="kpi-s">3 loại khoáng sản</div></div>
+    <div class="kpi br"><div class="kpi-l">Tổng diện tích</div><div class="kpi-v" id="moTongDT" style="font-size:15px">663 ha</div><div class="kpi-s">diện tích quy hoạch</div></div>
+    <div class="kpi" style="--ac:#92400E"><div class="kpi-l">🟤 Đất san lấp</div><div class="kpi-v" id="moDat" style="color:#92400E;font-size:13px">--</div><div class="kpi-s">mỏ · trữ lượng</div></div>
+    <div class="kpi" style="--ac:#1E40AF"><div class="kpi-l">🔵 Cát sỏi</div><div class="kpi-v" id="moCat" style="color:#1E40AF;font-size:13px">--</div><div class="kpi-s">mỏ · trữ lượng</div></div>
+    <div class="kpi" style="--ac:#374151"><div class="kpi-l">⚫ Đá</div><div class="kpi-v" id="moDa" style="color:#374151;font-size:13px">--</div><div class="kpi-s">mỏ · trữ lượng</div></div>
+  </div>
+  <div class="fb">
+    <label>🔍 LỌC</label>
+    <button class="bRst on" id="mfAll" onclick="filterMo('all')" style="background:var(--navy);color:#fff;border-color:var(--navy)">Tất cả</button>
+    <button class="bRst" id="mfDat" onclick="filterMo('dat')">🟤 Đất san lấp</button>
+    <button class="bRst" id="mfCat" onclick="filterMo('cat')">🔵 Cát sỏi</button>
+    <button class="bRst" id="mfDa"  onclick="filterMo('da')">⚫ Đá</button>
+    <input class="fi" id="moQ" type="text" placeholder="🔍 Tìm tên mỏ, xã/phường…" oninput="renderMo()">
+    <select class="fs" id="moXP" onchange="renderMo()"><option value="">Tất cả Xã/Phường</option></select>
+    <div class="fc"><b id="moCnt">0</b> mỏ</div>
+  </div>
+  <div class="mo-grid" id="moGrid"></div>
+  <div class="slbl" style="margin-top:1.5rem">Thống kê trữ lượng theo xã/phường (top 10)</div>
+  <div class="g2">
+    <div class="card"><div class="chead"><span class="dot" style="background:var(--amber)"></span>Trữ lượng theo xã/phường (triệu m³)</div>
+      <div style="position:relative;height:260px"><canvas id="cMoXP" role="img" aria-label="Trữ lượng mỏ theo xã phường">Xã Bà Nà 17.3 triệu m³</canvas></div></div>
+    <div class="card"><div class="chead"><span class="dot" style="background:var(--brown)"></span>Tỷ trọng trữ lượng theo loại</div>
+      <div style="position:relative;height:180px"><canvas id="cMoPie" role="img" aria-label="Pie trữ lượng">Đá 44% Đất 39% Cát 17%</canvas></div>
+      <div style="margin-top:10px">
+        <div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:0.5px solid var(--rule);font-size:11px"><span style="width:10px;height:10px;border-radius:2px;background:#BA7517;flex-shrink:0"></span><span style="flex:1">Đất san lấp — 9 mỏ</span><span style="font-weight:600">23,04 tr.m³ (39%)</span></div>
+        <div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:0.5px solid var(--rule);font-size:11px"><span style="width:10px;height:10px;border-radius:2px;background:#378ADD;flex-shrink:0"></span><span style="flex:1">Cát sỏi — 10 mỏ</span><span style="font-weight:600">9,91 tr.m³ (17%)</span></div>
+        <div style="display:flex;align-items:center;gap:8px;padding:5px 0;font-size:11px"><span style="width:10px;height:10px;border-radius:2px;background:#888780;flex-shrink:0"></span><span style="flex:1">Đá — 13 mỏ</span><span style="font-weight:600">25,88 tr.m³ (44%)</span></div>
+      </div>
+    </div>
+  </div>
+</div></div>
+
+<!-- ══ DANH SÁCH ══ -->
+<div class="panel" id="panel-list"><div class="wrap">
+  <div class="fb">
+    <label>🔍 LỌC</label>
+    <select class="fs" id="lP" onchange="applyL()"><option value="">Tất cả Phòng</option>
+      <option>Phòng Điều hành - Giám sát 1</option><option>Phòng Điều hành - Giám sát 2</option>
+      <option>Phòng Điều hành - Giám sát 3</option><option>Phòng Điều hành - Giám sát 4</option></select>
+    <select class="fs" id="lT" onchange="applyL()"><option value="">Tất cả TT</option>
+      <option value="TCHT">TCHT</option><option value="TCCT">TCCT</option>
+      <option value="TC00">TC00</option><option value="CBDT">CBDT</option></select>
+    <input class="fi" id="lQ" type="text" placeholder="🔍 Tìm tên dự án…" oninput="applyL()">
+    <select class="fs" id="lS" onchange="renderL()"><option value="gn_asc">GN thấp→cao</option>
+      <option value="gn_desc">GN cao→thấp</option><option value="kh_desc">KH lớn nhất</option>
+      <option value="stt">Theo STT</option></select>
+    <button class="bRst" onclick="rstL()">✕ Xóa</button>
+    <button class="bcsv" onclick="exportCSV()">⬇ CSV</button>
+    <div class="fc"><b id="lCnt">0</b> dòng</div>
+  </div>
+  <div class="tcard">
+    <div class="tw">
+      <table class="mt">
+        <thead><tr>
+          <th style="width:28px"></th>
+          <th style="width:52px">Mã DA</th>
+          <th style="min-width:200px">Công trình</th>
+          <th style="min-width:80px">Phòng</th>
+          <th style="min-width:95px">Cán bộ PH</th>
+          <th style="min-width:90px">Xã/Phường</th>
+          <th style="min-width:55px">TT</th>
+          <th style="min-width:60px">Nguồn</th>
+          <th class="r" style="min-width:78px">KH XL (tr.đ)</th>
+          <th class="r" style="min-width:72px">GN XL (tr.đ)</th>
+          <th style="min-width:90px">Tỷ lệ GN</th>
+          <th style="min-width:135px">⏱ Còn lại / Ngày GN cần</th>
+          <th style="min-width:75px">Nhà thầu TC</th>
+          <th style="min-width:68px">VL Đất</th>
+          <th style="min-width:62px">VL Cát</th>
+          <th style="min-width:62px">VL Đá</th>
+          <th style="min-width:50px">VM</th>
+        </tr></thead>
+        <tbody id="ltb"></tbody>
+      </table>
+    </div>
+    <div class="tf">
+      <div><button class="pgb" id="lPrv" onclick="chgPg(-1)">◀ Trước</button>
+        <span style="margin:0 9px;font-weight:600" id="pgI">--</span>
+        <button class="pgb" id="lNxt" onclick="chgPg(1)">Sau ▶</button></div>
+      <div>Trang <b id="pgSh">-</b>/<b id="pgTo">-</b> · <b id="pgAll">-</b> dòng</div>
+    </div>
+  </div>
+</div></div>
+
+<!-- ══ CẢNH BÁO ══ -->
+<div class="panel" id="panel-alert"><div class="wrap">
+  <div class="slbl">Giải ngân — Dự án cần ưu tiên xử lý</div>
+  <div class="ag">
+    <div class="ac"><div class="ah r">🔴 GN &lt; 30% (top 20)</div><div class="al" id="alR"></div></div>
+    <div class="ac"><div class="ah a">🟡 GN 30–70% (top 20)</div><div class="al" id="alA"></div></div>
+    <div class="ac"><div class="ah g">✅ Hoàn thành (top 20)</div><div class="al" id="alG"></div></div>
+  </div>
+  <div class="slbl">Tiến độ — Cảnh báo hợp đồng</div>
+  <div class="ag">
+    <div class="ac"><div class="ah r">🔴 Quá hạn HĐ (top 20)</div><div class="al" id="alTDR"></div></div>
+    <div class="ac"><div class="ah o">🟠 Nguy cơ chậm ≤30 ngày</div><div class="al" id="alTDO"></div></div>
+    <div class="ac"><div class="ah a">🟡 Cần theo dõi ≤90 ngày</div><div class="al" id="alTDY"></div></div>
+  </div>
+  <div class="slbl">Vướng mắc cần xử lý</div>
+  <div class="ag">
+    <div class="ac"><div class="ah navy">📋 Dự án có vướng mắc (top 20)</div><div class="al" id="alVM"></div></div>
+    <div class="ac"><div class="ah r">TC00 — Chưa thi công có KH vốn</div><div class="al" id="alTC"></div></div>
+    <div class="ac"><div class="ah t">🗺 Xã/Phường chưa có dự án</div><div id="xpNone" style="padding:8px 12px;display:flex;flex-wrap:wrap;gap:6px"></div></div>
+  </div>
+</div></div>
+
+<footer>🏛️ Ban Quản lý Dự án Đầu tư Xây dựng các Công trình Giao thông và Nông nghiệp Đà Nẵng &nbsp;·&nbsp; Báo cáo giải ngân v6.0 · KH 2026 · CSV 16/06/2025 · 93 Xã/Phường</footer>
+<script>
+
+// ══ GOOGLE LOGIN ══
+const ALLOWED_EMAILS=['vuongkts2909@gmail.com','duongnd80@gmail.com'];
+
+function handleGoogleLogin(response){
+  document.getElementById('loginLoading').classList.add('s');
+  document.getElementById('loginErr').classList.remove('s');
+  try{
+    const payload=JSON.parse(atob(response.credential.split('.')[1]));
+    const email=(payload.email||'').toLowerCase().trim();
+    const name=payload.name||email;
+    if(ALLOWED_EMAILS.map(e=>e.toLowerCase()).includes(email)){
+      sessionStorage.setItem('qlda_auth','1');
+      sessionStorage.setItem('qlda_user',name);
+      document.getElementById('loginScreen').classList.add('h');
+      document.getElementById('loginLoading').classList.remove('s');
+      const chip=document.createElement('div');
+      chip.className='chip';
+      chip.innerHTML='👤 <b>'+name.split(' ').pop()+'</b>';
+      document.querySelector('.tr').prepend(chip);
+      init();
+    }else{
+      document.getElementById('loginLoading').classList.remove('s');
+      const err=document.getElementById('loginErr');
+      err.innerHTML='⛔ Tài khoản <b>'+email+'</b> không có quyền truy cập.<br>Liên hệ quản trị viên để được cấp quyền.';
+      err.classList.add('s');
+      document.querySelector('.login-box').style.animation='shake .3s ease';
+      setTimeout(()=>document.querySelector('.login-box').style.animation='',400);
+      if(typeof google!=='undefined')google.accounts.id.disableAutoSelect();
+    }
+  }catch(e){
+    document.getElementById('loginLoading').classList.remove('s');
+    document.getElementById('loginErr').innerHTML='❌ Lỗi xác thực. Vui lòng thử lại.';
+    document.getElementById('loginErr').classList.add('s');
+  }
+}
+if(sessionStorage.getItem('qlda_auth')==='1')document.getElementById('loginScreen').classList.add('h');
+
+
+// ══ DỮ LIỆU TĨNH TỪ CSV 16/06/2025 ══
+const DA_STATIC=[
+{ma:'DA001',ten:'Tuyến đường trục 1 Tây Bắc (đoạn từ nút giao thông Ngã Ba Huế đến bệnh viện ung thư, đoạn từ Hồ Tùng',phong:'Phòng Điều hành - Giám sát 3',pgd:'Nguyễn Ngọc Hoàng',cb:'Nguyễn Văn A1',dia:'Phường Hòa Khánh',tvtk:'Công ty ABC1',nthi:'Công ty DEF1',tvgs:'Công ty GHJ1',ntkhac:'Công ty KLM1',batdau:'01/01/2026',tiendoHD:375,namda:'2025-2027',tt:'TCCT',nguon:'NSTP',soNguonVon:1,kh:15000000000,gn:18034445834,tyle:120.0,khXl:15000000000,gnXl:9017222917,vlDat:33523,vlCat:2354,vlDa:7950,vuongmac:'Pháp lý, Thi công',ghichu:'...'},
+{ma:'DA002',ten:'Đường gom dọc đường sắt từ cầu vượt Hòa Cầm đến Cầu Đỏ',phong:'Phòng Điều hành - Giám sát 3',pgd:'Phan Đình Đức',cb:'Nguyễn Văn A2',dia:'Phường Cẩm Lệ',tvtk:'Công ty ABC2',nthi:'Công ty DEF2',tvgs:'Công ty GHJ2',ntkhac:'Công ty KLM2',batdau:'01/01/2026',tiendoHD:375,namda:'2025-2027',tt:'TCCT',nguon:'NSTP',soNguonVon:1,kh:1000000000,gn:0,tyle:0.0,khXl:1000000000,gnXl:0,vlDat:33523,vlCat:2354,vlDa:7950,vuongmac:'Không có',ghichu:'...'},
+{ma:'DA003',ten:'Khu Nghĩa trang An Châu, xã Hòa Phú',phong:'Phòng Điều hành - Giám sát 1',pgd:'Phan Trọng Tài',cb:'Nguyễn Văn A3',dia:'Xã Hòa Vang',tvtk:'Công ty ABC3',nthi:'Công ty DEF3',tvgs:'Công ty GHJ3',ntkhac:'Công ty KLM3',batdau:'01/01/2026',tiendoHD:375,namda:'2025-2027',tt:'TCCT',nguon:'NSTP',soNguonVon:1,kh:1200000000,gn:0,tyle:0.0,khXl:1200000000,gnXl:0,vlDat:33523,vlCat:2354,vlDa:7950,vuongmac:'Không có',ghichu:'...'},
+{ma:'DA004',ten:'Nghĩa trang Hòa Ninh (gđ 3)',phong:'Phòng Điều hành - Giám sát 1',pgd:'Phan Trọng Tài',cb:'Nguyễn Văn A4',dia:'Xã Bà Nà',tvtk:'Công ty ABC4',nthi:'Công ty DEF4',tvgs:'Công ty GHJ4',ntkhac:'Công ty KLM4',batdau:'01/01/2026',tiendoHD:375,namda:'2025-2027',tt:'TCCT',nguon:'NSTP',soNguonVon:1,kh:1100000000,gn:0,tyle:0.0,khXl:1100000000,gnXl:0,vlDat:33523,vlCat:2354,vlDa:7950,vuongmac:'Không có',ghichu:'...'},
+{ma:'DA005',ten:'Nạo vét, thoát lũ khẩn cấp sông Cổ Cò (đoạn qua địa phận TPĐN); Bảo vệ, nâng cao khả năng chứa tàu t',phong:'Phòng Điều hành - Giám sát 3',pgd:'Phan Đình Đức',cb:'Nguyễn Văn A5',dia:'Phường Ngũ Hành Sơn',tvtk:'Công ty ABC5',nthi:'Công ty DEF5',tvgs:'Công ty GHJ5',ntkhac:'Công ty KLM5',batdau:'01/01/2026',tiendoHD:375,namda:'2025-2027',tt:'TCCT',nguon:'NSTP',soNguonVon:1,kh:35000000000,gn:19216740000,tyle:55.0,khXl:35000000000,gnXl:9608370000,vlDat:33523,vlCat:2354,vlDa:7950,vuongmac:'Không có',ghichu:'...'},
+{ma:'DA006',ten:'Nạo vét, thoát nước lũ khẩn cấp sông cổ Cò (đoạn qua địa phận TP Đà Nẵng); Bảo vệ, nâng cao khả năng',phong:'Phòng Điều hành - Giám sát 3',pgd:'Phan Đình Đức',cb:'Nguyễn Văn A6',dia:'Phường Ngũ Hành Sơn',tvtk:'Công ty ABC6',nthi:'Công ty DEF6',tvgs:'Công ty GHJ6',ntkhac:'Công ty KLM6',batdau:'01/01/2026',tiendoHD:375,namda:'2025-2027',tt:'TCCT',nguon:'NSTP',soNguonVon:1,kh:1000000000,gn:99000000,tyle:10.0,khXl:1000000000,gnXl:49500000,vlDat:33523,vlCat:2354,vlDa:7950,vuongmac:'Không có',ghichu:'...'},
+{ma:'DA007',ten:'Tuyến đường cấp bách chiến lược quốc phòng phục vụ dân sự và dân sinh quận Liên Chiểu, kết nối khu v',phong:'Phòng Điều hành - Giám sát 3',pgd:'Nguyễn Ngọc Hoàng',cb:'Nguyễn Văn A7',dia:'Phường Hòa Khánh',tvtk:'Công ty ABC7',nthi:'Công ty DEF7',tvgs:'Công ty GHJ7',ntkhac:'Công ty KLM7',batdau:'01/01/2026',tiendoHD:375,namda:'2025-2027',tt:'TCCT',nguon:'NSTP',soNguonVon:1,kh:12000000000,gn:2719322000,tyle:23.0,khXl:10000000000,gnXl:1359661000,vlDat:33523,vlCat:2354,vlDa:7950,vuongmac:'Pháp lý, Thi công',ghichu:'...'},
+{ma:'DA008',ten:'Tuyến đường nối dài đường Nguyễn Đức Thuận đến đường Trần Hưng Đạo',phong:'Phòng Điều hành - Giám sát 3',pgd:'Nguyễn Ngọc Hoàng',cb:'Nguyễn Văn A8',dia:'Phường An Hải',tvtk:'Công ty ABC8',nthi:'Công ty DEF8',tvgs:'Công ty GHJ8',ntkhac:'Công ty KLM8',batdau:'01/01/2026',tiendoHD:375,namda:'2025-2027',tt:'TCCT',nguon:'NSTP',soNguonVon:1,kh:700000000,gn:0,tyle:0.0,khXl:700000000,gnXl:0,vlDat:33523,vlCat:2354,vlDa:7950,vuongmac:'Không có',ghichu:'...'},
+{ma:'DA009',ten:'Đầu tư xây dựng tuyến đường 6,0m phía Đông trường Cao đẳng Lương thực thực phẩm',phong:'Phòng Điều hành - Giám sát 3',pgd:'Phan Đình Đức',cb:'Nguyễn Văn A9',dia:'Phường Hòa Khánh',tvtk:'Công ty ABC9',nthi:'Công ty DEF9',tvgs:'Công ty GHJ9',ntkhac:'Công ty KLM9',batdau:'01/01/2026',tiendoHD:375,namda:'2025-2027',tt:'TCCT',nguon:'NSTP',soNguonVon:1,kh:1200000000,gn:0,tyle:0.0,khXl:500000000,gnXl:0,vlDat:33523,vlCat:2354,vlDa:7950,vuongmac:'Không có',ghichu:'...'},
+{ma:'DA010',ten:'Đầu tư xây dựng bến bãi lấy nước phục vụ công tác chữa cháy trên địa bàn thành phố Đà Nẵng',phong:'Phòng Điều hành - Giám sát 3',pgd:'Trần Duy Anh',cb:'Nguyễn Văn A10',dia:'Phường Hòa Khánh',tvtk:'Công ty ABC10',nthi:'Công ty DEF10',tvgs:'Công ty GHJ10',ntkhac:'Công ty KLM10',batdau:'01/01/2026',tiendoHD:375,namda:'2025-2027',tt:'TCCT',nguon:'NSTP',soNguonVon:1,kh:3000000000,gn:284908000,tyle:9.0,khXl:3000000000,gnXl:142454000,vlDat:33523,vlCat:2354,vlDa:7950,vuongmac:'Không có',ghichu:'...'},
+{ma:'DA011',ten:'Đoạn tuyến nối từ ĐT 601 lên đường Hồ Chí Minh đoạn   đoạn La Sơn - Hòa Liên',phong:'Phòng Điều hành - Giám sát 3',pgd:'Nguyễn Ngọc Hoàng',cb:'Nguyễn Văn A11',dia:'Phường Liên Chiểu',tvtk:'Công ty ABC11',nthi:'Công ty DEF11',tvgs:'Công ty GHJ11',ntkhac:'Công ty KLM11',batdau:'01/01/2026',tiendoHD:375,namda:'2025-2027',tt:'TCCT',nguon:'NSTP',soNguonVon:1,kh:50000000000,gn:70241088000,tyle:140.0,khXl:50000000000,gnXl:35120544000,vlDat:33523,vlCat:2354,vlDa:7950,vuongmac:'Không có',ghichu:'...'},
+{ma:'DA012',ten:'Đường Lê trọng Tấn đoạn từ khu Phước Lý 6 đến đường Hoàng văn thái',phong:'Phòng Điều hành - Giám sát 3',pgd:'Nguyễn Ngọc Hoàng',cb:'Nguyễn Văn A12',dia:'Phường Hòa Khánh',tvtk:'Công ty ABC12',nthi:'Công ty DEF12',tvgs:'Công ty GHJ12',ntkhac:'Công ty KLM12',batdau:'01/01/2026',tiendoHD:375,namda:'2025-2027',tt:'TCCT',nguon:'NSTP',soNguonVon:1,kh:10000000000,gn:0,tyle:0.0,khXl:10000000000,gnXl:0,vlDat:33523,vlCat:2354,vlDa:7950,vuongmac:'Không có',ghichu:'...'},
+{ma:'DA013',ten:'Cải tạo, nâng cấp các tuyến đường nội thị khu vực quận Hải Châu',phong:'Phòng Điều hành - Giám sát 3',pgd:'Nguyễn Ngọc Hoàng',cb:'Nguyễn Văn A13',dia:'Phường Hải Châu',tvtk:'Công ty ABC13',nthi:'Công ty DEF13',tvgs:'Công ty GHJ13',ntkhac:'Công ty KLM13',batdau:'01/01/2026',tiendoHD:375,namda:'2025-2027',tt:'TCCT',nguon:'NSTP',soNguonVon:1,kh:2000000000,gn:1729976000,tyle:86.0,khXl:2000000000,gnXl:864988000,vlDat:33523,vlCat:2354,vlDa:7950,vuongmac:'Không có',ghichu:'...'},
+{ma:'DA014',ten:'Nâng cấp, mở rộng các tuyến đường có mặt cắt lòng đường từ 3,5m - 4,0m thành 5,5m trên địa bàn quận ',phong:'Phòng Điều hành - Giám sát 3',pgd:'Phan Đình Đức',cb:'Nguyễn Văn A14',dia:'Phường Hòa Cường',tvtk:'Công ty ABC14',nthi:'Công ty DEF14',tvgs:'Công ty GHJ14',ntkhac:'Công ty KLM14',batdau:'01/01/2026',tiendoHD:375,namda:'2025-2027',tt:'TCCT',nguon:'NSTP',soNguonVon:1,kh:25000000000,gn:8307970000,tyle:33.0,khXl:25000000000,gnXl:4153985000,vlDat:33523,vlCat:2354,vlDa:7950,vuongmac:'Thời tiết',ghichu:'...'},
+{ma:'DA015',ten:'Nâng cấp, mở rộng các tuyến đường có mặt cắt lòng đường từ 3,5m - 4,0m thành 5,5m trên địa bàn quận ',phong:'Phòng Điều hành - Giám sát 3',pgd:'Phan Trọng Tài',cb:'Nguyễn Văn A15',dia:'Phường Cẩm Lệ',tvtk:'Công ty ABC15',nthi:'Công ty DEF15',tvgs:'Công ty GHJ15',ntkhac:'Công ty KLM15',batdau:'01/01/2026',tiendoHD:375,namda:'2025-2027',tt:'TCCT',nguon:'NSTP',soNguonVon:1,kh:5000000000,gn:2675764170,tyle:54.0,khXl:5000000000,gnXl:1337882085,vlDat:33523,vlCat:2354,vlDa:7950,vuongmac:'Không có',ghichu:'...'},
+{ma:'DA016',ten:'Cải tạo, nâng đường dây tải điện 220KV tại nút giao Quốc lộ 14B - cao tốc Đà Nẵng- Quảng Ngãi',phong:'Phòng Điều hành - Giám sát 3',pgd:'Nguyễn Ngọc Hoàng',cb:'Nguyễn Văn A16',dia:'Phường Liên Chiểu',tvtk:'Công ty ABC16',nthi:'Công ty DEF16',tvgs:'Công ty GHJ16',ntkhac:'Công ty KLM16',batdau:'01/01/2026',tiendoHD:375,namda:'2025-2027',tt:'TCCT',nguon:'NSTP',soNguonVon:1,kh:7300000000,gn:10000000000,tyle:137.0,khXl:7300000000,gnXl:5000000000,vlDat:33523,vlCat:2354,vlDa:7950,vuongmac:'GPMB',ghichu:'...'},
+{ma:'DA017',ten:'Nút giao Quốc lộ 14B với cao tốc Đà Nẵng - Quảng Ngãi',phong:'Phòng Điều hành - Giám sát 3',pgd:'Nguyễn Ngọc Hoàng',cb:'Nguyễn Văn A17',dia:'Phường Liên Chiểu',tvtk:'Công ty ABC17',nthi:'Công ty DEF17',tvgs:'Công ty GHJ17',ntkhac:'Công ty KLM17',batdau:'01/01/2026',tiendoHD:375,namda:'2025-2027',tt:'TCCT',nguon:'NSTP',soNguonVon:1,kh:130000000000,gn:62925236280,tyle:48.0,khXl:130000000000,gnXl:31462618140,vlDat:33523,vlCat:2354,vlDa:7950,vuongmac:'Không có',ghichu:'...'},
+{ma:'DA018',ten:'Khu tái định cư phục vụ dự án đường sắt tốc độ cao trên trục Bắc -Nam trên địa bàn phường Điện bàn B',phong:'Phòng Điều hành - Giám sát 3',pgd:'Nguyễn Ngọc Hoàng',cb:'Nguyễn Văn A18',dia:'Phường Điện Bàn Bắc',tvtk:'Công ty ABC18',nthi:'Công ty DEF18',tvgs:'Công ty GHJ18',ntkhac:'Công ty KLM18',batdau:'01/01/2026',tiendoHD:375,namda:'2025-2027',tt:'TCCT',nguon:'NSTP',soNguonVon:1,kh:20000000000,gn:7754482000,tyle:39.0,khXl:15000000000,gnXl:3877241000,vlDat:33523,vlCat:2354,vlDa:7950,vuongmac:'GPMB, Pháp lý',ghichu:'...'},
+{ma:'DA019',ten:'Kiên cố hóa đường Hoàng Sa - Khu vực bán đảo Sơn Trà',phong:'Phòng Điều hành - Giám sát 3',pgd:'Phan Đình Đức',cb:'Nguyễn Văn A19',dia:'Phường Sơn Trà',tvtk:'Công ty ABC19',nthi:'Công ty DEF19',tvgs:'Công ty GHJ19',ntkhac:'Công ty KLM19',batdau:'01/01/2026',tiendoHD:375,namda:'2025-2027',tt:'TCCT',nguon:'NSTP',soNguonVon:1,kh:25000000000,gn:77798000,tyle:0.0,khXl:25000000000,gnXl:38899000,vlDat:33523,vlCat:2354,vlDa:7950,vuongmac:'Không có',ghichu:'...'},
+{ma:'DA020',ten:'Tuyến đường liên xã Hoà Phú- Hoà Ninh',phong:'Phòng Điều hành - Giám sát 3',pgd:'Phan Trọng Tài',cb:'Nguyễn Văn A20',dia:'Xã Bà Nà',tvtk:'Công ty ABC20',nthi:'Công ty DEF20',tvgs:'Công ty GHJ20',ntkhac:'Công ty KLM20',batdau:'01/01/2026',tiendoHD:375,namda:'2025-2027',tt:'TCCT',nguon:'NSTP',soNguonVon:1,kh:500000000,gn:0,tyle:0.0,khXl:500000000,gnXl:0,vlDat:33523,vlCat:2354,vlDa:7950,vuongmac:'Không có',ghichu:'...'},
+{ma:'DA021',ten:'Tuyến đường vành đai phía tây (đoạn qua khu công nghệ thông tin tập trung)',phong:'Phòng Điều hành - Giám sát 3',pgd:'Nguyễn Ngọc Hoàng',cb:'Nguyễn Văn A21',dia:'Phường Hòa Khánh',tvtk:'Công ty ABC21',nthi:'Công ty DEF21',tvgs:'Công ty GHJ21',ntkhac:'Công ty KLM21',batdau:'01/01/2026',tiendoHD:375,namda:'2025-2027',tt:'TCCT',nguon:'NSTP',soNguonVon:1,kh:15000000000,gn:7714878504,tyle:51.0,khXl:15000000000,gnXl:3857439252,vlDat:33523,vlCat:2354,vlDa:7950,vuongmac:'Không có',ghichu:'...'},
+{ma:'DA022',ten:'Khu TĐC phục vụ giải tỏa dự án Tuyến đường vành đai phía Tây tại xã Hòa Phong',phong:'Phòng Điều hành - Giám sát 3',pgd:'Nguyễn Ngọc Hoàng',cb:'Nguyễn Văn A22',dia:'Xã Hòa Vang',tvtk:'Công ty ABC22',nthi:'Công ty DEF22',tvgs:'Công ty GHJ22',ntkhac:'Công ty KLM22',batdau:'01/01/2026',tiendoHD:375,namda:'2025-2027',tt:'TCCT',nguon:'NSTP',soNguonVon:1,kh:1000000000,gn:0,tyle:0.0,khXl:1000000000,gnXl:0,vlDat:33523,vlCat:2354,vlDa:7950,vuongmac:'Thời tiết',ghichu:'...'},
+{ma:'DA023',ten:'Khu TĐC phục vụ giải tỏa dự án Tuyến đường vành đai phía Tây tại xã Hòa Khương',phong:'Phòng Điều hành - Giám sát 3',pgd:'Nguyễn Ngọc Hoàng',cb:'Nguyễn Văn A23',dia:'Xã Hòa Tiến',tvtk:'Công ty ABC23',nthi:'Công ty DEF23',tvgs:'Công ty GHJ23',ntkhac:'Công ty KLM23',batdau:'01/01/2026',tiendoHD:375,namda:'2025-2027',tt:'TCCT',nguon:'NSTP',soNguonVon:1,kh:2200000000,gn:4269888000,tyle:194.0,khXl:2200000000,gnXl:2134944000,vlDat:33523,vlCat:2354,vlDa:7950,vuongmac:'Không có',ghichu:'...'},
+{ma:'DA024',ten:'Khu TĐC phục vụ giải tỏa dự án Tuyến đường vành đai phía Tây tại xã Hòa Phú',phong:'Phòng Điều hành - Giám sát 3',pgd:'Nguyễn Ngọc Hoàng',cb:'Nguyễn Văn A24',dia:'Xã Hòa Vang',tvtk:'Công ty ABC24',nthi:'Công ty DEF24',tvgs:'Công ty GHJ24',ntkhac:'Công ty KLM24',batdau:'01/01/2026',tiendoHD:375,namda:'2025-2027',tt:'TCCT',nguon:'NSTP',soNguonVon:1,kh:1000000000,gn:0,tyle:0.0,khXl:1000000000,gnXl:0,vlDat:33523,vlCat:2354,vlDa:7950,vuongmac:'Không có',ghichu:'...'},
+{ma:'DA025',ten:'Khu TĐC Hòa Khương 2 phục vụ giải tỏa dự án tuyến đường vành đai phía Tây',phong:'Phòng Điều hành - Giám sát 3',pgd:'Nguyễn Ngọc Hoàng',cb:'Nguyễn Văn A25',dia:'Xã Hòa Tiến',tvtk:'Công ty ABC25',nthi:'Công ty DEF25',tvgs:'Công ty GHJ25',ntkhac:'Công ty KLM25',batdau:'01/01/2026',tiendoHD:375,namda:'2025-2027',tt:'TCCT',nguon:'NSTP',soNguonVon:1,kh:10000000000,gn:0,tyle:0.0,khXl:10000000000,gnXl:0,vlDat:33523,vlCat:2354,vlDa:7950,vuongmac:'Không có',ghichu:'...'},
+{ma:'DA026',ten:'HTKT Khu tái định cư trung tâm xã Hòa Bắc (giai đoạn 2)',phong:'Phòng Điều hành - Giám sát 3',pgd:'Nguyễn Ngọc Hoàng',cb:'Nguyễn Văn A26',dia:'Phường Hải Vân',tvtk:'Công ty ABC26',nthi:'Công ty DEF26',tvgs:'Công ty GHJ26',ntkhac:'Công ty KLM26',batdau:'01/01/2026',tiendoHD:375,namda:'2025-2027',tt:'TCCT',nguon:'NSTP',soNguonVon:1,kh:10000000000,gn:4231683306,tyle:42.0,khXl:10000000000,gnXl:2115841653,vlDat:33523,vlCat:2354,vlDa:7950,vuongmac:'Không có',ghichu:'...'},
+{ma:'DA027',ten:'Công trình cầu Quảng Đà và đường dẫn đầu cầu',phong:'Phòng Điều hành - Giám sát 3',pgd:'Phan Trọng Tài',cb:'Nguyễn Văn A27',dia:'Phường Điện Bàn',tvtk:'Công ty ABC27',nthi:'Công ty DEF27',tvgs:'Công ty GHJ27',ntkhac:'Công ty KLM27',batdau:'01/01/2026',tiendoHD:375,namda:'2025-2027',tt:'TCCT',nguon:'NSTP',soNguonVon:1,kh:4000000000,gn:0,tyle:0.0,khXl:3000000000,gnXl:0,vlDat:33523,vlCat:2354,vlDa:7950,vuongmac:'Không có',ghichu:'...'},
+{ma:'DA028',ten:'Nâng cấp Cảng Cá Thọ Quang giai đoạn 2',phong:'Phòng Điều hành - Giám sát 3',pgd:'Trần Duy Anh',cb:'Nguyễn Văn A28',dia:'Phường Sơn Trà',tvtk:'Công ty ABC28',nthi:'Công ty DEF28',tvgs:'Công ty GHJ28',ntkhac:'Công ty KLM28',batdau:'01/01/2026',tiendoHD:375,namda:'2025-2027',tt:'TCCT',nguon:'NSTP',soNguonVon:1,kh:200000000,gn:400000000,tyle:200.0,khXl:200000000,gnXl:200000000,vlDat:33523,vlCat:2354,vlDa:7950,vuongmac:'Không có',ghichu:'...'},
+{ma:'DA029',ten:'Tuyến ống thu gom nước thải dọc đường Trần Hưng Đạo nối dài, đoạn từ Tuyên Sơn đến Trạm xử lý nước t',phong:'Phòng Điều hành - Giám sát 3',pgd:'Hồ Tường Huy',cb:'Nguyễn Văn A29',dia:'Phường Ngũ Hành Sơn',tvtk:'Công ty ABC29',nthi:'Công ty DEF29',tvgs:'Công ty GHJ29',ntkhac:'Công ty KLM29',batdau:'01/01/2026',tiendoHD:375,namda:'2025-2027',tt:'TCCT',nguon:'NSTP',soNguonVon:1,kh:8200000000,gn:12273674000,tyle:150.0,khXl:8200000000,gnXl:6136837000,vlDat:33523,vlCat:2354,vlDa:7950,vuongmac:'Không có',ghichu:'...'},
+{ma:'DA030',ten:'Tuyến kênh thoát nước từ khu tái định cư Hoà Nhơn đến sông Tuý Loan',phong:'Phòng Điều hành - Giám sát 3',pgd:'Nguyễn Ngọc Hoàng',cb:'Nguyễn Văn A30',dia:'Phường Hòa Khánh',tvtk:'Công ty ABC30',nthi:'Công ty DEF30',tvgs:'Công ty GHJ30',ntkhac:'Công ty KLM30',batdau:'01/01/2026',tiendoHD:375,namda:'2025-2027',tt:'TCCT',nguon:'NSTP',soNguonVon:1,kh:50000000000,gn:1380628094,tyle:3.0,khXl:30000000000,gnXl:690314047,vlDat:33523,vlCat:2354,vlDa:7950,vuongmac:'Không có',ghichu:'...'},
+{ma:'DA031',ten:'Hệ thống thu gom nước thải khu vực Hòa Xuân, quận Cẩm Lệ',phong:'Phòng Điều hành - Giám sát 3',pgd:'Hồ Tường Huy',cb:'Nguyễn Văn A31',dia:'Phường Hòa Xuân',tvtk:'Công ty ABC31',nthi:'Công ty DEF31',tvgs:'Công ty GHJ31',ntkhac:'Công ty KLM31',batdau:'01/01/2026',tiendoHD:375,namda:'2025-2027',tt:'TCCT',nguon:'NSTP',soNguonVon:1,kh:15000000000,gn:839507200,tyle:6.0,khXl:15000000000,gnXl:419753600,vlDat:33523,vlCat:2354,vlDa:7950,vuongmac:'Không có',ghichu:'...'},
+{ma:'DA032',ten:'Tuyến cống thoát nước từ đường Lê Tấn Trung tới cổng Thọ Quang - Biển Đông Phường Thọ Quang',phong:'Phòng Điều hành - Giám sát 3',pgd:'Hồ Tường Huy',cb:'Nguyễn Văn A32',dia:'Phường Sơn Trà',tvtk:'Công ty ABC32',nthi:'Công ty DEF32',tvgs:'Công ty GHJ32',ntkhac:'Công ty KLM32',batdau:'01/01/2026',tiendoHD:375,namda:'2025-2027',tt:'TCCT',nguon:'NSTP',soNguonVon:1,kh:3000000000,gn:0,tyle:0.0,khXl:3000000000,gnXl:0,vlDat:33523,vlCat:2354,vlDa:7950,vuongmac:'Thời tiết',ghichu:'...'},
+{ma:'DA033',ten:'Nâng cấp, mở rộng cảng cá Thọ Quang, TP Đà Nẵng',phong:'Phòng Điều hành - Giám sát 3',pgd:'Trần Duy Anh',cb:'Nguyễn Văn A33',dia:'Phường Sơn Trà',tvtk:'Công ty ABC33',nthi:'Công ty DEF33',tvgs:'Công ty GHJ33',ntkhac:'Công ty KLM33',batdau:'01/01/2026',tiendoHD:375,namda:'2025-2027',tt:'TCCT',nguon:'NSTP',soNguonVon:1,kh:574000000,gn:1146230000,tyle:200.0,khXl:574000000,gnXl:573115000,vlDat:33523,vlCat:2354,vlDa:7950,vuongmac:'Không có',ghichu:'...'},
+{ma:'DA034',ten:'Kè chỉnh trị sông Vĩnh Điện đoạn qua khu dân cư E2 mở rộng Nam cầu Cẩm Lệ (bờ tả) và qua phường Hòa ',phong:'Phòng Điều hành - Giám sát 4',pgd:'Trần Duy Anh',cb:'Nguyễn Văn A34',dia:'Phường Hòa Xuân',tvtk:'Công ty ABC34',nthi:'Công ty DEF34',tvgs:'Công ty GHJ34',ntkhac:'Công ty KLM34',batdau:'01/01/2026',tiendoHD:375,namda:'2025-2027',tt:'TCCT',nguon:'NSTP',soNguonVon:1,kh:5000000000,gn:3200050000,tyle:64.0,khXl:5000000000,gnXl:1600025000,vlDat:33523,vlCat:2354,vlDa:7950,vuongmac:'Không có',ghichu:'...'},
+{ma:'DA035',ten:'Cải tạo nâng cấp đường Võ Duy Ninh',phong:'Phòng Điều hành - Giám sát 3',pgd:'Nguyễn Ngọc Hoàng',cb:'Nguyễn Văn A35',dia:'Phường Hòa Cường',tvtk:'Công ty ABC35',nthi:'Công ty DEF35',tvgs:'Công ty GHJ35',ntkhac:'Công ty KLM35',batdau:'01/01/2026',tiendoHD:375,namda:'2025-2027',tt:'TCCT',nguon:'NSTP',soNguonVon:1,kh:4000000000,gn:3670377472,tyle:92.0,khXl:4000000000,gnXl:1835188736,vlDat:33523,vlCat:2354,vlDa:7950,vuongmac:'Không có',ghichu:'...'},
+{ma:'DA036',ten:'Kè chống sạt lở thượng lưu cầu Trường Định, sông Cu Đê',phong:'Phòng Điều hành - Giám sát 4',pgd:'Trần Duy Anh',cb:'Nguyễn Văn A36',dia:'Phường Hải Vân',tvtk:'Công ty ABC36',nthi:'Công ty DEF36',tvgs:'Công ty GHJ36',ntkhac:'Công ty KLM36',batdau:'01/01/2026',tiendoHD:375,namda:'2025-2027',tt:'TCCT',nguon:'NSTW',soNguonVon:1,kh:24568000000,gn:9290272000,tyle:38.0,khXl:23568000000,gnXl:4645136000,vlDat:33523,vlCat:2354,vlDa:7950,vuongmac:'Không có',ghichu:'...'},
+{ma:'DA037',ten:'Kè chống sạt lở khẩn cấp tại vị trí xung yếu các tuyến sông trên địa bàn thành phố Đà Nẵng',phong:'Phòng Điều hành - Giám sát 4',pgd:'Trần Duy Anh',cb:'Nguyễn Văn A37',dia:'Phường Hòa Tiến',tvtk:'Công ty ABC37',nthi:'Công ty DEF37',tvgs:'Công ty GHJ37',ntkhac:'Công ty KLM37',batdau:'01/01/2026',tiendoHD:375,namda:'2025-2027',tt:'TCCT',nguon:'NSTW',soNguonVon:1,kh:74058000000,gn:1165180000,tyle:2.0,khXl:74058000000,gnXl:582590000,vlDat:33523,vlCat:2354,vlDa:7950,vuongmac:'Không có',ghichu:'...'},
+{ma:'DA038',ten:'Nâng cấp, mở rộng cơ sở vật chất Trường THCS và THPT Nguyễn Khuyến',phong:'Phòng Điều hành - Giám sát 3',pgd:'Phan Đình Đức',cb:'Nguyễn Văn A38',dia:'Phường Hòa Cường',tvtk:'Công ty ABC38',nthi:'Công ty DEF38',tvgs:'Công ty GHJ38',ntkhac:'Công ty KLM38',batdau:'01/01/2026',tiendoHD:375,namda:'2025-2027',tt:'TCCT',nguon:'NSTP',soNguonVon:1,kh:15000000000,gn:3978970000,tyle:27.0,khXl:15000000000,gnXl:1989485000,vlDat:33523,vlCat:2354,vlDa:7950,vuongmac:'Không có',ghichu:'...'},
+{ma:'DA039',ten:'Cải tạo, nâng cấp trường tiều học Tô Vĩnh Diện',phong:'Phòng Điều hành - Giám sát 3',pgd:'Phan Đình Đức',cb:'Nguyễn Văn A39',dia:'Phường Hòa Cường',tvtk:'Công ty ABC39',nthi:'Công ty DEF39',tvgs:'Công ty GHJ39',ntkhac:'Công ty KLM39',batdau:'01/01/2026',tiendoHD:375,namda:'2025-2027',tt:'TCCT',nguon:'NSTP',soNguonVon:1,kh:24487000000,gn:745652640,tyle:3.0,khXl:24487000000,gnXl:372826320,vlDat:33523,vlCat:2354,vlDa:7950,vuongmac:'Không có',ghichu:'...'},
+{ma:'DA040',ten:'Cải tạo, nâng cấp và mở rộng trường THCS Phạm Ngọc Thạch',phong:'Phòng Điều hành - Giám sát 3',pgd:'Phan Đình Đức',cb:'Nguyễn Văn A40',dia:'Phường An Khê',tvtk:'Công ty ABC40',nthi:'Công ty DEF40',tvgs:'Công ty GHJ40',ntkhac:'Công ty KLM40',batdau:'01/01/2026',tiendoHD:375,namda:'2025-2027',tt:'TCCT',nguon:'NSTP',soNguonVon:1,kh:22697000000,gn:295065454,tyle:1.0,khXl:22697000000,gnXl:147532727,vlDat:33523,vlCat:2354,vlDa:7950,vuongmac:'Không có',ghichu:'...'},
+{ma:'DA041',ten:'Nâng cấp, mở rộng cơ sở vật chất Trường THPT Thanh Khê',phong:'Phòng Điều hành - Giám sát 3',pgd:'Phan Đình Đức',cb:'Nguyễn Văn A41',dia:'Phường Thanh Khê',tvtk:'Công ty ABC41',nthi:'Công ty DEF41',tvgs:'Công ty GHJ41',ntkhac:'Công ty KLM41',batdau:'01/01/2026',tiendoHD:375,namda:'2025-2027',tt:'TCCT',nguon:'NSTP',soNguonVon:1,kh:2000000000,gn:3623974000,tyle:181.0,khXl:2000000000,gnXl:1811987000,vlDat:33523,vlCat:2354,vlDa:7950,vuongmac:'Không có',ghichu:'...'},
+{ma:'DA042',ten:'Nâng cấp, mở rộng đường Ngô Chân Lưu',phong:'Phòng Điều hành - Giám sát 3',pgd:'Phan Trọng Tài',cb:'Nguyễn Văn A42',dia:'Phường Hòa Xuân',tvtk:'Công ty ABC42',nthi:'Công ty DEF42',tvgs:'Công ty GHJ42',ntkhac:'Công ty KLM42',batdau:'01/01/2026',tiendoHD:375,namda:'2025-2027',tt:'TCCT',nguon:'NSTP',soNguonVon:1,kh:5000000000,gn:0,tyle:0.0,khXl:5000000000,gnXl:0,vlDat:33523,vlCat:2354,vlDa:7950,vuongmac:'Không có',ghichu:'...'},
+{ma:'DA043',ten:'Nâng cấp HTKT khu vực xung quang đường Tống Phước Phổ',phong:'Phòng Điều hành - Giám sát 3',pgd:'Nguyễn Ngọc Hoàng',cb:'Nguyễn Văn A43',dia:'Phường Hòa Khánh',tvtk:'Công ty ABC43',nthi:'Công ty DEF43',tvgs:'Công ty GHJ43',ntkhac:'Công ty KLM43',batdau:'01/01/2026',tiendoHD:375,namda:'2025-2027',tt:'TCCT',nguon:'NSTP',soNguonVon:1,kh:23000000000,gn:14637916000,tyle:64.0,khXl:23000000000,gnXl:7318958000,vlDat:33523,vlCat:2354,vlDa:7950,vuongmac:'Không có',ghichu:'...'},
+{ma:'DA044',ten:'Đậy kín tuyến kênh hở dài khoản 500m tại khu vực đường Hồng Thái - Tân Trào',phong:'Phòng Điều hành - Giám sát 3',pgd:'Hồ Tường Huy',cb:'Nguyễn Văn A44',dia:'Phường Liên Chiểu',tvtk:'Công ty ABC44',nthi:'Công ty DEF44',tvgs:'Công ty GHJ44',ntkhac:'Công ty KLM44',batdau:'01/01/2026',tiendoHD:375,namda:'2025-2027',tt:'TCCT',nguon:'NSTP',soNguonVon:1,kh:20000000000,gn:18530880000,tyle:93.0,khXl:20000000000,gnXl:9265440000,vlDat:33523,vlCat:2354,vlDa:7950,vuongmac:'Không có',ghichu:'...'},
+{ma:'DA045',ten:'Mở rộng nghĩa trang Hoà Sơn về phía Đông Nam giai đoạn 4)',phong:'Phòng Điều hành - Giám sát 3',pgd:'Phan Trọng Tài',cb:'Nguyễn Văn A45',dia:'Phường Hòa Khánh',tvtk:'Công ty ABC45',nthi:'Công ty DEF45',tvgs:'Công ty GHJ45',ntkhac:'Công ty KLM45',batdau:'01/01/2026',tiendoHD:375,namda:'2025-2027',tt:'TCCT',nguon:'NSTP',soNguonVon:1,kh:100000000,gn:0,tyle:0.0,khXl:100000000,gnXl:0,vlDat:33523,vlCat:2354,vlDa:7950,vuongmac:'GPMB',ghichu:'...'},
+{ma:'DA046',ten:'Tuyến cống thoát nước số 2 thuộc tuyến cống thoát nước Khe Cạn (dưới đường Hoàng Thị Loan ra đường T',phong:'Phòng Điều hành - Giám sát 3',pgd:'Phan Trọng Tài',cb:'Nguyễn Văn A46',dia:'Phường Liên Chiểu',tvtk:'Công ty ABC46',nthi:'Công ty DEF46',tvgs:'Công ty GHJ46',ntkhac:'Công ty KLM46',batdau:'01/01/2026',tiendoHD:375,namda:'2025-2027',tt:'TCCT',nguon:'NSTP',soNguonVon:1,kh:5000000000,gn:2295363574,tyle:46.0,khXl:5000000000,gnXl:1147681787,vlDat:33523,vlCat:2354,vlDa:7950,vuongmac:'Không có',ghichu:'...'},
+{ma:'DA047',ten:'Tuyến cống thoát nước khớp nối hạ lưu tuyến cống hiện trạng trên đường Trần Nam Trung',phong:'Phòng Điều hành - Giám sát 3',pgd:'Hồ Tường Huy',cb:'Nguyễn Văn A47',dia:'Phường Cẩm Lệ',tvtk:'Công ty ABC47',nthi:'Công ty DEF47',tvgs:'Công ty GHJ47',ntkhac:'Công ty KLM47',batdau:'01/01/2026',tiendoHD:375,namda:'2025-2027',tt:'TCCT',nguon:'NSTP',soNguonVon:1,kh:70000000000,gn:868836000,tyle:1.0,khXl:70000000000,gnXl:434418000,vlDat:33523,vlCat:2354,vlDa:7950,vuongmac:'Không có',ghichu:'...'},
+{ma:'DA048',ten:'Xây dựng cầu trên đường Nguyễn Nhàn tại vị trí qua kênh Phong Bắc',phong:'Phòng Điều hành - Giám sát 3',pgd:'Phan Đình Đức',cb:'Nguyễn Văn A48',dia:'Phường Hòa Xuân',tvtk:'Công ty ABC48',nthi:'Công ty DEF48',tvgs:'Công ty GHJ48',ntkhac:'Công ty KLM48',batdau:'01/01/2026',tiendoHD:375,namda:'2025-2027',tt:'TC00',nguon:'NSTP',soNguonVon:1,kh:5000000000,gn:0,tyle:0.0,khXl:5000000000,gnXl:0,vlDat:33523,vlCat:2354,vlDa:7950,vuongmac:'Không có',ghichu:'...'},
+{ma:'DA049',ten:'Đầu tư xây dựng hạ tầng kỹ thuật Cụm nút giao thông Lê Thanh Nghị - Cách Mạng Tháng Tám - Thăng Long',phong:'Phòng Điều hành - Giám sát 3',pgd:'Nguyễn Ngọc Hoàng',cb:'Nguyễn Văn A49',dia:'Phường Hòa Xuân',tvtk:'Công ty ABC49',nthi:'Công ty DEF49',tvgs:'Công ty GHJ49',ntkhac:'Công ty KLM49',batdau:'01/01/2026',tiendoHD:375,namda:'2025-2027',tt:'TC00',nguon:'NSTP',soNguonVon:1,kh:280100000000,gn:7129466000,tyle:3.0,khXl:280100000000,gnXl:3564733000,vlDat:33523,vlCat:2354,vlDa:7950,vuongmac:'Không có',ghichu:'...'},
+{ma:'DA050',ten:'Đường nối từ ĐT.609C đến Quốc lộ 14B, huyện Đại Lộc',phong:'Phòng Điều hành - Giám sát 1',pgd:'Phan Trọng Tài',cb:'Nguyễn Văn A50',dia:'xã Đại Lộc',tvtk:'Công ty ABC50',nthi:'Công ty DEF50',tvgs:'Công ty GHJ50',ntkhac:'Công ty KLM50',batdau:'01/01/2026',tiendoHD:375,namda:'2025-2027',tt:'TCCT',nguon:'NSTP',soNguonVon:1,kh:20000000000,gn:733676000,tyle:4.0,khXl:20000000000,gnXl:366838000,vlDat:33523,vlCat:2354,vlDa:7950,vuongmac:'Không có',ghichu:'...'},
+{ma:'DA051',ten:'Nâng cấp mở rộng đường ĐT609, đoạn An Điềm - A Sờ',phong:'Phòng Điều hành - Giám sát 1',pgd:'Nguyễn Tuấn Phong',cb:'Nguyễn Văn A51',dia:'xã Đại Lộc',tvtk:'Công ty ABC51',nthi:'Công ty DEF51',tvgs:'Công ty GHJ51',ntkhac:'Công ty KLM51',batdau:'01/01/2026',tiendoHD:375,namda:'2025-2027',tt:'TCCT',nguon:'NSTP',soNguonVon:1,kh:30000000000,gn:29908272000,tyle:100.0,khXl:30000000000,gnXl:14954136000,vlDat:33523,vlCat:2354,vlDa:7950,vuongmac:'Không có',ghichu:'...'},
+{ma:'DA052',ten:'Nạo vét, thoát lũ khẩn cấp và chống xâm nhập mặn sông Cổ Cò, thành phố Hội An',phong:'Phòng Điều hành - Giám sát 1',pgd:'Phan Đình Đức',cb:'Nguyễn Văn A52',dia:'phường Hội An',tvtk:'Công ty ABC52',nthi:'Công ty DEF52',tvgs:'Công ty GHJ52',ntkhac:'Công ty KLM52',batdau:'01/01/2026',tiendoHD:375,namda:'2025-2027',tt:'TCCT',nguon:'NSTP',soNguonVon:1,kh:15000000000,gn:0,tyle:0.0,khXl:12551005335,gnXl:0,vlDat:33523,vlCat:2354,vlDa:7950,vuongmac:'Không có',ghichu:'...'},
+{ma:'DA053',ten:'Đường trục chính Tam Hòa nối từ Quốc lộ 1 đến đường Võ Chí Công và ĐT613B',phong:'Phòng Điều hành - Giám sát 2',pgd:'Nguyễn Tuấn Phong',cb:'Nguyễn Văn A53',dia:'xã Núi Thành',tvtk:'Công ty ABC53',nthi:'Công ty DEF53',tvgs:'Công ty GHJ53',ntkhac:'Công ty KLM53',batdau:'01/01/2026',tiendoHD:375,namda:'2025-2027',tt:'TCCT',nguon:'NSTP',soNguonVon:1,kh:100000000000,gn:7998898000,tyle:8.0,khXl:100000000000,gnXl:3999449000,vlDat:33523,vlCat:2354,vlDa:7950,vuongmac:'Không có',ghichu:'...'},
+{ma:'DA054',ten:'Đường trục chính nối KCN ô tô Chu Lai Trường Hải đến KCN Tam Anh (giai đoạn 2)',phong:'Phòng Điều hành - Giám sát 2',pgd:'Nguyễn Tuấn Phong',cb:'Nguyễn Văn A54',dia:'xã Núi Thành',tvtk:'Công ty ABC54',nthi:'Công ty DEF54',tvgs:'Công ty GHJ54',ntkhac:'Công ty KLM54',batdau:'01/01/2026',tiendoHD:375,namda:'2025-2027',tt:'TCCT',nguon:'NSTP',soNguonVon:1,kh:20000000000,gn:0,tyle:0.0,khXl:20000000000,gnXl:0,vlDat:33523,vlCat:2354,vlDa:7950,vuongmac:'Không có',ghichu:'...'},
+{ma:'DA055',ten:'Đường nối Quốc lộ 14H đến ĐT609C, huyện Duy Xuyên và huyện Đại Lộc, tỉnh Quảng Nam',phong:'Phòng Điều hành - Giám sát 1',pgd:'Phan Trọng Tài',cb:'Nguyễn Văn A55',dia:'xã Đại Lộc',tvtk:'Công ty ABC55',nthi:'Công ty DEF55',tvgs:'Công ty GHJ55',ntkhac:'Công ty KLM55',batdau:'01/01/2026',tiendoHD:375,namda:'2025-2027',tt:'TCCT',nguon:'NSTP',soNguonVon:1,kh:25000000000,gn:0,tyle:0.0,khXl:23610929000,gnXl:0,vlDat:33523,vlCat:2354,vlDa:7950,vuongmac:'Không có',ghichu:'...'},
+{ma:'DA056',ten:'Đường Tam Trà - Trà Kót (ĐT 617 đi Quốc lộ 40B)',phong:'Phòng Điều hành - Giám sát 1 và 2',pgd:'Nguyễn Tuấn Phong',cb:'Nguyễn Văn A56',dia:'xã Trà Liên',tvtk:'Công ty ABC56',nthi:'Công ty DEF56',tvgs:'Công ty GHJ56',ntkhac:'Công ty KLM56',batdau:'01/01/2026',tiendoHD:375,namda:'2025-2027',tt:'TCCT',nguon:'NSTP',soNguonVon:1,kh:75000000000,gn:0,tyle:0.0,khXl:73722249765,gnXl:0,vlDat:33523,vlCat:2354,vlDa:7950,vuongmac:'Không có',ghichu:'...'},
+{ma:'DA057',ten:'Đường trục chính vào Khu công nghiệp Tam Thăng mở rộng',phong:'Phòng Điều hành - Giám sát 2',pgd:'Nguyễn Tuấn Phong',cb:'Nguyễn Văn A57',dia:'xã Núi Thành',tvtk:'Công ty ABC57',nthi:'Công ty DEF57',tvgs:'Công ty GHJ57',ntkhac:'Công ty KLM57',batdau:'01/01/2026',tiendoHD:375,namda:'2025-2027',tt:'TCCT',nguon:'NSTP',soNguonVon:1,kh:43000000000,gn:0,tyle:0.0,khXl:43000000000,gnXl:0,vlDat:33523,vlCat:2354,vlDa:7950,vuongmac:'Không có',ghichu:'...'},
+{ma:'DA058',ten:'Hoàn thiện đường Hùng Vương, thành phố Tam Kỳ',phong:'Phòng Điều hành - Giám sát 1',pgd:'Hồ Tường Huy',cb:'Nguyễn Văn A58',dia:'phường Tam Kỳ',tvtk:'Công ty ABC58',nthi:'Công ty DEF58',tvgs:'Công ty GHJ58',ntkhac:'Công ty KLM58',batdau:'01/01/2026',tiendoHD:375,namda:'2025-2027',tt:'TCCT',nguon:'NSTP',soNguonVon:1,kh:130000000000,gn:13000000000,tyle:10.0,khXl:130000000000,gnXl:6500000000,vlDat:33523,vlCat:2354,vlDa:7950,vuongmac:'Không có',ghichu:'...'},
+{ma:'DA059',ten:'Cầu Phong Thử trên tuyến ĐT.609 (Nâng cấp, mở rộng)',phong:'Phòng Điều hành - Giám sát 1',pgd:'Nguyễn Ngọc Hoàng',cb:'Nguyễn Văn A59',dia:'xã Điện Bàn Tây',tvtk:'Công ty ABC59',nthi:'Công ty DEF59',tvgs:'Công ty GHJ59',ntkhac:'Công ty KLM59',batdau:'01/01/2026',tiendoHD:375,namda:'2025-2027',tt:'TCCT',nguon:'NSTP',soNguonVon:1,kh:40000000000,gn:0,tyle:0.0,khXl:40000000000,gnXl:0,vlDat:33523,vlCat:2354,vlDa:7950,vuongmac:'Không có',ghichu:'...'},
+{ma:'DA060',ten:'Cầu Nghĩa Tự',phong:'Phòng Điều hành - Giám sát 1',pgd:'Phan Đình Đức',cb:'Nguyễn Văn A60',dia:'phường Điện Bàn Đông',tvtk:'Công ty ABC60',nthi:'Công ty DEF60',tvgs:'Công ty GHJ60',ntkhac:'Công ty KLM60',batdau:'01/01/2026',tiendoHD:375,namda:'2025-2027',tt:'TCCT',nguon:'NSTP',soNguonVon:1,kh:60000000000,gn:0,tyle:0.0,khXl:60000000000,gnXl:0,vlDat:33523,vlCat:2354,vlDa:7950,vuongmac:'Không có',ghichu:'...'},
+{ma:'DA061',ten:'Hoàn thiện đường ven biển 129 (Võ Chí Công) - Ngân sách thành phố',phong:'Phòng Điều hành - Giám sát 1',pgd:'Nguyễn Tuấn Phong',cb:'Nguyễn Văn A61',dia:'xã Núi Thành',tvtk:'Công ty ABC61',nthi:'Công ty DEF61',tvgs:'Công ty GHJ61',ntkhac:'Công ty KLM61',batdau:'01/01/2026',tiendoHD:375,namda:'2025-2027',tt:'TCCT',nguon:'NSTP',soNguonVon:2,kh:71926000000,gn:0,tyle:0.0,khXl:71926000000,gnXl:0,vlDat:33523,vlCat:2354,vlDa:7950,vuongmac:'Không có',ghichu:'...'},
+{ma:'DA061',ten:'Hoàn thiện đường ven biển 129 (Võ Chí Công) - Ngân sách Trung ương',phong:'Phòng Điều hành - Giám sát 1',pgd:'Nguyễn Tuấn Phong',cb:'Nguyễn Văn A62',dia:'xã Núi Thành',tvtk:'Công ty ABC62',nthi:'Công ty DEF62',tvgs:'Công ty GHJ62',ntkhac:'Công ty KLM62',batdau:'01/01/2026',tiendoHD:375,namda:'2025-2027',tt:'TCCT',nguon:'NSTW',soNguonVon:2,kh:38460000000,gn:1749190000,tyle:5.0,khXl:37480309023,gnXl:874595000,vlDat:33523,vlCat:2354,vlDa:7950,vuongmac:'Không có',ghichu:'...'},
+{ma:'DA062',ten:'Cầu Văn Ly và đường dẫn - Ngân sách thành phố',phong:'Phòng Điều hành - Giám sát 1',pgd:'Nguyễn Ngọc Hoàng',cb:'Nguyễn Văn A63',dia:'xã Đại Lộc',tvtk:'Công ty ABC63',nthi:'Công ty DEF63',tvgs:'Công ty GHJ63',ntkhac:'Công ty KLM63',batdau:'01/01/2026',tiendoHD:375,namda:'2025-2027',tt:'TCCT',nguon:'NSTP',soNguonVon:2,kh:45000000000,gn:26903392000,tyle:60.0,khXl:45000000000,gnXl:13451696000,vlDat:33523,vlCat:2354,vlDa:7950,vuongmac:'Không có',ghichu:'...'},
+{ma:'DA062',ten:'Cầu Văn Ly và đường dẫn - Ngân sách Trung ương',phong:'Phòng Điều hành - Giám sát 1',pgd:'Nguyễn Ngọc Hoàng',cb:'Nguyễn Văn A64',dia:'xã Đại Lộc',tvtk:'Công ty ABC64',nthi:'Công ty DEF64',tvgs:'Công ty GHJ64',ntkhac:'Công ty KLM64',batdau:'01/01/2026',tiendoHD:375,namda:'2025-2027',tt:'TCCT',nguon:'NSTW',soNguonVon:2,kh:71000000000,gn:0,tyle:0.0,khXl:66178197688,gnXl:0,vlDat:33523,vlCat:2354,vlDa:7950,vuongmac:'Không có',ghichu:'...'},
+{ma:'DA063',ten:'Xây dựng cơ sở hạ tầng thích ứng với biến đổi khí hậu cho đồng bào dân tộc thiểu số (CRIEM) - NSTP',phong:'Phòng Điều hành - Giám sát 1',pgd:'Nguyễn Tuấn Phong',cb:'Nguyễn Văn A65',dia:'xã Phước Năng',tvtk:'Công ty ABC65',nthi:'Công ty DEF65',tvgs:'Công ty GHJ65',ntkhac:'Công ty KLM65',batdau:'01/01/2026',tiendoHD:375,namda:'2025-2027',tt:'TCCT',nguon:'NSTP',soNguonVon:2,kh:85000000000,gn:23371572242,tyle:27.0,khXl:85000000000,gnXl:11685786121,vlDat:33523,vlCat:2354,vlDa:7950,vuongmac:'Không có',ghichu:'...'},
+{ma:'DA063',ten:'Xây dựng cơ sở hạ tầng thích ứng với biến đổi khí hậu cho đồng bào dân tộc thiểu số (CRIEM) - Vốn va',phong:'Phòng Điều hành - Giám sát 1',pgd:'Nguyễn Tuấn Phong',cb:'Nguyễn Văn A66',dia:'xã Phước Năng',tvtk:'Công ty ABC66',nthi:'Công ty DEF66',tvgs:'Công ty GHJ66',ntkhac:'Công ty KLM66',batdau:'01/01/2026',tiendoHD:375,namda:'2025-2027',tt:'TCCT',nguon:'VODA',soNguonVon:2,kh:176910000000,gn:118338705510,tyle:67.0,khXl:176910000000,gnXl:59169352755,vlDat:33523,vlCat:2354,vlDa:7950,vuongmac:'Không có',ghichu:'...'},
+{ma:'DA064',ten:'Liên kết vùng miền Trung tỉnh Quảng Nam - Vốn ODA',phong:'Phòng Điều hành - Giám sát 1',pgd:'Nguyễn Tuấn Phong',cb:'Nguyễn Văn A67',dia:'xã Tiên Phước',tvtk:'Công ty ABC67',nthi:'Công ty DEF67',tvgs:'Công ty GHJ67',ntkhac:'Công ty KLM67',batdau:'01/01/2026',tiendoHD:375,namda:'2025-2027',tt:'TCCT',nguon:'VODA',soNguonVon:3,kh:131009000000,gn:24124797072,tyle:18.0,khXl:131009000000,gnXl:12062398536,vlDat:33523,vlCat:2354,vlDa:7950,vuongmac:'Không có',ghichu:'...'},
+{ma:'DA064',ten:'Liên kết vùng miền Trung tỉnh Quảng Nam - Ngân sách thành phố',phong:'Phòng Điều hành - Giám sát 1',pgd:'Nguyễn Tuấn Phong',cb:'Nguyễn Văn A68',dia:'xã Tiên Phước',tvtk:'Công ty ABC68',nthi:'Công ty DEF68',tvgs:'Công ty GHJ68',ntkhac:'Công ty KLM68',batdau:'01/01/2026',tiendoHD:375,namda:'2025-2027',tt:'TCCT',nguon:'NSTP',soNguonVon:3,kh:96311000000,gn:443294178,tyle:0.0,khXl:90148931442,gnXl:221647089,vlDat:33523,vlCat:2354,vlDa:7950,vuongmac:'Không có',ghichu:'...'},
+{ma:'DA064',ten:'Liên kết vùng miền Trung tỉnh Quảng Nam - Ngân sách Trung ương',phong:'Phòng Điều hành - Giám sát 1',pgd:'Nguyễn Tuấn Phong',cb:'Nguyễn Văn A69',dia:'xã Tiên Phước',tvtk:'Công ty ABC69',nthi:'Công ty DEF69',tvgs:'Công ty GHJ69',ntkhac:'Công ty KLM69',batdau:'01/01/2026',tiendoHD:375,namda:'2025-2027',tt:'TCCT',nguon:'NSTW',soNguonVon:3,kh:50000000000,gn:360915996,tyle:1.0,khXl:44955682400,gnXl:180457998,vlDat:33523,vlCat:2354,vlDa:7950,vuongmac:'Không có',ghichu:'...'},
+{ma:'DA065',ten:'Phát triển tích hợp thích ứng tỉnh Quảng Nam - Ngân sách thành phố',phong:'Phòng Điều hành - Giám sát 2',pgd:'Phan Đình Đức',cb:'Nguyễn Văn A70',dia:'xã  Thăng Bình',tvtk:'Công ty ABC70',nthi:'Công ty DEF70',tvgs:'Công ty GHJ70',ntkhac:'Công ty KLM70',batdau:'01/01/2026',tiendoHD:375,namda:'2025-2027',tt:'TCCT',nguon:'NSTP',soNguonVon:2,kh:130000000000,gn:18200264850,tyle:14.0,khXl:129716298000,gnXl:9100132425,vlDat:33523,vlCat:2354,vlDa:7950,vuongmac:'Không có',ghichu:'...'},
+{ma:'DA065',ten:'Phát triển tích hợp thích ứng tỉnh Quảng Nam - Vốn ODA',phong:'Phòng Điều hành - Giám sát 2',pgd:'Phan Đình Đức',cb:'Nguyễn Văn A71',dia:'xã  Thăng Bình',tvtk:'Công ty ABC71',nthi:'Công ty DEF71',tvgs:'Công ty GHJ71',ntkhac:'Công ty KLM71',batdau:'01/01/2026',tiendoHD:375,namda:'2025-2027',tt:'TCCT',nguon:'VODA',soNguonVon:2,kh:165000000000,gn:38630722778,tyle:23.0,khXl:165000000000,gnXl:19315361389,vlDat:33523,vlCat:2354,vlDa:7950,vuongmac:'Không có',ghichu:'...'},
+{ma:'DA066',ten:'Phát triển vùng sản xuất hạt giống lúa lai tại tỉnh Quảng Nam',phong:'Phòng Điều hành - Giám sát 4',pgd:'Nguyễn Ngọc Tân',cb:'Nguyễn Văn A72',dia:'xã Điện Bàn Tây',tvtk:'Công ty ABC72',nthi:'Công ty DEF72',tvgs:'Công ty GHJ72',ntkhac:'Công ty KLM72',batdau:'01/01/2026',tiendoHD:375,namda:'2025-2027',tt:'TCCT',nguon:'NSTP',soNguonVon:1,kh:4000000000,gn:0,tyle:0.0,khXl:3093901542,gnXl:0,vlDat:33523,vlCat:2354,vlDa:7950,vuongmac:'Không có',ghichu:'...'},
+{ma:'DA067',ten:'Nâng cấp mở rộng khu neo đậu tránh trú bão An Hòa kết hợp cảng cá Tam Quang',phong:'Phòng Điều hành - Giám sát 4',pgd:'Trần Duy Anh',cb:'Nguyễn Văn A73',dia:'xã Núi Thành',tvtk:'Công ty ABC73',nthi:'Công ty DEF73',tvgs:'Công ty GHJ73',ntkhac:'Công ty KLM73',batdau:'01/01/2026',tiendoHD:375,namda:'2025-2027',tt:'TCCT',nguon:'NSTP',soNguonVon:1,kh:36000000000,gn:0,tyle:0.0,khXl:36000000000,gnXl:0,vlDat:33523,vlCat:2354,vlDa:7950,vuongmac:'Không có',ghichu:'...'},
+{ma:'DA068',ten:'Sửa chữa, nâng cấp khu neo đậu tránh trú bão cho tàu cá An Hòa',phong:'Phòng Điều hành - Giám sát 4',pgd:'Trần Duy Anh',cb:'Nguyễn Văn A74',dia:'xã Núi Thành',tvtk:'Công ty ABC74',nthi:'Công ty DEF74',tvgs:'Công ty GHJ74',ntkhac:'Công ty KLM74',batdau:'01/01/2026',tiendoHD:375,namda:'2025-2027',tt:'TCCT',nguon:'NSTP',soNguonVon:1,kh:10000000000,gn:0,tyle:0.0,khXl:10000000000,gnXl:0,vlDat:33523,vlCat:2354,vlDa:7950,vuongmac:'Không có',ghichu:'...'},
+{ma:'DA069',ten:'Hồ Suối Thỏ - Vốn TP',phong:'Phòng Điều hành - Giám sát 4',pgd:'Nguyễn Ngọc Tân',cb:'Nguyễn Văn A75',dia:'xã Tiên Phước',tvtk:'Công ty ABC75',nthi:'Công ty DEF75',tvgs:'Công ty GHJ75',ntkhac:'Công ty KLM75',batdau:'01/01/2026',tiendoHD:375,namda:'2025-2027',tt:'TCCT',nguon:'NSTP',soNguonVon:2,kh:5000000000,gn:0,tyle:0.0,khXl:5000000000,gnXl:0,vlDat:33523,vlCat:2354,vlDa:7950,vuongmac:'Không có',ghichu:'...'},
+{ma:'DA069',ten:'Hồ Suối Thỏ - Vốn TW',phong:'Phòng Điều hành - Giám sát 4',pgd:'Nguyễn Ngọc Tân',cb:'Nguyễn Văn A76',dia:'xã Tiên Phước',tvtk:'Công ty ABC76',nthi:'Công ty DEF76',tvgs:'Công ty GHJ76',ntkhac:'Công ty KLM76',batdau:'01/01/2026',tiendoHD:375,namda:'2025-2027',tt:'TCCT',nguon:'NSTW',soNguonVon:2,kh:35421000000,gn:5063420000,tyle:14.0,khXl:35421000000,gnXl:2531710000,vlDat:33523,vlCat:2354,vlDa:7950,vuongmac:'Không có',ghichu:'...'},
+{ma:'DA070',ten:'Chống xói lở và bảo vệ bền vững bờ biển Hội An - Vốn TP',phong:'Phòng Điều hành - Giám sát 4',pgd:'Nguyễn Ngọc Tân',cb:'Nguyễn Văn A77',dia:'phường Hội An',tvtk:'Công ty ABC77',nthi:'Công ty DEF77',tvgs:'Công ty GHJ77',ntkhac:'Công ty KLM77',batdau:'01/01/2026',tiendoHD:375,namda:'2025-2027',tt:'TCCT',nguon:'NSTP',soNguonVon:2,kh:64000000000,gn:7802891800,tyle:12.0,khXl:64000000000,gnXl:3901445900,vlDat:33523,vlCat:2354,vlDa:7950,vuongmac:'Không có',ghichu:'...'},
+{ma:'DA070',ten:'Chống xói lở và bảo vệ bền vững bờ biển Hội An - Vốn nước ngoài',phong:'Phòng Điều hành - Giám sát 4',pgd:'Nguyễn Ngọc Tân',cb:'Nguyễn Văn A78',dia:'phường Hội An',tvtk:'Công ty ABC78',nthi:'Công ty DEF78',tvgs:'Công ty GHJ78',ntkhac:'Công ty KLM78',batdau:'01/01/2026',tiendoHD:375,namda:'2025-2027',tt:'TCCT',nguon:'VAFD',soNguonVon:2,kh:420000000000,gn:0,tyle:0.0,khXl:420000000000,gnXl:0,vlDat:33523,vlCat:2354,vlDa:7950,vuongmac:'Không có',ghichu:'...'},
+{ma:'DA071',ten:'Cải tạo, nâng cấp Quốc lộ 14D',phong:'Phòng Điều hành - Giám sát 1',pgd:'Phan Trọng Tài',cb:'Nguyễn Văn A79',dia:'xã Bến Giằng',tvtk:'Công ty ABC79',nthi:'Công ty DEF79',tvgs:'Công ty GHJ79',ntkhac:'Công ty KLM79',batdau:'01/01/2026',tiendoHD:375,namda:'2025-2027',tt:'TCCT',nguon:'NSTW',soNguonVon:1,kh:116009,gn:0,tyle:0.0,khXl:0,gnXl:0,vlDat:33523,vlCat:2354,vlDa:7950,vuongmac:'Không có',ghichu:'Chuẩn bị khởi công'},
+{ma:'DA072',ten:'Cải thiện môi trường đô thị Chu Lai Núi Thành',phong:'Phòng Điều hành - Giám sát 2',pgd:'Nguyễn Ngọc Tân',cb:'Nguyễn Văn A80',dia:'xã Núi Thành',tvtk:'Công ty ABC80',nthi:'Công ty DEF80',tvgs:'Công ty GHJ80',ntkhac:'Công ty KLM80',batdau:'01/01/2026',tiendoHD:375,namda:'2025-2027',tt:'TCCT',nguon:'NSTP',soNguonVon:1,kh:1523922122,gn:0,tyle:0.0,khXl:0,gnXl:0,vlDat:33523,vlCat:2354,vlDa:7950,vuongmac:'Không có',ghichu:'...'},
+{ma:'DA073',ten:'Phát triển môi trường hạ tầng đô thị để đối phó với biến đổi khí hậu thành phố Hội An, Tỉnh Quảng Na',phong:'Phòng Điều hành - Giám sát 2',pgd:'Nguyễn Tuấn Phong',cb:'Nguyễn Văn A81',dia:'phường Hội An',tvtk:'Công ty ABC81',nthi:'Công ty DEF81',tvgs:'Công ty GHJ81',ntkhac:'Công ty KLM81',batdau:'01/01/2026',tiendoHD:375,namda:'2025-2027',tt:'TCCT',nguon:'NSTP',soNguonVon:1,kh:282923608,gn:0,tyle:0.0,khXl:0,gnXl:0,vlDat:33523,vlCat:2354,vlDa:7950,vuongmac:'Không có',ghichu:'...'}
+];
+
+// ══ DỮ LIỆU MỎ VẬT LIỆU ══
+const MO_STATIC=[
+  {id:1,loai:'KHOANGSAN_DATSANLAP',typeKey:'dat',ten:'DX67',xa:'Xã Duy Xuyên',dt:4.1565,tl:2000000,lat:15.791322,lon:108.240642,gmaps:'https://www.google.com/maps?q=15.791322,108.240642',tenCu:'Đường tránh lũ kết hợp phát triển đô thị Nam Phước, kết nối Trung tâm hành chính huyện Duy Xuyên, Quốc Lộ 1A và Quốc lộ '},
+  {id:2,loai:'KHOANGSAN_DATSANLAP',typeKey:'dat',ten:'QS-BS01',xa:'Xã Quế Sơn Trung',dt:9.4,tl:1100000,lat:15.709477,lon:108.211849,gmaps:'https://www.google.com/maps?q=15.709477,108.211849',tenCu:'Hồ chứa nước Lộc Đại'},
+  {id:3,loai:'KHOANGSAN_DATSANLAP',typeKey:'dat',ten:'QS148',xa:'Xã Quế Sơn',dt:9.18,tl:2600000,lat:15.693117,lon:108.199544,gmaps:'https://www.google.com/maps?q=15.693117,108.199544',tenCu:'Hồ chứa nước Lộc Đại'},
+  {id:4,loai:'KHOANGSAN_DATSANLAP',typeKey:'dat',ten:'TB69',xa:'Xã Thăng Phú',dt:5.0,tl:2500000,lat:15.64426,lon:108.375858,gmaps:'https://www.google.com/maps?q=15.64426,108.375858',tenCu:'Đường nối từ đường Võ Chí Công đi Khu công nghiệp Đông Quế Sơn nối với Quốc lộ 14H và Quốc lộ 1A; Cầu Bình Sa đi Bình Hả'},
+  {id:5,loai:'KHOANGSAN_DATSANLAP',typeKey:'dat',ten:'Thọ Khương',xa:'Xã Núi Thành',dt:2.74,tl:150000,lat:15.432478,lon:108.616292,gmaps:'https://www.google.com/maps?q=15.432478,108.616292',tenCu:'Hoàn thiện đường ven biển 129 (Võ Chí Công)'},
+  {id:6,loai:'KHOANGSAN_DATSANLAP',typeKey:'dat',ten:'PN-BS07',xa:'Xã Chiên Đàn',dt:20.0,tl:2000000,lat:15.556783,lon:108.373728,gmaps:'https://www.google.com/maps?q=15.556783,108.373728',tenCu:'Các dự án sử dụng vốn ngân sách do Ban làm CĐT'},
+  {id:7,loai:'KHOANGSAN_DATSANLAP',typeKey:'dat',ten:'TB65',xa:'Xã Thăng Phú',dt:8.0,tl:1100000,lat:15.630041,lon:108.370583,gmaps:'https://www.google.com/maps?q=15.630041,108.370583',tenCu:'Các dự án sử dụng vốn ngân sách do Ban làm CĐT'},
+  {id:8,loai:'KHOANGSAN_DATSANLAP',typeKey:'dat',ten:'DX-BS02',xa:'Xã Duy Xuyên',dt:25.4,tl:2500000,lat:15.793026,lon:108.246461,gmaps:'https://www.google.com/maps?q=15.793026,108.246461',tenCu:'Các dự án sử dụng vốn ngân sách do Ban làm CĐT'},
+  {id:9,loai:'KHOANGSAN_DATSANLAP',typeKey:'dat',ten:'DL-BS09',xa:'Xã Đại Lộc',dt:21.0,tl:2000000,lat:15.910315,lon:108.092938,gmaps:'https://www.google.com/maps?q=15.910315,108.092938',tenCu:'Các dự án sử dụng vốn ngân sách do Ban làm CĐT'},
+  {id:10,loai:'KHOANGSAN_CAT_SOI',typeKey:'cat',ten:'DL1B',xa:'Xã Vu Gia',dt:5.0,tl:191145,lat:15.860849,lon:108.052182,gmaps:'https://www.google.com/maps?q=15.860849,108.052182',tenCu:'Cải tạo, nâng cấp Quốc lộ 14D'},
+  {id:11,loai:'KHOANGSAN_CAT_SOI',typeKey:'cat',ten:'NS08',xa:'Xã Quế Phước',dt:33.95,tl:849000,lat:15.682017,lon:108.011214,gmaps:'https://www.google.com/maps?q=15.682017,108.011214',tenCu:'Các dự án sử dụng vốn ngân sách do Ban làm CĐT'},
+  {id:12,loai:'KHOANGSAN_CAT_SOI',typeKey:'cat',ten:'DX2B',xa:'Xã Thu Bồn',dt:8.68,tl:324000,lat:15.842156,lon:108.118563,gmaps:'https://www.google.com/maps?q=15.842156,108.118563',tenCu:'Các dự án sử dụng vốn ngân sách do Ban làm CĐT'},
+  {id:13,loai:'KHOANGSAN_CAT_SOI',typeKey:'cat',ten:'DX09',xa:'Xã Thu Bồn',dt:36.5,tl:1095000,lat:15.841838,lon:108.114118,gmaps:'https://www.google.com/maps?q=15.841838,108.114118',tenCu:'Các dự án sử dụng vốn ngân sách do Ban làm CĐT'},
+  {id:14,loai:'KHOANGSAN_CAT_SOI',typeKey:'cat',ten:'DX-BS12',xa:'Xã Duy Xuyên',dt:30.0,tl:1200000,lat:15.834262,lon:108.19767,gmaps:'https://www.google.com/maps?q=15.834262,108.19767',tenCu:'Các dự án sử dụng vốn ngân sách do Ban làm CĐT'},
+  {id:15,loai:'KHOANGSAN_CAT_SOI',typeKey:'cat',ten:'DB6',xa:'Xã Điện Bàn Tây',dt:13.1,tl:260000,lat:15.871003,lon:108.213382,gmaps:'https://www.google.com/maps?q=15.871003,108.213382',tenCu:'Các dự án sử dụng vốn ngân sách do Ban làm CĐT'},
+  {id:16,loai:'KHOANGSAN_CAT_SOI',typeKey:'cat',ten:'DB7',xa:'Xã Gò Nổi',dt:35.1,tl:700000,lat:15.869762,lon:108.160856,gmaps:'https://www.google.com/maps?q=15.869762,108.160856',tenCu:'Các dự án sử dụng vốn ngân sách do Ban làm CĐT'},
+  {id:17,loai:'KHOANGSAN_CAT_SOI',typeKey:'cat',ten:'DL19',xa:'Xã Đại Lộc',dt:15.0,tl:600000,lat:15.845798,lon:108.118411,gmaps:'https://www.google.com/maps?q=15.845798,108.118411',tenCu:'Các dự án sử dụng vốn ngân sách do Ban làm CĐT'},
+  {id:18,loai:'KHOANGSAN_CAT_SOI',typeKey:'cat',ten:'DL6',xa:'Xã Vu Gia',dt:37.0,tl:1880000,lat:15.868581,lon:108.061941,gmaps:'https://www.google.com/maps?q=15.868581,108.061941',tenCu:'Các dự án sử dụng vốn ngân sách do Ban làm CĐT'},
+  {id:19,loai:'KHOANGSAN_CAT_SOI',typeKey:'cat',ten:'DL7B',xa:'Xã Đại Lộc',dt:3.0,tl:118000,lat:15.844202,lon:108.121965,gmaps:'https://www.google.com/maps?q=15.844202,108.121965',tenCu:'Các dự án sử dụng vốn ngân sách do Ban làm CĐT'},
+  {id:20,loai:'KHOANGSAN_DA',typeKey:'da',ten:'NT2A-ĐC',xa:'Xã Núi Thành',dt:4.18,tl:2687449,lat:15.38031,lon:108.703586,gmaps:'https://www.google.com/maps?q=15.38031,108.703586',tenCu:'Các dự án sử dụng vốn ngân sách do Ban làm CĐT'},
+  {id:21,loai:'KHOANGSAN_DA',typeKey:'da',ten:'NT8A (Khu 1)',xa:'Xã Núi Thành',dt:6.63,tl:4087865,lat:15.382554,lon:108.698818,gmaps:'https://www.google.com/maps?q=15.382554,108.698818',tenCu:'Các dự án sử dụng vốn ngân sách do Ban làm CĐT'},
+  {id:22,loai:'KHOANGSAN_DA',typeKey:'da',ten:'NT8A (Khu 2)',xa:'Xã Núi Thành',dt:7.7,tl:5818427,lat:15.382232,lon:108.700214,gmaps:'https://www.google.com/maps?q=15.382232,108.700214',tenCu:'Các dự án sử dụng vốn ngân sách do Ban làm CĐT'},
+  {id:23,loai:'KHOANGSAN_DA',typeKey:'da',ten:'NT3A-ĐC',xa:'Xã Núi Thành',dt:3.8,tl:945964,lat:15.384848,lon:108.688498,gmaps:'https://www.google.com/maps?q=15.384848,108.688498',tenCu:'Các dự án sử dụng vốn ngân sách do Ban làm CĐT'},
+  {id:24,loai:'KHOANGSAN_DA',typeKey:'da',ten:'DL18B',xa:'Xã Hà Nha',dt:5.0,tl:1383457,lat:15.878071,lon:107.990642,gmaps:'https://www.google.com/maps?q=15.878071,107.990642',tenCu:'Các dự án sử dụng vốn ngân sách do Ban làm CĐT'},
+  {id:25,loai:'KHOANGSAN_DA',typeKey:'da',ten:'DX78',xa:'Xã Duy Xuyên',dt:3.1016,tl:741308,lat:15.79416,lon:108.236252,gmaps:'https://www.google.com/maps?q=15.79416,108.236252',tenCu:'Các dự án sử dụng vốn ngân sách do Ban làm CĐT'},
+  {id:26,loai:'KHOANGSAN_DA',typeKey:'da',ten:'DX9B',xa:'Xã Duy Xuyên',dt:2.8671,tl:598799,lat:15.79342,lon:108.240078,gmaps:'https://www.google.com/maps?q=15.79342,108.240078',tenCu:'Các dự án sử dụng vốn ngân sách do Ban làm CĐT'},
+  {id:27,loai:'KHOANGSAN_DA',typeKey:'da',ten:'DG1B',xa:'Xã Sông Kôn',dt:1.45,tl:102425,lat:15.976076,lon:107.855132,gmaps:'https://www.google.com/maps?q=15.976076,107.855132',tenCu:'Các dự án sử dụng vốn ngân sách do Ban làm CĐT'},
+  {id:28,loai:'KHOANGSAN_DA',typeKey:'da',ten:'QH.8(ĐXD)-4',xa:'Xã Bà Nà',dt:6.96,tl:474248,lat:16.03364,lon:108.146238,gmaps:'https://www.google.com/maps?q=16.03364,108.146238',tenCu:'Các dự án sử dụng vốn ngân sách do Ban làm CĐT'},
+  {id:29,loai:'KHOANGSAN_DA',typeKey:'da',ten:'QH.8(ĐXD)-5',xa:'Xã Bà Nà',dt:4.5,tl:363630,lat:16.031802,lon:108.14329,gmaps:'https://www.google.com/maps?q=16.031802,108.14329',tenCu:'Các dự án sử dụng vốn ngân sách do Ban làm CĐT'},
+  {id:30,loai:'KHOANGSAN_DA',typeKey:'da',ten:'QH.8(ĐXD)-6',xa:'Xã Bà Nà',dt:9.7,tl:823298,lat:16.030309,lon:108.139465,gmaps:'https://www.google.com/maps?q=16.030309,108.139465',tenCu:'Các dự án sử dụng vốn ngân sách do Ban làm CĐT'},
+  {id:31,loai:'KHOANGSAN_DA',typeKey:'da',ten:'QH.13(ĐXD)-1',xa:'Xã Hòa Tiến',dt:5.0,tl:325000,lat:15.957744,lon:108.109974,gmaps:'https://www.google.com/maps?q=15.957744,108.109974',tenCu:'Các dự án sử dụng vốn ngân sách do Ban làm CĐT'},
+  {id:32,loai:'KHOANGSAN_DA',typeKey:'da',ten:'QH.6(ĐXD)',xa:'P. Hòa Khánh',dt:4.0,tl:426717,lat:16.040127,lon:108.089412,gmaps:'https://www.google.com/maps?q=16.040127,108.089412',tenCu:'Các dự án sử dụng vốn ngân sách do Ban làm CĐT'}
+];
+
+// ══ DỮ LIỆU TĨNH XÃ/PHƯỜNG (93 xã/phường) ══
+const XP_STATIC=[
+  {stt:'1',ten:'Phường Hải Châu',dien:'7,58',danso:'131.427',hcc:'15 Lê Hồng Phong',sdt:'903595835',chu:'Nguyễn Văn Duy (0903570134)',pho:'Võ Thành Trung (0905141415)',lat:null,lon:null},
+  {stt:'2',ten:'Phường Hòa Cường',dien:'15,72',danso:'119.363',hcc:'388 Núi Thành',sdt:'905275908',chu:'Trương Thanh Dũng (0905275908)',pho:'Hoàng Giang Yên Thủy (0905145125)',lat:null,lon:null},
+  {stt:'3',ten:'Phường Thanh Khê',dien:'7,92',danso:'201.240',hcc:'503 Trần Cao Vân',sdt:'988790989',chu:'Trần Tường Vân (0989074161)',pho:'Huỳnh Sơn Hải (0985001019)',lat:null,lon:null},
+  {stt:'4',ten:'Phường An Khê',dien:'12,36',danso:'93.625',hcc:'916 Tôn Đản',sdt:'908687456',chu:'Ngô Ngọc Hậu (0903555480)',pho:'Phan Tấn Dũng (0904282807)',lat:null,lon:null},
+  {stt:'5',ten:'Phường An Hải',dien:'7,37',danso:'82.635',hcc:'289 Nguyễn Công Trứ',sdt:'910393230',chu:'Hoàng Công Thanh (0905607727)',pho:'Nguyễn Thị Anh Thảo (0905789980)',lat:null,lon:null},
+  {stt:'6',ten:'Phường Sơn Trà',dien:'56,03',danso:'86.890',hcc:'06 Nguyễn Phan Vinh',sdt:'912099004',chu:'Đinh Vui (0913415457)',pho:'Phan Thị Nữ (0905737978)',lat:null,lon:null},
+  {stt:'7',ten:'Phường Ngũ Hành Sơn',dien:'40,19',danso:'115.944',hcc:'486 Lê Văn Hiến',sdt:'913804778',chu:'Nguyễn Hòa (0905058559)',pho:'Lê Thị Thanh Duyên (0969055500)',lat:null,lon:null},
+  {stt:'8',ten:'Phường Hòa Khánh',dien:'40,93',danso:'112.518',hcc:'168 Nguyễn Sinh Sắc',sdt:'915510552',chu:'Huỳnh Anh Vũ (0905234569)',pho:'Dương Hiển Tuấn (0905190038)',lat:null,lon:null},
+  {stt:'9',ten:'Phường Hải Vân',dien:'406,09',danso:'48.992',hcc:'20 Nguyễn Phước Chu',sdt:'918922100',chu:'Nguyễn Thúc Dũng (0905885123)',pho:'Phạm Thị Hồng Hạnh (0977812004)',lat:null,lon:null},
+  {stt:'10',ten:'Phường Liên Chiểu',dien:'41,19',danso:'70.628',hcc:'68 Lạc Long Quân',sdt:'917216326',chu:'Trần Công Nguyên (0905537609)',pho:'Đặng Ngọc Nhân (0905174474)',lat:null,lon:null},
+  {stt:'11',ten:'Phường Cẩm Lệ',dien:'14,05',danso:'78.837',hcc:'135 Ông Ích Đường',sdt:'920627874',chu:'Nguyễn Hải Đường (0913496249)',pho:'Nguyễn Thị Việt Hiền (0905168212)',lat:null,lon:null},
+  {stt:'12',ten:'Phường Hòa Xuân',dien:'27,96',danso:'85.580',hcc:'111 Hoàng Ngân',sdt:'922333648',chu:'Đặng Quang Vinh (0905023357)',pho:'Lương Hữu Hùng (0905596278)',lat:null,lon:null},
+  {stt:'13',ten:'Xã Hòa Vang',dien:'107,61',danso:'26.712',hcc:'TTHC huyện Hòa Vang (cũ)',sdt:'942802936',chu:'Lê Phú Nguyện (0905323445)',pho:'Lê Văn Hùng Vương (0983415419)',lat:null,lon:null},
+  {stt:'14',ten:'Xã Hòa Tiến',dien:'65,9',danso:'38.823',hcc:'UBND xã Hòa Tiến (cũ)',sdt:'944508710',chu:'Nguyễn Tấn Khoa (0905006789)',pho:'Lê Trung Thắng (0903580148)',lat:null,lon:null},
+  {stt:'15',ten:'Xã Bà Nà',dien:'136,41',danso:'25.267',hcc:'UBND xã Hòa Nhơn (cũ)',sdt:'946214484',chu:'Lê Minh Tuấn (0946000234)',pho:'Bùi Nam Dũng (0905710666)',lat:null,lon:null},
+  {stt:'16',ten:'Xã Núi Thành',dien:'124,75',danso:'69.406',hcc:'Khối 3',sdt:'947920258',chu:'Hoàng Châu Sơn (0905981195)',pho:'Phạm Thị Vũ Thảo (0935091921)',lat:null,lon:null},
+  {stt:'17',ten:'Xã Tam Mỹ',dien:'173,14',danso:'18.064',hcc:'Thôn Tịnh Sơn',sdt:'949626032',chu:'Nguyễn Quang Thạnh (0982090704)',pho:'Đỗ Thị Sen (0358214106)',lat:null,lon:null},
+  {stt:'18',ten:'Xã Tam Anh',dien:'68,84',danso:'31.026',hcc:'Thôn Nam Định',sdt:'951331806',chu:'Trần Văn Trường (0973551072)',pho:'Nguyễn Quang Hải (0387733081)',lat:null,lon:null},
+  {stt:'19',ten:'Xã Đức Phú',dien:'108,97',danso:'9.240',hcc:'Thôn Thuận Yên Đông',sdt:'953037580',chu:'Ngô Đức An (0914020538)',pho:'Trần Công Hiệu (0905559273)',lat:null,lon:null},
+  {stt:'20',ten:'Xã Tam Xuân',dien:'66,92',danso:'42.834',hcc:'Thôn Phú Khê',sdt:'954743354',chu:'Nguyễn Chí Dân (0988951776)',pho:'Đinh Văn Thiên (0979094252)',lat:null,lon:null},
+  {stt:'21',ten:'Xã Tam Hải',dien:'13,32',danso:'10.312',hcc:'Thôn Tân Lập',sdt:'956449128',chu:'Huỳnh Văn Cường (0966604455)',pho:'Bùi Như Diệu (0982635537)',lat:null,lon:null},
+  {stt:'22',ten:'Phường Tam Kỳ',dien:'8,36',danso:'44.075',hcc:'159 Trưng Nữ Vương',sdt:'924039422',chu:'Đỗ Văn Minh (0905381177)',pho:'Phan Bá Hội (0944862898)',lat:null,lon:null},
+  {stt:'23',ten:'Xã Quảng Phú',dien:'36,21',danso:'29.401',hcc:'Khối phố Phú Thạnh',sdt:'925745196',chu:'Nguyễn Minh Nam (0911197777)',pho:'Phạm Đình Vũ (0905403344)',lat:null,lon:null},
+  {stt:'24',ten:'Phường Hương Trà',dien:'14,64',danso:'33.523',hcc:'510 Hùng Vương',sdt:'927450970',chu:'Trần Trung Hậu (0901937789)',pho:'Nguyễn Ba (0905810250)',lat:null,lon:null},
+  {stt:'25',ten:'Phường Bàn Thạch',dien:'34,77',danso:'36.800',hcc:'06 Nguyễn Đình Hiến',sdt:'929156744',chu:'Dương Văn Tuấn (0905285611)',pho:'Lê Ngọc Dương (0979335311)',lat:null,lon:null},
+  {stt:'26',ten:'Phường Tây Hồ',dien:'75,67',danso:'35.493',hcc:'Thôn Cẩm Khê',sdt:'958154902',chu:'Trần Quốc Danh (0913430656)',pho:'Nguyễn Thị Cúc (0912491709)',lat:null,lon:null},
+  {stt:'27',ten:'Xã Chiên Đàn',dien:'48,63',danso:'32.145',hcc:'01 Hà Đông',sdt:'959860676',chu:'Lê Văn Ninh (0911323888)',pho:'Trần Thị Thu Sang (0383691466)',lat:null,lon:null},
+  {stt:'28',ten:'Xã Phú Ninh',dien:'131,35',danso:'26.954',hcc:'Thôn Cây Sanh',sdt:'961566450',chu:'Nguyễn Hữu Bình (0918793754)',pho:'Nguyễn Hùng Linh (0914056666)',lat:null,lon:null},
+  {stt:'29',ten:'Xã Lãnh Ngọc',dien:'161,14',danso:'14.847',hcc:'Thôn 4',sdt:'963272224',chu:'Nguyễn Minh Xinh (0983716353)',pho:'Tăng Ngọc Đức (0981086989)',lat:null,lon:null},
+  {stt:'30',ten:'Xã Tiên Phước',dien:'74,63',danso:'28.137',hcc:'81 Huỳnh Thúc Kháng',sdt:'964977998',chu:'Nguyễn Hùng Anh (0905444998)',pho:'Nguyễn Thị Xuân Diệu (0985232258)',lat:null,lon:null},
+  {stt:'31',ten:'Xã Thạnh Bình',dien:'100,89',danso:'24.775',hcc:'Thôn 5',sdt:'966683772',chu:'Dương Đức Lin (0935202065)',pho:'Trần Thị Ngọc Hà (0982093351)',lat:null,lon:null},
+  {stt:'32',ten:'Xã Sơn Cẩm Hà',dien:'118,75',danso:'17.608',hcc:'Thôn Cầm Tây',sdt:'968389546',chu:'Phạm Việt Hậu (0903426456)',pho:'Nguyễn Thị Thanh Thủy (0987657753)',lat:null,lon:null},
+  {stt:'33',ten:'Xã Trà Liên',dien:'178,15',danso:'7.052',hcc:'Thôn Định Yên',sdt:'970095320',chu:'Nguyễn Hồng Vương (0968078959)',pho:'(Không có)',lat:null,lon:null},
+  {stt:'34',ten:'Xã Trà Giáp',dien:'121,55',danso:'5.939',hcc:'Thôn 2',sdt:'971801094',chu:'Phùng Văn Nam (0984673444)',pho:'Nguyễn Thanh Huấn (0972729692)',lat:null,lon:null},
+  {stt:'35',ten:'Xã Trà Tân',dien:'183,08',danso:'6.293',hcc:'Thôn 1',sdt:'973506868',chu:'Lê Minh Chiến (0985601388)',pho:'Lê Văn Bình (0834325319)',lat:null,lon:null},
+  {stt:'36',ten:'Xã Trà Đốc',dien:'233,61',danso:'10.475',hcc:'Thôn 2',sdt:'975212642',chu:'Phan Duy Hưng (0914021921)',pho:'Lê Nho Triều (0977292757)',lat:null,lon:null},
+  {stt:'37',ten:'Xã Trà My',dien:'130,6',danso:'19.956',hcc:'Thôn Dương Hòa',sdt:'976918416',chu:'Ngô Quốc Vương (0903086820)',pho:'Trần Thanh Cúc (0961054748)',lat:null,lon:null},
+  {stt:'38',ten:'Xã Nam Trà My',dien:'178,31',danso:'7.395',hcc:'Thôn 1',sdt:'978624190',chu:'Trần Văn Mẫn (0914083308)',pho:'Nguyễn Đình Bình (0917986983)',lat:null,lon:null},
+  {stt:'39',ten:'Xã Trà Tập',dien:'183,17',danso:'8.384',hcc:'Thôn 1',sdt:'980329964',chu:'(Chưa có)',pho:'Nguyễn Thế Anh (0988602566)',lat:null,lon:null},
+  {stt:'40',ten:'Xã Trà Vân',dien:'85,58',danso:'5.342',hcc:'Thôn 2',sdt:'982035738',chu:'Nguyễn Tấn Thành (0979889891)',pho:'Nguyễn Hồng Dũng (0347910901)',lat:null,lon:null},
+  {stt:'41',ten:'Xã Trà Linh',dien:'158,19',danso:'7.088',hcc:'Thôn 3',sdt:'983741512',chu:'Trịnh Minh Hải (0987243565)',pho:'Hồ Văn Thể (0966510244)',lat:null,lon:null},
+  {stt:'42',ten:'Xã Trà Leng',dien:'221,15',danso:'6.586',hcc:'Thôn 2',sdt:'985447286',chu:'Châu Minh Nghĩa (0986100060)',pho:'Mai Văn Chính (0972973223)',lat:null,lon:null},
+  {stt:'43',ten:'Xã Thăng Bình',dien:'68,91',danso:'54.415',hcc:'37 Nguyễn Thuật',sdt:'987153060',chu:'Đoàn Thanh Khiết (0905766369)',pho:'Võ Thị Đoan Trang (0983028065)',lat:null,lon:null},
+  {stt:'44',ten:'Xã Thăng An',dien:'80,98',danso:'51.988',hcc:'Thôn Nam Hà',sdt:'988858834',chu:'Nguyễn Thanh Phong (0905914740)',pho:'Phan Thanh Vân (0935129529)',lat:null,lon:null},
+  {stt:'45',ten:'Xã Thăng Trường',dien:'63,79',danso:'24.803',hcc:'Thôn Bình Trúc',sdt:'990564608',chu:'Nguyễn Văn Hoàng (0905859579)',pho:'Bùi Thị Trang (0905599954)',lat:null,lon:null},
+  {stt:'46',ten:'Xã Thăng Điền',dien:'61,59',danso:'42.280',hcc:'Thôn Kế Xuyên 2',sdt:'992270382',chu:'Trương Công Sơn (0983065282)',pho:'Nguyễn Đình Tư (0905180959)',lat:null,lon:null},
+  {stt:'47',ten:'Xã Thăng Phú',dien:'60,5',danso:'17.266',hcc:'Thôn Tú Tr',sdt:'993976156',chu:'Đoàn Thiện Ngọc Vũ (0974912555)',pho:'Võ Thị Ngọc Ánh (0905897918)',lat:null,lon:null},
+  {stt:'48',ten:'Xã Đồng Dương',dien:'76,49',danso:'24.773',hcc:'Thôn Châu Lâm',sdt:'995681930',chu:'Lê Văn Thôi (0977034885)',pho:'Lê Quốc Huy (0905807504)',lat:null,lon:null},
+  {stt:'49',ten:'Xã Quế Sơn Trung',dien:'111,37',danso:'33.300',hcc:'Thôn Phước Dương',sdt:'997387704',chu:'Ngô Văn Nhanh (0977034442)',pho:'Trà Tiến Tài (0989281371)',lat:null,lon:null},
+  {stt:'50',ten:'Xã Quế Sơn',dien:'94,1',danso:'34.122',hcc:'02 Trưng Nữ Vương',sdt:'999093478',chu:'Võ Đình Trung (0961200097)',pho:'Đặng Thị Thùy Vinh (0905205345)',lat:null,lon:null},
+  {stt:'51',ten:'Xã Xuân Phú',dien:'51,99',danso:'37.083',hcc:'Thôn Mộc Bài',sdt:'1000799252',chu:'Nguyễn Thị Thu Thủy (0982100444)',pho:'Lê Quang Hòa (0905451745)',lat:null,lon:null},
+  {stt:'52',ten:'Xã Nông Sơn',dien:'112,53',danso:'21.018',hcc:'Thôn Trung Hạ',sdt:'1002505026',chu:'Lý Xuân Phong (0912909121)',pho:'Đỗ Đức Huynh (0913163077)',lat:null,lon:null},
+  {stt:'53',ten:'Xã Quế Phước',dien:'359,11',danso:'14.162',hcc:'Thôn Bình Yên',sdt:'1004210800',chu:'Tào Thị Tố Điểm (0345779757)',pho:'Phạm Phú Thủy (0982234408)',lat:null,lon:null},
+  {stt:'54',ten:'Xã Duy Nghĩa',dien:'35,36',danso:'32.143',hcc:'Thôn Thuận An',sdt:'1005916574',chu:'Phạm Được (0985921513)',pho:'Lê Phước Thư (0937603172)',lat:null,lon:null},
+  {stt:'55',ten:'Xã Nam Phước',dien:'38,85',danso:'53.498',hcc:'468 Hùng Vương',sdt:'1007622348',chu:'Nguyễn Văn Khánh (0905242458)',pho:'Nguyễn Thị Thúy Hồng (0945712777)',lat:null,lon:null},
+  {stt:'56',ten:'Xã Duy Xuyên',dien:'125,78',danso:'32.243',hcc:'Thôn An Hòa',sdt:'1009328122',chu:'Đặng Hữu Phúc (0905629979)',pho:'Nguyễn Văn Việt (0905776729)',lat:null,lon:null},
+  {stt:'57',ten:'Xã Thu Bồn',dien:'108,77',danso:'36.909',hcc:'Thôn Phú Lạc',sdt:'1011033896',chu:'Nguyễn Thanh Sơn (0935347778)',pho:'Nguyễn Hành Lâm (0983614882)',lat:null,lon:null},
+  {stt:'58',ten:'Phường Điện Bàn',dien:'19,78',danso:'41.270',hcc:'24 Hoàng Diệu, khối 3',sdt:'932568292',chu:'Nguyễn Thị Thúy Hằng (0917027555)',pho:'Đặng Hữu Tú (0935301234)',lat:null,lon:null},
+  {stt:'59',ten:'Xã Điện Bàn Đông',dien:'61,02',danso:'72.273',hcc:'845 Trần Thủ Độ, KP Quảng Lăng B',sdt:'930862518',chu:'Nguyễn Thanh Vỹ (0935028629)',pho:'Nguyễn Văn Dũng (0888946386)',lat:null,lon:null},
+  {stt:'60',ten:'Xã An Thắng',dien:'19,64',danso:'34.176',hcc:'KP Phong Nhị',sdt:'941097162',chu:'Đặng Công Nhiên (0905661999)',pho:'Đoàn Thị Minh Nguyệt (0916867606)',lat:null,lon:null},
+  {stt:'61',ten:'Xã Điện Bàn Bắc',dien:'36,39',danso:'30.780',hcc:'Thôn Xóm Bùng',sdt:'934274066',chu:'Nguyễn Thị Minh Châu (0916521767)',pho:'Phan Văn Phờ (0906415448)',lat:null,lon:null},
+  {stt:'62',ten:'Xã Điện Bàn Tây',dien:'43,31',danso:'44.473',hcc:'Thôn Phong Thủ 1',sdt:'1012739670',chu:'Võ Như Phong (0919800090)',pho:'Nguyễn Hồng Thanh (0905026574)',lat:null,lon:null},
+  {stt:'63',ten:'Xã Gò Nổi',dien:'36,2',danso:'29.968',hcc:'Thôn Đông Lãnh',sdt:'1014445444',chu:'Phùng Hoàng Việt (0905030703)',pho:'Trần Kim Thoa (0935631789)',lat:null,lon:null},
+  {stt:'64',ten:'Phường Hội An',dien:'10,81',danso:'37.222',hcc:'02 Hoàng Diệu',sdt:'935979840',chu:'Nguyễn Tấn Cường (0948157868)',pho:'Trần Thị Cẩm Nhung (0905142104)',lat:null,lon:null},
+  {stt:'65',ten:'Phường Hội An Đông',dien:'18,22',danso:'31.109',hcc:'456 Cửa Đại',sdt:'937685614',chu:'Trần Tấn Dũng (0989639724)',pho:'Đinh Cao Thắng (0905860737)',lat:null,lon:null},
+  {stt:'66',ten:'Phường Hội An Tây',dien:'18,09',danso:'42.370',hcc:'544 Hai Bà Trưng',sdt:'939391388',chu:'Bùi Văn Dũng (0988620700)',pho:'Lê Văn Bình (0983013597)',lat:null,lon:null},
+  {stt:'67',ten:'Xã Tân Hiệp',dien:'16,43',danso:'2.614',hcc:'Thôn Bãi Làng',sdt:'1016151218',chu:'Phạm Thị Mỹ Hương (0981922029)',pho:'Nguyễn Văn An (0987128876)',lat:null,lon:null},
+  {stt:'68',ten:'Xã Đại Lộc',dien:'73,97',danso:'61.217',hcc:'11 Hùng Vương',sdt:'1017856992',chu:'Lê Đỗ Tuấn Khương (0906422213)',pho:'Đoàn Ngọc Tuấn (0369101089)',lat:null,lon:null},
+  {stt:'69',ten:'Xã Hà Nha',dien:'132,69',danso:'38.199',hcc:'Thôn Hà Nha',sdt:'1019562766',chu:'Mai Thanh Sang (0905234556)',pho:'Trần Quốc Đạt (0975159581)',lat:null,lon:null},
+  {stt:'70',ten:'Xã Thượng Đức',dien:'216,37',danso:'22.520',hcc:'Thôn Tân Hà',sdt:'1021268540',chu:'Phan Trung Phi (0967465777)',pho:'Mai Anh Sơn (0917002347)',lat:null,lon:null},
+  {stt:'71',ten:'Xã Vu Gia',dien:'25,12',danso:'27.649',hcc:'Thôn Lâm Yên',sdt:'1022974314',chu:'Lê Phan Minh (0983408934)',pho:'Nguyễn Thị Thanh Vân (0903554047)',lat:null,lon:null},
+  {stt:'72',ten:'Xã Phú Thuận',dien:'130,89',danso:'27.575',hcc:'204 Đường ĐH4.Đl',sdt:'1024680088',chu:'Nguyễn Thị Hồng (0905152182)',pho:'Võ Thị Thúy Nguyệt (0935808639)',lat:null,lon:null},
+  {stt:'73',ten:'Xã Thạnh Mỹ',dien:'207,28',danso:'9.072',hcc:'Thôn Mực',sdt:'1026385862',chu:'Nguyễn Công Bình (0905344838)',pho:'A Lăng Tâm (0979161904)',lat:null,lon:null},
+  {stt:'74',ten:'Xã Bến Giằng',dien:'535,96',danso:'8.277',hcc:'Thôn Bến Giằng',sdt:'1028091636',chu:'Châu Ngọc Vĩnh (0919769272)',pho:'Ka Ring Mộc Miên (0989564499)',lat:null,lon:null},
+  {stt:'75',ten:'Xã Nam Giang',dien:'262,94',danso:'4.979',hcc:'Thôn A Bát',sdt:'1029797410',chu:'Nguyễn Văn Hiếu (0983519121)',pho:'Hiên Dơnh (0378808976)',lat:null,lon:null},
+  {stt:'76',ten:'Xã Đắc Pring',dien:'412,49',danso:'3.060',hcc:'Thôn 56B',sdt:'1031503184',chu:'Hồ Viết Căn (0976291920)',pho:'Pơ Loong Diệu (0979308747)',lat:null,lon:null},
+  {stt:'77',ten:'Xã La Dêê',dien:'184,81',danso:'2.930',hcc:'Thôn Đắc Ốc',sdt:'1033208958',chu:'Bùi Thế Anh (0396113007)',pho:'Hiên Hế (0332144693)',lat:null,lon:null},
+  {stt:'78',ten:'Xã La Êê',dien:'243,12',danso:'2.371',hcc:'Thôn Pà Ooi',sdt:'1034914732',chu:'Pơ Loong A Đốc (965134135)',pho:'A Rất Thị Hoa (0989431293)',lat:null,lon:null},
+  {stt:'79',ten:'Xã Sông Vàng',dien:'183,63',danso:'7.024',hcc:'Thôn Ban Mai',sdt:'1036620506',chu:'Lê Văn Tư (0374631376)',pho:'Đinh Thị Ngơi (0378811427)',lat:null,lon:null},
+  {stt:'80',ten:'Xã Sông Kôn',dien:'212,94',danso:'8.746',hcc:'Thôn Ra Lang',sdt:'1038326280',chu:'Đỗ Hữu Tùng (0915011323)',pho:'Giri Thái Sơn (0333260676)',lat:null,lon:null},
+  {stt:'81',ten:'Xã Đông Giang',dien:'169,43',danso:'8.870',hcc:'Thôn Ngã Ba',sdt:'1040032054',chu:'Coor Le (0976193685)',pho:'Hôih Bảy (0868377723)',lat:null,lon:null},
+  {stt:'82',ten:'Xã Bến Hiên',dien:'255,85',danso:'4.588',hcc:'Thôn Axờ',sdt:'1041737828',chu:'Bhiryu Long (0987775619)',pho:'Đinh Thị Thúy Hồng (0822372732)',lat:null,lon:null},
+  {stt:'83',ten:'Xã A Vương',dien:'225,3',danso:'5.463',hcc:'Thôn Azút',sdt:'1043443602',chu:'Briu Quân (0876010009)',pho:'Zơrâm Bê (0346722778)',lat:null,lon:null},
+  {stt:'84',ten:'Xã Tây Giang',dien:'400,45',danso:'8.629',hcc:'Thôn Agrồng',sdt:'1045149376',chu:'Arất Blúi (0979194199)',pho:'Bríu Thị Sen (0976485305)',lat:null,lon:null},
+  {stt:'85',ten:'Xã Hùng Sơn',dien:'287,95',danso:'7.958',hcc:'Thôn Arâng',sdt:'1046855150',chu:'Zơrâm Buôn (0981461119)',pho:'Ông Văn Kiêm (0986983117)',lat:null,lon:null},
+  {stt:'86',ten:'Xã Hiệp Đức',dien:'150,47',danso:'14.931',hcc:'125 Hùng Vương',sdt:'1048560924',chu:'Lưu Hoàng Ân (0983356922)',pho:'Trần Thị Thu Huyền (0905662679)',lat:null,lon:null},
+  {stt:'87',ten:'Xã Việt An',dien:'150,17',danso:'26.196',hcc:'Thôn Việt An',sdt:'1050266698',chu:'Nguyễn Ngọc Hoàng Việt (0982777125)',pho:'Huỳnh Hữu Cường (0976012759)',lat:null,lon:null},
+  {stt:'88',ten:'Xã Phước Trà',dien:'196,22',danso:'6.933',hcc:'Thôn Trà Sơn',sdt:'1051972472',chu:'Hoàng Văn Hùng (0983747601)',pho:'Trần Quốc Trí (0979161481)',lat:null,lon:null},
+  {stt:'89',ten:'Xã Khâm Đức',dien:'161,98',danso:'9.741',hcc:'48 đường Hồ Chí Minh',sdt:'1053678246',chu:'Hồ Công Điểm (0941818858)',pho:'Nguyễn Quốc Nguyên (0869214229)',lat:null,lon:null},
+  {stt:'90',ten:'Xã Phước Năng',dien:'257,1',danso:'8.452',hcc:'Thôn 2',sdt:'1055384020',chu:'Lê Viết Thắng (0977440405)',pho:'Nguyễn Văn Toàn (0905169505)',lat:null,lon:null},
+  {stt:'91',ten:'Xã Phước Chánh',dien:'107,56',danso:'4.466',hcc:'Thôn 3',sdt:'1057089794',chu:'Lê Đình Tài (0905234313)',pho:'Huỳnh Anh Sơn (0906468999)',lat:null,lon:null},
+  {stt:'92',ten:'Xã Phước Thành',dien:'286,65',danso:'4.651',hcc:'Thôn 2',sdt:'1058795568',chu:'Đỗ Hoài Xoan (914009933)',pho:'Hồ Văn Hải (0966549944)',lat:null,lon:null},
+  {stt:'93',ten:'Xã Phước Hiệp',dien:'340,05',danso:'4.529',hcc:'Thôn 1',sdt:'1060501342',chu:'Trần Thiện Hải (0905495229)',pho:'Hồ Thị Hồng Hảo (0986023055)',lat:null,lon:null}
+];
+
+// ══ CONFIG ══
+const URL_MO_NEW='https://docs.google.com/spreadsheets/d/e/2PACX-1vTpTWjWDJmyRZPjmE_PdPpSDhyDLzFrzWmkFcn3h2BjwXfoKJqoefIWQLzrfd7_rlOpUoDFyyjUM20D/pub?gid=957357812&single=true&output=csv';
+const URL_XP='https://docs.google.com/spreadsheets/d/e/2PACX-1vTpTWjWDJmyRZPjmE_PdPpSDhyDLzFrzWmkFcn3h2BjwXfoKJqoefIWQLzrfd7_rlOpUoDFyyjUM20D/pub?gid=747744167&single=true&output=csv';
+const URL_TOA='https://docs.google.com/spreadsheets/d/e/2PACX-1vQ1WJe1aZNRjb_E75kJ7LpOcNPHBAmd-_4vOcjPCxjYKZ9mn4uFiwtw8qAvqZ5wFA/pub?gid=176970964&single=true&output=csv';
+const PAGE=25;
+
+let allDA=[],allXP=[],filtered=[],listData=[],tdData=[],tdFiltered=[],moFiltered=[],moType='all';
+let curPg=1,tdPg=1,charts={};
+
+// ══ UTILS ══
+const N=s=>{if(!s&&s!==0)return 0;let str=String(s).trim().replace(/\s/g,'');if(!str||str==='-')return 0;const dots=(str.match(/\./g)||[]).length;const commas=(str.match(/,/g)||[]).length;if(dots>1){str=str.replace(/\./g,'');}else if(dots===1&&commas===0){const af=str.split('.')[1];if(af&&af.length===3)str=str.replace('.','');}if(commas>1){str=str.replace(/,/g,'');}else if(commas===1){str=str.replace(',','.');}const v=parseFloat(str.replace(/[^\d.]/g,''));return isNaN(v)?0:v;};
+const TY=v=>(v/1e9).toFixed(1);
+const MN=v=>Math.round(v/1e6).toLocaleString('vi-VN');
+const VQ=id=>(document.getElementById(id).value||'').toLowerCase().trim();
+const V=id=>document.getElementById(id).value;
+const S=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};
+function COL(p){if(p===null)return{b:'#BDC3C7',t:'var(--ink3)'};if(p>=80)return{b:'var(--green)',t:'var(--green)'};if(p>=50)return{b:'var(--amber)',t:'var(--amber)'};if(p>=30)return{b:'var(--red)',t:'var(--red)'};return{b:'#7B0000',t:'#7B0000'};}
+function stB(tt){const m={TCHT:'g',TCCT:'n',TC00:'r',CBDT:'a'};const c=m[tt]||'';return c?`<span class="st ${c}">${tt}</span>`:tt;}
+const TT_L={TCHT:'Hoàn thành',TCCT:'Đang thi công',TC00:'Chưa thi công',CBDT:'Chuẩn bị ĐT'};
+function shP(k){return(k||'').replace('Phòng Điều hành - Giám sát ','P.').replace('Phòng Kế hoạch','P.KH');}
+function pbRow(p,c){return`<div class="pb"><div class="pbt"><div class="pbf" style="width:${Math.min(p??0,100)}%;background:${c.b}"></div></div><span class="pbp" style="color:${c.t}">${p!==null?p+'%':'--'}</span></div>`;}
+function pc(r){return r.tyle!==null&&r.tyle!==undefined?r.tyle:(r.kh>0?Math.round(r.gn/r.kh*100):null);}
+function rnkC(i){return i===0?'g':i===1?'s':i===2?'b':'';}
+
+// ══ CẢNH BÁO TIẾN ĐỘ ══
+const TODAY=new Date(2025,5,16);
+function parseDate(s){s=(s||'').trim();if(!s)return null;const p=s.split(/[\/\-]/);if(p.length===3){if(p[0].length===4)return new Date(+p[0],+p[1]-1,+p[2]);return new Date(+p[2],+p[1]-1,+p[0]);}return null;}
+function canhBaoHD(batdau,tiendoHD,tt){
+  if(tt==='TCHT')return{cls:'td-done',label:'🔵 Hoàn thành',level:'done',ngayCon:null,ngayBD:null,ngayHT:null};
+  const d=parseDate(batdau);
+  const days=parseInt(tiendoHD)||0;
+  if(!d||!days)return{cls:'td-unknown',label:'⬜ Chưa có dữ liệu',level:'unknown',ngayCon:null,ngayBD:null,ngayHT:null};
+
+  const ht=new Date(d.getTime()+days*86400000);
+  // Số ngày còn lại từ HÔM NAY đến ngày HOÀN THÀNH HĐ
+  const conDenHT=Math.round((ht-TODAY)/86400000);
+  // Số ngày đến khi bắt đầu TC (nếu chưa bắt đầu)
+  const denBD=Math.round((d-TODAY)/86400000);
+
+  // Case 1: Chưa đến ngày bắt đầu TC
+  if(denBD>0){
+    return{
+      cls:'td-unknown',
+      label:`⚪ Chưa TC — BD: ${d.toLocaleDateString('vi-VN')} (còn ${denBD} ngày)`,
+      level:'notstarted',
+      ngayCon:conDenHT,  // số ngày từ hôm nay đến ngày HT HĐ
+      ngayBD:d,ngayHT:ht,
+      denBD,
+      conDenHT
+    };
+  }
+
+  // Case 2: Đang thi công (TODAY >= batdau)
+  // Số ngày còn lại của HĐ kể từ HÔM NAY
+  const conHD=Math.round((ht-TODAY)/86400000);
+
+  // Case 3: Quá hạn
+  if(conHD<0)return{cls:'td-overdue',label:`🔴 Quá hạn ${Math.abs(conHD)} ngày`,level:'overdue',ngayCon:conHD,ngayBD:d,ngayHT:ht,conDenHT};
+
+  // Case 4: Đang thi công, cảnh báo theo ngày còn lại
+  if(conHD<=30)return{cls:'td-urgent',label:`🟠 Nguy cơ — còn ${conHD} ngày`,level:'urgent',ngayCon:conHD,ngayBD:d,ngayHT:ht,conDenHT};
+  if(conHD<=90)return{cls:'td-warning',label:`🟡 Cần theo dõi — còn ${conHD} ngày`,level:'warning',ngayCon:conHD,ngayBD:d,ngayHT:ht,conDenHT};
+  return{cls:'td-normal',label:`🟢 Bình thường — còn ${conHD} ngày`,level:'normal',ngayCon:conHD,ngayBD:d,ngayHT:ht,conDenHT};
+}
+function canhBaoNamDA(namda,tt){
+  if(tt==='TCHT')return{cls:'td-done',label:'🔵 Hoàn thành',level:'done'};
+  const m=(namda||'').match(/(\d{4})\s*-\s*(\d{4})/);if(!m)return{cls:'td-unknown',label:'⬜ Chưa rõ',level:'unknown'};
+  const ht=new Date(parseInt(m[2]),11,31);const con=Math.round((ht-TODAY)/86400000);
+  if(con<0)return{cls:'td-overdue',label:`🔴 Quá hạn`,level:'overdue'};
+  if(con<=180)return{cls:'td-urgent',label:`🟠 Gần kết thúc (${m[2]})`,level:'urgent'};
+  if(con<=365)return{cls:'td-warning',label:`🟡 Cần theo dõi (${m[2]})`,level:'warning'};
+  return{cls:'td-normal',label:`🟢 Bình thường (${m[2]})`,level:'normal'};
+}
+
+// ══ CSV ══
+function parseCSV(txt){const rows=[];let inQ=false,cur='',row=[];for(let i=0;i<txt.length;i++){const c=txt[i];if(c==='"'){inQ=!inQ;}else if(c===','&&!inQ){row.push(cur.trim());cur='';}else if((c==='\n'||c==='\r')&&!inQ){if(cur||row.length){row.push(cur.trim());rows.push(row);}cur='';row=[];if(c==='\r'&&txt[i+1]==='\n')i++;}else cur+=c;}if(cur||row.length){row.push(cur.trim());rows.push(row);}return rows;}
+
+// ══ PARSE CSV → DA OBJECTS ══
+// Cột map (0-based): STT=0,Mã=1,Tên=2,Phòng=3,PGĐ=4,CB=5,Địa=6,TVTK=7,NT=8,TVGS=9,NTKhác=10
+// BĐ=11,TĐ(ngày)=12,NămDA=13,TT=14,Nguồn=15,Loại=16
+// KH_TS=22,GN_TS=25,TL_TS=28,VL_Đất=31,VL_Cát=32,VL_Đá=33,VM=34,GC=35
+function parseCSVtoDA(txt){
+  const rows=parseCSV(txt).slice(1).filter(r=>r[0]&&/^\d+$/.test(r[0].trim())&&r[2]&&r[2].trim());
+  return rows.map(r=>{
+    const tyle_str=(r[28]||'').replace('%','').trim();
+    const kh=N(r[22]),gn=N(r[25]);
+    const tyle=tyle_str&&tyle_str!=='0'?parseFloat(tyle_str):(kh>0?Math.round(gn/kh*100):0);
+    return{
+      ma:(r[1]||'').trim(),
+      ten:(r[2]||'').trim().replace(/\n/g,' '),
+      phong:(r[3]||'').trim(),
+      pgd:(r[4]||'').trim(),
+      cb:(r[5]||'').trim(),
+      dia:(r[6]||'').trim(),
+      tvtk:(r[7]||'').trim(),
+      nthi:(r[8]||'').trim(),
+      tvgs:(r[9]||'').trim(),
+      ntkhac:(r[10]||'').trim(),
+      batdau:(r[11]||'').trim(),
+      tiendoHD:parseInt(r[12]||'0')||0,
+      namda:(r[13]||'').trim(),
+      tt:(r[14]||'').trim().toUpperCase(),
+      nguon:(r[15]||'').trim().toUpperCase(),
+      loai:(r[16]||'').trim(),
+      soNguonVon:parseInt(r[16]||'1')||1,
+      kh,gn,tyle,
+      khXl:N(r[23]),   // Xây lắp - KH
+      gnXl:N(r[26]),   // Xây lắp - GN
+      vlDat:N(r[31]),
+      vlCat:N(r[32]),
+      vlDa:N(r[33]),
+      vuongmac:(r[34]||'').trim(),
+      ghichu:(r[35]||'...').trim()
+    };
+  });
+}
+
+// ══ PARSE CSV → MO OBJECTS ══
+// Cột: STT=0,Loại=1,Tên=2,Xã=3,DT=4,TL=5,Tọa độ=6,GMap=7,TênCũ=8
+function parseCSVtoMo(txt){
+  const LV={KHOANGSAN_DATSANLAP:'Đất san lấp',KHOANGSAN_CAT_SOI:'Cát sỏi',KHOANGSAN_DA:'Đá'};
+  return parseCSV(txt).slice(1).filter(r=>r[0]&&/^\d+$/.test(r[0].trim())&&r[1]&&r[2]).map((r,i)=>{
+    const loai=(r[1]||'').trim();
+    let typeKey='da';
+    if(loai==='KHOANGSAN_DATSANLAP')typeKey='dat';
+    else if(loai==='KHOANGSAN_CAT_SOI')typeKey='cat';
+    // Parse diện tích: "25,4" hoặc "25.4" → 25.4
+    // DT: "25,4" (VN decimal) hoặc "25.4" → 25.4
+    const dtStr=(r[4]||'0').trim().replace(',','.');
+    const dt=parseFloat(dtStr)||0;
+    // Parse trữ lượng VN: "2.000.000" → 2000000, "474.248,50" → 474248
+    const tlRaw=(r[5]||'0').trim();
+    let tlStr=tlRaw;
+    const tlDots=tlStr.split('').filter(x=>x==='.').length;
+    const tlCommas=tlStr.split('').filter(x=>x===',').length;
+    if(tlDots>=2||(tlDots>=1&&tlCommas>=1&&tlStr.indexOf('.')<tlStr.indexOf(','))){
+      tlStr=tlStr.replace(/\./g,'').replace(',','.');
+    }else if(tlDots===1&&tlCommas===0){
+      const af=tlStr.split('.')[1];
+      if(af&&af.length===3)tlStr=tlStr.replace('.','');
+    }
+    const tl=parseFloat(tlStr.replace(/[^\d.]/g,''))||0;
+    // Parse tọa độ: "15.556673,108.373378"
+    const toaStr=(r[6]||'').trim();
+    let lat=null,lon=null;
+    const parts=toaStr.split(',');
+    if(parts.length>=2){
+      const la=parseFloat(parts[0].trim());
+      const lo=parseFloat(parts[1].trim());
+      if(!isNaN(la)&&la>0)lat=la;
+      if(!isNaN(lo)&&lo>0)lon=lo;
+    }
+    // Google Maps link từ tọa độ nếu cột 7 không có link thực
+    const gmapRaw=(r[7]||'').trim();
+    const gmaps=(gmapRaw.startsWith('http'))?gmapRaw:(lat?`https://www.google.com/maps?q=${lat},${lon}`:'');
+    return{
+      id:i+1,loai,typeKey,
+      ten:(r[2]||'').trim(),
+      xa:(r[3]||'').trim(),
+      dt,tl,lat,lon,
+      gmaps,
+      tenCu:(r[8]||'').trim()
+    };
+  });
+}
+
+// ══ TÍNH TỔNG DA THỰC (= công thức Q202) ══
+// =COUNTIF(Q,1)/1 + COUNTIF(Q,2)/2 + COUNTIF(Q,3)/3 + ...
+// Mỗi dòng đóng góp 1/soNguonVon vào tổng
+function tinhSoDA(daList){
+  if(!daList||!daList.length)return 0;
+  return Math.round(daList.reduce((s,r)=>s+1/(r.soNguonVon||1),0));
+}
+
+// ══ INIT ══
+async function init(){
+  ld(true,'Đang tải dữ liệu…');
+  document.getElementById('btnRef').classList.add('spin');
+  // Thử đọc realtime từ Google Sheets mới
+  const URL_DA_NEW='https://docs.google.com/spreadsheets/d/e/2PACX-1vTpTWjWDJmyRZPjmE_PdPpSDhyDLzFrzWmkFcn3h2BjwXfoKJqoefIWQLzrfd7_rlOpUoDFyyjUM20D/pub?gid=1871130618&single=true&output=csv';
+  try{
+    const rDA=await fetch(URL_DA_NEW,{cache:'no-store'});
+    if(rDA.ok){
+      const tDA=await rDA.text();
+      const parsedDA=parseCSVtoDA(tDA);
+      if(parsedDA.length>5){allDA=parsedDA;console.log('✅ Realtime: '+allDA.length+' DA');}
+      else{allDA=DA_STATIC.map(r=>({...r,khXl:r.kh,gnXl:r.gn,soNguonVon:r.soNguonVon||1}));}
+    }else{allDA=DA_STATIC.map(r=>({...r,khXl:r.kh,gnXl:r.gn,soNguonVon:r.soNguonVon||1}));}
+  }catch(e){allDA=DA_STATIC.map(r=>({...r,khXl:r.kh,gnXl:r.gn,soNguonVon:r.soNguonVon||1}));console.log('Fallback to static');}
+  // Fetch mỏ vật liệu realtime
+  const URL_MO_LIVE='https://docs.google.com/spreadsheets/d/e/2PACX-1vTpTWjWDJmyRZPjmE_PdPpSDhyDLzFrzWmkFcn3h2BjwXfoKJqoefIWQLzrfd7_rlOpUoDFyyjUM20D/pub?gid=957357812&single=true&output=csv';
+  try{
+    const rMo=await fetch(URL_MO_LIVE,{cache:'no-store'});
+    if(rMo.ok){
+      const tMo=await rMo.text();
+      const parsedMo=parseCSVtoMo(tMo);
+      if(parsedMo.length>5){allMo=parsedMo;console.log('✅ Mỏ realtime: '+allMo.length);}
+      else{allMo=[...MO_STATIC];}
+    }else{allMo=[...MO_STATIC];}
+  }catch(e){allMo=[...MO_STATIC];console.log('Mỏ fallback static');}
+  try{
+    const[r2,r3]=await Promise.all([fetch(URL_XP,{cache:'no-store'}),fetch(URL_TOA,{cache:'no-store'})]);
+    const[t2,t3]=await Promise.all([r2.text(),r3.text()]);
+    allXP=parseCSV(t2).slice(1).filter(r=>r[0]&&r[1]).map(r=>({stt:r[0]||'',ten:(r[1]||'').trim(),dien:r[2]||'',danso:r[3]||'',hcc:r[4]||'',sdt:r[5]||'',chu:r[6]||'',pho:r[7]||'',lat:null,lon:null}));
+    const toaMap={};parseCSV(t3).slice(1).filter(r=>r[0]&&r[1]).forEach(r=>{const ten=(r[1]||'').trim();const lat=parseFloat((r[2]||'').replace(',','.'));const lon=parseFloat((r[3]||'').replace(',','.'));if(!isNaN(lat)&&!isNaN(lon))toaMap[ten.toLowerCase()]={lat,lon};});
+    allXP.forEach(x=>{const k=toaMap[x.ten.toLowerCase()];if(k){x.lat=k.lat;x.lon=k.lon;}});
+  }catch(e){allXP=XP_STATIC.map(x=>({...x}));console.log('XP fallback static: '+allXP.length);}
+  document.getElementById('upd').textContent=new Date().toLocaleString('vi-VN',{hour:'2-digit',minute:'2-digit',day:'2-digit',month:'2-digit'});
+  S('tb1',allDA.length+'DA');S('tb2',allXP.length||XP_STATIC.length);S('tb4','45 mỏ');
+  popFilters();applyF();renderXP();renderTop20();renderAlerts();renderTD();
+  renderMoKPI();renderMo();setTimeout(renderMoCharts,100);
+
+
+  toast('✅ Đã tải '+allDA.length+' dự án · 45 mỏ vật liệu');
+  ld(false);document.getElementById('btnRef').classList.remove('spin');
+}
+function ld(v,m=''){document.getElementById('loader').classList.toggle('h',!v);if(m)document.getElementById('ldMsg').textContent=m;}
+
+// ══ FILTERS ══
+function popFilters(){
+  const pgds=[...new Set(allDA.map(r=>r.pgd).filter(Boolean))].sort();
+  const cbs=[...new Set(allDA.map(r=>r.cb).filter(Boolean))].sort();
+  const xps=[...new Set(allDA.map(r=>r.dia).filter(Boolean))].sort();
+  function pop(id,vals){const s=document.getElementById(id);if(!s)return;const first=s.options[0].outerHTML;s.innerHTML=first;vals.forEach(v=>{const o=document.createElement('option');o.value=o.textContent=v;s.appendChild(o);});}
+  pop('fG',pgds);pop('fCB',cbs);pop('fX',xps);pop('tdFCB',cbs);
+  S('fTot',allDA.length);
+}
+function applyF(){
+  const fP=V('fP'),fG=V('fG'),fCB=V('fCB'),fN=V('fN'),fT=V('fT'),fX=V('fX'),fQ=VQ('fQ');
+  filtered=allDA.filter(r=>{
+    if(fP&&r.phong!==fP)return false;if(fG&&r.pgd!==fG)return false;if(fCB&&r.cb!==fCB)return false;
+    if(fN&&r.nguon!==fN)return false;if(fT&&r.tt!==fT)return false;if(fX&&r.dia!==fX)return false;
+    if(fQ&&!r.ten.toLowerCase().includes(fQ))return false;return true;
+  });
+  S('fCnt',filtered.length);renderKPIs();renderCharts();renderAlerts();
+}
+function rstF(){['fP','fG','fCB','fN','fT','fX'].forEach(id=>document.getElementById(id).value='');document.getElementById('fQ').value='';applyF();}
+
+// ══ KPIs ══
+function renderKPIs(){
+  const d=filtered,kh=d.reduce((s,r)=>s+r.kh,0),gn=d.reduce((s,r)=>s+r.gn,0);
+  const tl=kh>0?gn/kh*100:0;
+  // Tổng DA thực = công thức Q202 (loại trùng dự án nhiều nguồn vốn)
+  const soDAThuc=tinhSoDA(allDA);
+  S('k1',soDAThuc);
+  S('k1sub','dự án thực ('+allDA.length+' dòng)');S('k2',TY(kh));S('k3',TY(gn));S('k4',tl.toFixed(1)+'%');S('k5',TY(kh-gn));
+  S('k6',d.filter(r=>r.tt==='TCHT').length);
+  S('k7',d.filter(r=>{const cb=canhBaoHD(r.batdau,r.tiendoHD,r.tt);return cb.level==='overdue'||cb.level==='urgent';}).length);
+  S('k8',new Set(d.map(r=>r.dia).filter(Boolean)).size);
+  S('kVlDat',d.reduce((s,r)=>s+(r.vlDat||0),0).toLocaleString('vi-VN'));
+  S('kVlCat',d.reduce((s,r)=>s+(r.vlCat||0),0).toLocaleString('vi-VN'));
+  S('kVlDa',d.reduce((s,r)=>s+(r.vlDa||0),0).toLocaleString('vi-VN'));
+  const k=document.getElementById('kK4');
+  k.className='kpi'+(tl>=80?' g':tl>=50?' ':' r');
+  k.querySelector('.kpi-v').style.color=tl>=80?'var(--green)':tl>=50?'var(--navy)':'var(--red)';
+}
+
+// ══ CHARTS ══
+const PAL=['#1B3A6B','#0B6E6E','#C8720A','#1A6B3C','#B52A2A','#5B2D8E','#2E5FA3','#786fa6'];
+function grp(arr,key){const m={};arr.forEach(r=>{const k=r[key]||'?';if(!m[k])m[k]={kh:0,gn:0,cnt:0};m[k].kh+=r.kh;m[k].gn+=r.gn;m[k].cnt++;});return m;}
+function mkH(id,lbl,dat,cols,unit){if(charts[id])charts[id].destroy();charts[id]=new Chart(document.getElementById(id),{type:'bar',data:{labels:lbl,datasets:[{data:dat,backgroundColor:cols||PAL,borderRadius:4,borderSkipped:false}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.raw+' '+(unit||'tỷ đ')}}},scales:{x:{grid:{color:'rgba(0,0,0,.06)'},ticks:{font:{size:9}}},y:{grid:{display:false},ticks:{font:{size:9}}}}}});}
+function mkPie(id,lbl,dat){if(charts[id])charts[id].destroy();charts[id]=new Chart(document.getElementById(id),{type:'doughnut',data:{labels:lbl,datasets:[{data:dat,backgroundColor:PAL,borderWidth:2,hoverOffset:4}]},options:{responsive:true,maintainAspectRatio:false,cutout:'58%',plugins:{legend:{position:'right',labels:{boxWidth:10,font:{size:9},padding:8}},tooltip:{callbacks:{label:c=>`${c.label}: ${c.raw} tỷ`}}}}});}
+function renderCharts(){
+  const d=filtered,pm=grp(d,'phong'),ck=Object.keys(pm),cv=Object.values(pm);
+  mkH('cP',ck.map(shP),cv.map(v=>+TY(v.gn)));
+  const gm=grp(d,'pgd');mkH('cG',Object.keys(gm),Object.values(gm).map(v=>+TY(v.gn)),PAL);
+  const nm={};d.forEach(r=>{const k=r.nguon||'?';nm[k]=(nm[k]||0)+r.gn;});
+  mkPie('cN',Object.keys(nm),Object.values(nm).map(v=>+TY(v)));
+  if(charts.cCmp)charts.cCmp.destroy();
+  charts.cCmp=new Chart(document.getElementById('cCmp'),{type:'bar',data:{labels:ck.map(shP),datasets:[{label:'KH Vốn',data:cv.map(v=>+TY(v.kh)),backgroundColor:'rgba(46,95,163,.2)',borderColor:'#2E5FA3',borderWidth:1.5,borderRadius:4},{label:'Giải Ngân',data:cv.map(v=>+TY(v.gn)),backgroundColor:'rgba(26,107,60,.72)',borderColor:'#1A6B3C',borderWidth:1.5,borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{boxWidth:10,font:{size:9}}}},scales:{x:{grid:{display:false},ticks:{font:{size:9}}},y:{grid:{color:'rgba(0,0,0,.06)'},ticks:{font:{size:9},callback:v=>v+'B'}}}}});
+  if(charts.cTL)charts.cTL.destroy();
+  const tlD=cv.map(v=>v.kh>0?+(v.gn/v.kh*100).toFixed(1):0);
+  charts.cTL=new Chart(document.getElementById('cTL'),{type:'bar',data:{labels:ck.map(shP),datasets:[{data:tlD,backgroundColor:tlD.map(v=>v>=80?'rgba(26,107,60,.8)':v>=50?'rgba(200,114,10,.8)':'rgba(181,42,42,.8)'),borderRadius:6,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.raw+'%'}}},scales:{x:{grid:{display:false},ticks:{font:{size:9}}},y:{min:0,max:100,grid:{color:'rgba(0,0,0,.06)'},ticks:{font:{size:9},callback:v=>v+'%'}}}}});
+  const tm={};d.forEach(r=>{tm[r.tt||'?']=(tm[r.tt||'?']||0)+1;});
+  if(charts.cTT)charts.cTT.destroy();
+  charts.cTT=new Chart(document.getElementById('cTT'),{type:'bar',data:{labels:Object.keys(tm).map(k=>`${k} · ${TT_L[k]||''}`),datasets:[{data:Object.values(tm),backgroundColor:Object.keys(tm).map(k=>({TCHT:'#1A6B3C',TCCT:'#1B3A6B',TC00:'#B52A2A',CBDT:'#C8720A'})[k]||'#637381'),borderRadius:6,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.raw+' DA'}}},scales:{x:{grid:{display:false},ticks:{font:{size:9}}},y:{grid:{color:'rgba(0,0,0,.06)'},ticks:{stepSize:1,font:{size:9}}}}}});
+  const xm={};d.forEach(r=>{if(r.dia){if(!xm[r.dia])xm[r.dia]={cnt:0,gn:0,kh:0};xm[r.dia].cnt++;xm[r.dia].gn+=r.gn;xm[r.dia].kh+=r.kh;}});
+  const byCnt=Object.entries(xm).sort((a,b)=>b[1].cnt-a[1].cnt).slice(0,10);
+  if(charts.cXPcnt)charts.cXPcnt.destroy();
+  charts.cXPcnt=new Chart(document.getElementById('cXPcnt'),{type:'bar',data:{labels:byCnt.map(e=>e[0]),datasets:[{data:byCnt.map(e=>e[1].cnt),backgroundColor:'rgba(11,110,110,.75)',borderRadius:4,borderSkipped:false}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.raw+' DA'}}},scales:{x:{grid:{color:'rgba(0,0,0,.06)'},ticks:{stepSize:1,font:{size:9}}},y:{grid:{display:false},ticks:{font:{size:9}}}}}});
+}
+
+// ══ TOP 20 ══
+function renderTop20(){
+  const d=allDA,withKH=d.filter(r=>r.kh>0&&r.tt!=='TCHT');
+  const low=[...withKH].sort((a,b)=>(pc(a)??999)-(pc(b)??999)).slice(0,20);
+  const high=[...d.filter(r=>r.kh>0)].sort((a,b)=>(pc(b)??-1)-(pc(a)??-1)).slice(0,20);
+  const bigKH=[...d].filter(r=>r.kh>0).sort((a,b)=>b.kh-a.kh).slice(0,20);
+  const xm={};d.forEach(r=>{if(r.dia){if(!xm[r.dia])xm[r.dia]={cnt:0,gn:0,kh:0};xm[r.dia].cnt++;xm[r.dia].gn+=r.gn;xm[r.dia].kh+=r.kh;}});
+  const topXP=Object.entries(xm).sort((a,b)=>b[1].kh-a[1].kh).slice(0,20);
+  function fillT(id,rows,valFn){document.querySelector(`#${id} tbody`).innerHTML=rows.map((r,i)=>{const p=pc(r);const c=COL(p);return`<tr><td class="rnk ${rnkC(i)}">${i+1}</td><td class="tnm" title='${r.ten}'>${r.ten}</td><td style="font-size:10px;white-space:nowrap">${r.cb||'--'}</td><td class="r">${valFn(r)}</td><td>${pbRow(p,c)}</td></tr>`;}).join('');}
+  fillT('tLow',low,r=>r.kh?MN(r.kh):'--');fillT('tHigh',high,r=>r.gn?MN(r.gn):'--');fillT('tKH',bigKH,r=>r.kh?MN(r.kh):'--');
+  document.querySelector('#tXP tbody').innerHTML=topXP.map(([xp,v],i)=>{const p=v.kh>0?Math.round(v.gn/v.kh*100):null;const c=COL(p);return`<tr><td class="rnk ${rnkC(i)}">${i+1}</td><td style="font-weight:600;color:var(--teal)">${xp}</td><td class="r">${v.cnt}</td><td class="r" style="font-weight:700;color:var(--navy)">${TY(v.kh)}</td><td class="r" style="color:var(--green)">${TY(v.gn)}</td><td>${pbRow(p,c)}</td></tr>`;}).join('');
+}
+
+// ══ TIẾN ĐỘ ══
+function renderTD(){
+  const d=allDA,counts={done:0,normal:0,warning:0,urgent:0,overdue:0,notstarted:0};
+  d.forEach(r=>{const cb=canhBaoHD(r.batdau,r.tiendoHD,r.tt);counts[cb.level]=(counts[cb.level]||0)+1;});
+  S('tdDone',counts.done||0);
+  S('tdNormal',(counts.normal||0)+(counts.notstarted||0));
+  S('tdWarning',counts.warning||0);S('tdUrgent',counts.urgent||0);S('tdOverdue',counts.overdue||0);
+  S('tb5',(counts.overdue+counts.urgent)||0);
+  tdData=[...d];applyTD();
+}
+function applyTD(){
+  const fP=V('tdFP'),fCB=V('tdFCB'),fLv=V('tdFLv'),fQ=VQ('tdFQ');
+  tdFiltered=tdData.filter(r=>{
+    if(fP&&r.phong!==fP)return false;if(fCB&&r.cb!==fCB)return false;
+    if(fQ&&!r.ten.toLowerCase().includes(fQ))return false;
+    if(fLv){const cb=canhBaoHD(r.batdau,r.tiendoHD,r.tt);
+      // 'normal' option cũng bao gồm 'notstarted'
+      const lvMatch=cb.level===fLv||(fLv==='normal'&&cb.level==='notstarted');
+      if(!lvMatch)return false;
+    }
+    return true;
+  });
+  S('tdCnt',tdFiltered.length);tdPg=1;renderTDTable();
+}
+function rstTD(){['tdFP','tdFCB','tdFLv'].forEach(id=>document.getElementById(id).value='');document.getElementById('tdFQ').value='';applyTD();}
+function renderTDTable(){
+  const tot=tdFiltered.length,pgs=Math.ceil(tot/PAGE)||1,st=(tdPg-1)*PAGE,pg=tdFiltered.slice(st,st+PAGE);
+  S('tdPgI',`${tdPg}/${pgs}`);S('tdPgSh',tdPg);S('tdPgTo',pgs);
+  document.getElementById('tdPrv').disabled=tdPg<=1;document.getElementById('tdNxt').disabled=tdPg>=pgs;
+  document.getElementById('tdTbody').innerHTML=pg.map(r=>{
+    const cbHD=canhBaoHD(r.batdau,r.tiendoHD,r.tt);const cbNam=canhBaoNamDA(r.namda,r.tt);
+    return`<tr onclick="openDA('${r.ma}')" style="cursor:pointer">
+      <td><span class="st n" style="font-size:9px">${r.ma}</span></td>
+      <td class="tdn" title='${r.ten}'>${r.ten}</td>
+      <td style="font-size:10px;white-space:nowrap">${r.cb||'--'}</td>
+      <td style="font-size:10px;text-align:center">${r.batdau||'--'}</td>
+      <td style="text-align:center;font-weight:600">${r.tiendoHD||'--'}</td>
+      <td><span class="${cbHD.cls}" style="font-size:9px;padding:2px 6px;border-radius:12px">${cbHD.label}</span></td>
+      <td style="text-align:center;font-size:10px;font-weight:600">${r.namda||'--'}</td>
+      <td><span class="${cbNam.cls}" style="font-size:9px;padding:2px 6px;border-radius:12px">${cbNam.label}</span></td>
+      <td>${stB(r.tt)}</td>
+    </tr>`;
+  }).join('')||'<tr><td colspan="9" style="text-align:center;padding:16px;color:var(--ink3)">Không có dữ liệu</td></tr>';
+}
+function chgTDPg(d){tdPg+=d;renderTDTable();}
+
+// ══ XÃ PHƯỜNG ══
+function daForXP(ten){const n=s=>s.toLowerCase().replace(/^(xã|phường|x\.|p\.)\s*/,'').trim();const tn=n(ten);return allDA.filter(r=>n(r.dia)===tn||r.dia.toLowerCase()===ten.toLowerCase());}
+function moForXP(ten){return allMo.filter(m=>m.xa.toLowerCase()===ten.toLowerCase()||m.xa.toLowerCase().includes(ten.toLowerCase().replace(/^(xã|phường)\s*/,'')));}
+function haversine(lat1,lon1,lat2,lon2){const R=6371,dLat=(lat2-lat1)*Math.PI/180,dLon=(lon2-lon1)*Math.PI/180,a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));}
+
+function renderXP(){
+  const q=(document.getElementById('xpQ').value||'').toLowerCase();
+  const list=q?allXP.filter(x=>x.ten.toLowerCase().includes(q)||x.hcc.toLowerCase().includes(q)||x.chu.toLowerCase().includes(q)):allXP;
+  document.getElementById('xpGrid').innerHTML=list.map(x=>{
+    const das=daForXP(x.ten),mos=moForXP(x.ten);
+    const dsF=parseInt((x.danso||'0').replace(/\D/g,'')).toLocaleString('vi-VN');
+    const gmUrl=x.lat?`https://www.google.com/maps?q=${x.lat},${x.lon}`:'';
+    const daHtml=das.length===0?`<div style="font-size:10px;color:var(--ink3);font-style:italic">Chưa có dự án</div>`:
+      das.slice(0,3).map(d=>{const p=pc(d);const c=COL(p);return`<div class="xda-i"><span class="st ${({TCHT:'g',TCCT:'n',TC00:'r',CBDT:'a'})[d.tt]||''}" style="font-size:8px">${d.tt}</span><span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:10px" title="${d.ten}">${d.ten}</span><div class="xda-pb"><div class="xda-pf" style="width:${Math.min(p??0,100)}%;background:${c.b}"></div></div><span class="xda-p" style="color:${c.t}">${p!==null?p+'%':'--'}</span></div>`;}).join('')+(das.length>3?`<div style="font-size:9px;color:var(--ink3)">…+${das.length-3} DA khác</div>`:'');
+    const moTag=mos.length>0?`<span style="font-size:10px;font-weight:600;padding:1px 7px;border-radius:12px;background:var(--brlt);color:var(--brown);margin-left:5px">⛏${mos.length} mỏ</span>`:'';
+    return`<div class="xc" onclick="showXPModal('${x.ten}')">
+      <div class="xch"><span class="xcn">${x.ten}</span><span class="xcb">#${x.stt}</span></div>
+      <div class="xcbody">
+        <div class="xrow"><span class="xlbl">SĐT</span><span class="xval">${x.sdt||'--'}</span></div>
+        <div class="xrow"><span class="xlbl">Chủ tịch</span><span class="xval">${x.chu||'--'}</span></div>
+        <div class="xrow"><span class="xlbl">Tọa độ</span><span class="xval" style="font-size:9px">${x.lat?`${x.lat.toFixed(4)}, ${x.lon.toFixed(4)}`:'--'}${gmUrl?` <a href="${gmUrl}" target="_blank" onclick="event.stopPropagation()" style="color:var(--blue)">📍</a>`:''}</span></div>
+        <div class="xrow"><span class="xlbl">Tổng hợp</span><span class="xval"><span class="xtag">${das.length} DA</span>${moTag} <span style="font-size:10px;color:var(--ink3);margin-left:4px">${dsF} người</span></span></div>
+        <div class="xda-l">Dự án tại địa bàn</div>${daHtml}
+      </div>
+    </div>`;
+  }).join('')||'<div style="padding:28px;text-align:center;color:var(--ink3);grid-column:1/-1">Không tìm thấy</div>';
+}
+
+function showXPModal(ten){
+  const x=allXP.find(xp=>xp.ten===ten)||{ten};
+  const das=daForXP(x.ten),mos=moForXP(x.ten),xpObj=allXP.find(xp=>xp.ten===x.ten)||x;
+  const dsF=parseInt((x.danso||'0').replace(/\D/g,'')).toLocaleString('vi-VN');
+  const gmUrl=xpObj.lat?`https://www.google.com/maps?q=${xpObj.lat},${xpObj.lon}`:'';
+  let distHtml='';
+  if(xpObj.lat){
+    const nearby=allMo.filter(m=>m.lat&&m.lon).map(m=>({...m,dist:haversine(xpObj.lat,xpObj.lon,m.lat,m.lon)})).sort((a,b)=>a.dist-b.dist).slice(0,5);
+    if(nearby.length){
+      distHtml='<div style="margin-top:10px;padding-top:8px;border-top:2px solid var(--rule)"><div style="font-size:11px;font-weight:700;color:var(--navy);margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px">🚛 5 Mỏ vật liệu gần nhất</div>';
+      distHtml+=nearby.map(m=>`<div style="display:flex;align-items:center;gap:10px;padding:5px 0;border-bottom:1px solid var(--bg);font-size:11px"><span style="min-width:70px;font-weight:700;color:var(--teal)">~${(m.dist*1.3).toFixed(1)} km</span><span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${m.ten} (${m.loai==='KHOANGSAN_DATSANLAP'?'Đất':m.loai==='KHOANGSAN_CAT_SOI'?'Cát':'Đá'})</span>${m.lat?`<a href="https://www.google.com/maps/dir/${xpObj.lat},${xpObj.lon}/${m.lat},${m.lon}" target="_blank" style="font-size:10px;color:var(--blue)">🗺</a>`:''}</div>`).join('');
+      distHtml+='</div>';
+    }
+  }
+  const daHtml=das.map((d,i)=>{const p=pc(d);const c=COL(p);const cbHD=canhBaoHD(d.batdau,d.tiendoHD,d.tt);return`<div style="margin-top:7px;padding:8px;background:var(--bg);border-radius:6px;font-size:11px"><div style="font-weight:600;color:var(--navy);margin-bottom:3px">${i+1}. ${d.ten}</div><div style="display:flex;gap:8px;flex-wrap:wrap;color:var(--ink3);font-size:10px"><span>${shP(d.phong)}</span><span>CB: ${d.cb}</span>${stB(d.tt)}<span style="font-weight:700;color:${c.t}">${p!==null?p+'%':'--'} GN</span></div><div style="margin-top:3px"><span class="${cbHD.cls}" style="font-size:9px;padding:2px 6px;border-radius:12px">${cbHD.label}</span></div>${d.vuongmac&&d.vuongmac!=='Không có'?`<div style="margin-top:3px;font-size:10px;color:var(--red)">⚠ ${d.vuongmac}</div>`:''}</div>`;}).join('');
+  document.getElementById('mTit').textContent='📍 '+x.ten;
+  document.getElementById('mBod').innerHTML=`
+    <div class="ir"><span class="il">Diện tích</span><span class="iv">${x.dien||'--'} km²</span></div>
+    <div class="ir"><span class="il">Dân số</span><span class="iv">${dsF} người</span></div>
+    <div class="ir"><span class="il">Địa chỉ HCC</span><span class="iv">${x.hcc||'--'}</span></div>
+    <div class="ir"><span class="il">SĐT HCC</span><span class="iv"><a href="tel:${x.sdt}" style="color:var(--blue)">${x.sdt||'--'}</a></span></div>
+    <div class="ir"><span class="il">Chủ tịch UBND</span><span class="iv">${x.chu||'--'}</span></div>
+    <div class="ir"><span class="il">Phó Chủ tịch TT</span><span class="iv">${x.pho||'--'}</span></div>
+    <div class="ir"><span class="il">Tọa độ</span><span class="iv">${xpObj.lat?xpObj.lat.toFixed(5)+', '+xpObj.lon.toFixed(5):'--'}${gmUrl?` <a href="${gmUrl}" target="_blank" class="mo-map" style="margin-left:6px">📍 Maps</a>`:''}</span></div>
+    <div class="ir"><span class="il">Số dự án</span><span class="iv"><b style="color:var(--navy);font-size:14px">${das.length}</b> dự án${mos.length?` · <b style="color:var(--brown)">${mos.length}</b> mỏ`:''}</span></div>
+    <hr style="margin:10px 0;border:none;border-top:1px solid var(--rule)">
+    <b style="font-size:11px;color:var(--ink2)">Danh sách dự án:</b>
+    ${daHtml||'<div style="color:var(--ink3);font-style:italic;margin-top:6px;font-size:11px">Chưa có dự án nào.</div>'}
+    ${distHtml}`;
+  document.getElementById('modalOv').classList.remove('h');
+}
+window.showXPModal=showXPModal;
+function closeMo(e){if(e.target===document.getElementById('modalOv'))closeMoBtn();}
+function closeMoBtn(){document.getElementById('modalOv').classList.add('h');}
+window.closeMo=closeMo;window.closeMoBtn=closeMoBtn;
+
+// ══ MỎ VẬT LIỆU ══
+function renderMoKPI(){
+  const dat=allMo.filter(m=>m.typeKey==='dat'),cat=allMo.filter(m=>m.typeKey==='cat'),da=allMo.filter(m=>m.typeKey==='da');
+  const sumTL=arr=>arr.reduce((s,m)=>s+(m.tl||0),0),sumDT=arr=>arr.reduce((s,m)=>s+(m.dt||0),0);
+  const fmt=v=>v>=1e6?(v/1e6).toFixed(2)+' tr.m³':v.toLocaleString('vi-VN')+'m³';
+  S('moTong',allMo.length);S('moTongTL',fmt(sumTL(allMo)));S('moTongDT',sumDT(allMo).toFixed(1)+' ha');
+  S('moDat',dat.length+' mỏ · '+fmt(sumTL(dat)));S('moCat',cat.length+' mỏ · '+fmt(sumTL(cat)));S('moDa',da.length+' mỏ · '+fmt(sumTL(da)));
+  const xps=[...new Set(allMo.map(m=>m.xa).filter(Boolean))].sort();
+  const sMoXP=document.getElementById('moXP');sMoXP.innerHTML='<option value="">Tất cả Xã/Phường</option>';
+  xps.forEach(x=>{const o=document.createElement('option');o.value=o.textContent=x;sMoXP.appendChild(o);});
+}
+function filterMo(type){
+  moType=type;
+  ['All','Dat','Cat','Da'].forEach(t=>{const b=document.getElementById('mf'+t);if(b){b.style.background='';b.style.color='';b.style.borderColor='';}});
+  const key='mf'+type.charAt(0).toUpperCase()+type.slice(1);
+  const btn=document.getElementById(key);
+  if(btn){btn.style.background='var(--navy)';btn.style.color='#fff';btn.style.borderColor='var(--navy)';}
+  renderMo();
+}
+function renderMo(){
+  const q=VQ('moQ'),fXP=V('moXP');
+  const f2=allMo.filter(m=>{if(moType!=='all'&&m.typeKey!==moType)return false;if(fXP&&m.xa!==fXP)return false;if(q&&!m.ten.toLowerCase().includes(q)&&!m.xa.toLowerCase().includes(q))return false;return true;});
+  S('moCnt',f2.length);
+  const tL={dat:'🟤 Đất san lấp',cat:'🔵 Cát sỏi',da:'⚫ Đá'};
+  const LV={KHOANGSAN_DATSANLAP:'Đất san lấp',KHOANGSAN_CAT_SOI:'Cát sỏi',KHOANGSAN_DA:'Đá'};
+  document.getElementById('moGrid').innerHTML=f2.map(m=>{
+    const gUrl=m.gmaps||(m.lat?`https://www.google.com/maps?q=${m.lat},${m.lon}`:'');
+    const tlD=m.tl>=1e6?(m.tl/1e6).toFixed(3)+' triệu m³':m.tl.toLocaleString('vi-VN')+' m³';
+    return`<div class="mo-card" onclick='showMoModal(${m.id})'>
+      <div class="mo-head"><span class="mo-name" title="${m.ten}">${m.ten}</span><span class="mo-type ${m.typeKey}">${tL[m.typeKey]||LV[m.loai]||m.loai}</span></div>
+      <div class="mo-body">
+        <div class="mo-row"><span class="mo-lbl">Xã/Phường</span><span class="mo-val" style="color:var(--teal);font-weight:600">${m.xa||'--'}</span></div>
+        <div class="mo-row"><span class="mo-lbl">Diện tích</span><span class="mo-val">${m.dt?m.dt.toFixed(2)+' ha':'--'}</span></div>
+        <div class="mo-row"><span class="mo-lbl">Trữ lượng</span><span class="mo-val" style="font-weight:600;color:var(--amber)">${tlD}</span></div>
+        <div class="mo-row"><span class="mo-lbl">Tọa độ</span><span class="mo-val" style="font-size:10px">${m.lat?`${m.lat.toFixed(5)}, ${m.lon.toFixed(5)}`:'--'}</span></div>
+        ${m.tenCu?`<div class="mo-row"><span class="mo-lbl">Cung cấp cho công trình </span><span class="mo-val" style="color:var(--ink3);font-size:10px;font-style:italic">${m.tenCu}</span></div>`:''}
+        ${gUrl?`<a href="${gUrl}" target="_blank" class="mo-map" onclick="event.stopPropagation()">📍 Xem Maps</a>`:''}
+      </div>
+    </div>`;
+  }).join('')||'<div style="grid-column:1/-1;padding:28px;text-align:center;color:var(--ink3)">Không tìm thấy</div>';
+}
+function showMoModal(id){
+  const m=allMo.find(x=>x.id===id);if(!m)return;
+  const gUrl=m.gmaps||(m.lat?`https://www.google.com/maps?q=${m.lat},${m.lon}`:'');
+  const tlD=m.tl>=1e6?(m.tl/1e6).toFixed(3)+' triệu m³':m.tl.toLocaleString('vi-VN')+' m³';
+  const LV={KHOANGSAN_DATSANLAP:'Đất san lấp',KHOANGSAN_CAT_SOI:'Cát sỏi',KHOANGSAN_DA:'Đá'};
+  let nearXP='';
+  if(m.lat){
+    const near=allXP.filter(x=>x.lat&&x.lon).map(x=>({...x,dist:haversine(m.lat,m.lon,x.lat,x.lon)})).sort((a,b)=>a.dist-b.dist).slice(0,8);
+    if(near.length){
+      nearXP='<div style="margin-top:10px;padding-top:8px;border-top:2px solid var(--rule)"><div style="font-size:11px;font-weight:700;color:var(--navy);margin-bottom:3px;text-transform:uppercase;letter-spacing:.5px">🚛 Cự ly đến 8 Xã/Phường gần nhất (× 1.3 ≈ đường bộ)</div>';
+      nearXP+=near.map(x=>{const das=daForXP(x.ten);return`<div style="display:flex;align-items:center;gap:10px;padding:5px 0;border-bottom:1px solid var(--bg);font-size:11px"><span style="min-width:65px;font-weight:700;color:var(--teal)">~${(x.dist*1.3).toFixed(1)} km</span><span style="flex:1;font-weight:600">${x.ten}</span><span style="font-size:10px;color:var(--ink3)">${das.length} DA</span>${x.lat?`<a href="https://www.google.com/maps/dir/${m.lat},${m.lon}/${x.lat},${x.lon}" target="_blank" style="font-size:10px;color:var(--blue)">🗺 Chỉ đường</a>`:''}</div>`;}).join('');
+      nearXP+='</div>';
+    }
+  }
+  document.getElementById('mTit').textContent='⛏ '+m.ten;
+  document.getElementById('mBod').innerHTML=`
+    <div class="ir"><span class="il">Loại khoáng sản</span><span class="iv">${LV[m.loai]||m.loai}</span></div>
+    <div class="ir"><span class="il">Xã/Phường</span><span class="iv" style="color:var(--teal);font-weight:600">${m.xa||'--'}</span></div>
+    <div class="ir"><span class="il">Diện tích mỏ</span><span class="iv">${m.dt?m.dt.toFixed(2)+' ha':'--'}</span></div>
+    <div class="ir"><span class="il">Trữ lượng dự kiến</span><span class="iv" style="font-weight:600;color:var(--amber)">${tlD}</span></div>
+    <div class="ir"><span class="il">Tọa độ mỏ</span><span class="iv">${m.lat?m.lat.toFixed(5)+', '+m.lon.toFixed(5):'--'}</span></div>
+    ${m.tenCu?`<div class="ir"><span class="il">Tên gọi cũ</span><span class="iv" style="color:var(--ink3)">${m.tenCu}</span></div>`:''}
+    <div class="ir"><span class="il">Google Maps</span><span class="iv">${gUrl?`<a href="${gUrl}" target="_blank" class="mo-map">📍 Mở Maps</a>`:'Chưa có'}</span></div>
+    ${nearXP}`;
+  document.getElementById('modalOv').classList.remove('h');
+}
+window.showMoModal=showMoModal;
+
+// ══ BIỂU ĐỒ MỎ ══
+function renderMoCharts(){
+  const xm={};allMo.forEach(m=>{if(!m.xa)return;if(!xm[m.xa])xm[m.xa]={tl:0,cnt:0};xm[m.xa].tl+=(m.tl||0);xm[m.xa].cnt++;});
+  const topXa=Object.entries(xm).sort((a,b)=>b[1].tl-a[1].tl).slice(0,10);
+  const cvXP=document.getElementById('cMoXP');
+  if(cvXP){if(charts.cMoXP)charts.cMoXP.destroy();charts.cMoXP=new Chart(cvXP,{type:'bar',data:{labels:topXa.map(e=>e[0]),datasets:[{data:topXa.map(e=>+(e[1].tl/1e6).toFixed(3)),backgroundColor:topXa.map((_,i)=>i<3?'#C8720A':'rgba(200,114,10,.45)'),borderRadius:4,borderSkipped:false}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.raw+' tr.m³'}}},scales:{x:{grid:{color:'rgba(0,0,0,.06)'},ticks:{font:{size:9}}},y:{grid:{display:false},ticks:{font:{size:9}}}}}});}
+  const cvPie=document.getElementById('cMoPie');
+  if(cvPie){const dat=allMo.filter(m=>m.typeKey==='dat').reduce((s,m)=>s+(m.tl||0),0);const cat=allMo.filter(m=>m.typeKey==='cat').reduce((s,m)=>s+(m.tl||0),0);const da=allMo.filter(m=>m.typeKey==='da').reduce((s,m)=>s+(m.tl||0),0);if(charts.cMoPie)charts.cMoPie.destroy();charts.cMoPie=new Chart(cvPie,{type:'doughnut',data:{labels:['Đất san lấp','Cát sỏi','Đá'],datasets:[{data:[+(dat/1e6).toFixed(3),+(cat/1e6).toFixed(3),+(da/1e6).toFixed(3)],backgroundColor:['#BA7517','#378ADD','#888780'],borderWidth:2,borderColor:'rgba(0,0,0,.05)',hoverOffset:4}]},options:{responsive:true,maintainAspectRatio:false,cutout:'62%',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.label}: ${c.raw} triệu m³`}}}}});}
+}
+
+// ══ ALERTS ══
+function renderAlerts(){
+  const d=allDA,withKH=d.filter(r=>r.kh>0&&r.tt!=='TCHT');
+  const alR=withKH.filter(r=>(pc(r)??100)<30).sort((a,b)=>(pc(a)??0)-(pc(b)??0)).slice(0,20);
+  const alA=withKH.filter(r=>{const p=pc(r);return p!==null&&p>=30&&p<70;}).sort((a,b)=>(pc(a)??0)-(pc(b)??0)).slice(0,20);
+  const alG=d.filter(r=>r.tt==='TCHT').slice(0,20);
+  const alTDR=d.filter(r=>canhBaoHD(r.batdau,r.tiendoHD,r.tt).level==='overdue').slice(0,20);
+  const alTDO=d.filter(r=>canhBaoHD(r.batdau,r.tiendoHD,r.tt).level==='urgent').slice(0,20);
+  const alTDY=d.filter(r=>canhBaoHD(r.batdau,r.tiendoHD,r.tt).level==='warning').slice(0,20);
+  const alVM=d.filter(r=>r.vuongmac&&r.vuongmac.toLowerCase()!=='không có'&&r.vuongmac.trim()).slice(0,20);
+  const alTC=d.filter(r=>r.tt==='TC00'&&r.kh>0).sort((a,b)=>b.kh-a.kh);
+  function ai(r,bc,val){return`<div class="ai" onclick="openDA('${r.ma}')"><span class="bdg ${bc}">${val}</span><span class="ainame" title='${r.ten}'>${r.ten}</span><span class="aisub">${r.cb||shP(r.phong)}</span></div>`;}
+  document.getElementById('alR').innerHTML=alR.length?alR.map(r=>ai(r,'r',pc(r)!==null?pc(r)+'%':'--')).join(''):`<div class="empty">✓ Không có</div>`;
+  document.getElementById('alA').innerHTML=alA.length?alA.map(r=>ai(r,'a',pc(r)!==null?pc(r)+'%':'--')).join(''):`<div class="empty">✓ Không có</div>`;
+  document.getElementById('alG').innerHTML=alG.length?alG.map(r=>`<div class="ai"><span class="bdg g">TCHT</span><span class="ainame" title='${r.ten}'>${r.ten}</span><span class="aisub">${r.pgd}</span></div>`).join(''):`<div class="empty">Không có</div>`;
+  function tdAi(r,bc){const cb=canhBaoHD(r.batdau,r.tiendoHD,r.tt);return`<div class="ai" onclick="openDA('${r.ma}')"><span class="bdg ${bc}" style="font-size:9px">${cb.ngayCon!==null?(cb.ngayCon<0?'Quá '+Math.abs(cb.ngayCon)+'N':'Còn '+cb.ngayCon+'N'):'--'}</span><span class="ainame" title='${r.ten}'>${r.ten}</span><span class="aisub">${r.cb||'--'}</span></div>`;}
+  document.getElementById('alTDR').innerHTML=alTDR.length?alTDR.map(r=>tdAi(r,'r')).join(''):`<div class="empty">✓ Không có</div>`;
+  document.getElementById('alTDO').innerHTML=alTDO.length?alTDO.map(r=>tdAi(r,'o')).join(''):`<div class="empty">✓ Không có</div>`;
+  document.getElementById('alTDY').innerHTML=alTDY.length?alTDY.map(r=>tdAi(r,'a')).join(''):`<div class="empty">✓ Không có</div>`;
+  document.getElementById('alVM').innerHTML=alVM.length?alVM.map(r=>`<div class="ai" onclick="openDA('${r.ma}')"><span class="bdg n">VM</span><span class="ainame" title='${r.vuongmac}'>${r.ten}</span><span class="aisub" style="color:var(--red)">${r.vuongmac.slice(0,25)}</span></div>`).join(''):`<div class="empty">✓ Không có vướng mắc</div>`;
+  document.getElementById('alTC').innerHTML=alTC.length?alTC.map(r=>`<div class="ai" onclick="openDA('${r.ma}')"><span class="bdg r">TC00</span><span class="ainame" title='${r.ten}'>${r.ten}</span><span class="aisub">KH:${MN(r.kh)} tr</span></div>`).join(''):`<div class="empty">✓ Không có</div>`;
+  const xpCo=new Set(allDA.map(r=>(r.dia||'').toLowerCase().trim()));
+  const xpChua=allXP.filter(x=>!xpCo.has(x.ten.toLowerCase().trim()));
+  document.getElementById('xpNone').innerHTML=xpChua.length?xpChua.map(x=>`<span style="background:var(--bg);border:1px solid var(--rule);border-radius:20px;padding:3px 9px;font-size:11px;color:var(--ink2)">${x.ten}</span>`).join(''):`<span style="color:var(--green);font-size:12px">✓ Tất cả xã/phường đều có dự án</span>`;
+  S('tb3',(alTDR.length+alTDO.length+alR.length)||0);
+}
+
+// ══ CLICK DA DETAIL ══
+function openDA(ma,r){
+  // Nếu không truyền r, tìm từ allDA
+  if(!r||typeof r==='undefined'){r=allDA.find(x=>x.ma===ma)||{};}
+  const p=pc(r),c=COL(p),cbHD=canhBaoHD(r.batdau,r.tiendoHD,r.tt),cbNam=canhBaoNamDA(r.namda,r.tt);
+  document.getElementById('mTit').textContent='📁 '+ma+' — '+(r.ten||'').slice(0,55);
+  document.getElementById('mBod').innerHTML=`
+    <div class="ir"><span class="il">Phòng ĐHGS</span><span class="iv">${r.phong||'--'}</span></div>
+    <div class="ir"><span class="il">Phó Giám đốc</span><span class="iv">${r.pgd||'--'}</span></div>
+    <div class="ir"><span class="il">Cán bộ phụ trách</span><span class="iv" style="font-weight:600;color:var(--navy)">${r.cb||'--'}</span></div>
+    <div class="ir"><span class="il">Địa điểm</span><span class="iv">${r.dia||'--'}</span></div>
+    <div class="ir"><span class="il">Tình trạng</span><span class="iv">${stB(r.tt)}</span></div>
+    <div class="ir"><span class="il">Nguồn vốn</span><span class="iv">${r.nguon||'--'}</span></div>
+    <div style="margin-top:10px;padding-top:8px;border-top:2px solid var(--rule)"><div style="font-size:11px;font-weight:700;color:var(--navy);margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px">💰 Giải ngân</div></div>
+    <div class="ir"><span class="il">KH Vốn</span><span class="iv">${MN(r.kh)} tr.đ</span></div>
+    <div class="ir"><span class="il">Giải ngân</span><span class="iv" style="color:var(--green);font-weight:600">${MN(r.gn)} tr.đ</span></div>
+    <div class="ir"><span class="il">Tỷ lệ GN</span><span class="iv"><span style="font-weight:700;color:${c.t}">${p!==null?p+'%':'--'}</span></span></div>
+    <div style="margin-top:10px;padding-top:8px;border-top:2px solid var(--rule)"><div style="font-size:11px;font-weight:700;color:var(--navy);margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px">⏱ Tiến độ & Hợp đồng</div></div>
+    <div class="ir"><span class="il">TV Thiết kế</span><span class="iv">${r.tvtk||'--'}</span></div>
+    <div class="ir"><span class="il">Nhà thầu TC</span><span class="iv">${r.nthi||'--'}</span></div>
+    <div class="ir"><span class="il">TV Giám sát</span><span class="iv">${r.tvgs||'--'}</span></div>
+    <div class="ir"><span class="il">Nhà thầu khác</span><span class="iv">${r.ntkhac||'--'}</span></div>
+    <div class="ir"><span class="il">Bắt đầu thi công</span><span class="iv">${r.batdau||'--'}</span></div>
+    <div class="ir"><span class="il">Tiến độ HĐ</span><span class="iv">${r.tiendoHD||'--'} ngày</span></div>
+    <div class="ir"><span class="il">CB Tiến độ HĐ</span><span class="iv"><span class="${cbHD.cls}" style="font-size:10px;padding:2px 8px;border-radius:12px">${cbHD.label}</span></span></div>
+    <div class="ir"><span class="il">Năm DA</span><span class="iv">${r.namda||'--'}</span></div>
+    <div class="ir"><span class="il">CB Năm DA</span><span class="iv"><span class="${cbNam.cls}" style="font-size:10px;padding:2px 8px;border-radius:12px">${cbNam.label}</span></span></div>
+    <div style="margin-top:10px;padding-top:8px;border-top:2px solid var(--rule)"><div style="font-size:11px;font-weight:700;color:var(--brown);margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px">🧱 Nhu cầu vật liệu</div></div>
+    <div class="ir"><span class="il">Đất san lấp</span><span class="iv">${(r.vlDat||0).toLocaleString('vi-VN')} m³</span></div>
+    <div class="ir"><span class="il">Cát</span><span class="iv">${(r.vlCat||0).toLocaleString('vi-VN')} m³</span></div>
+    <div class="ir"><span class="il">Đá</span><span class="iv">${(r.vlDa||0).toLocaleString('vi-VN')} m³</span></div>
+    ${r.vuongmac&&r.vuongmac.toLowerCase()!=='không có'?`<div style="margin-top:10px;padding-top:8px;border-top:2px solid var(--rule)"><div style="font-size:11px;font-weight:700;color:var(--red);margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px">⚠ Khó khăn, vướng mắc</div></div><div class="ir"><span class="il">Vướng mắc</span><span class="iv" style="color:var(--red)">${r.vuongmac}</span></div>`:''}
+    ${r.ghichu&&r.ghichu!=='...'?`<div class="ir"><span class="il">Ghi chú</span><span class="iv">${r.ghichu}</span></div>`:''}`;
+  document.getElementById('modalOv').classList.remove('h');
+}
+window.openDA=openDA;
+
+// ══ LIST ══
+function applyL(){
+  const fP=V('lP'),fT=V('lT'),fQ=VQ('lQ');
+  listData=allDA.filter(r=>{if(fP&&r.phong!==fP)return false;if(fT&&r.tt!==fT)return false;if(fQ&&!r.ten.toLowerCase().includes(fQ))return false;return true;});
+  S('lCnt',listData.length);curPg=1;renderL();
+}
+function rstL(){['lP','lT'].forEach(id=>document.getElementById(id).value='');document.getElementById('lQ').value='';applyL();}
+function srtL(){const s=V('lS'),a=[...listData];if(s==='gn_asc')a.sort((x,y)=>(pc(x)??999)-(pc(y)??999));else if(s==='gn_desc')a.sort((x,y)=>(pc(y)??-1)-(pc(x)??-1));else if(s==='kh_desc')a.sort((x,y)=>y.kh-x.kh);else a.sort((x,y)=>x.ma.localeCompare(y.ma));return a;}
+// Track expanded rows
+const expandedRows=new Set();
+function toggleRow(ma){
+  if(expandedRows.has(ma))expandedRows.delete(ma);
+  else expandedRows.add(ma);
+  renderL();
+}
+window.toggleRow=toggleRow;
+
+function renderL(){
+  const arr=srtL(),tot=arr.length,pgs=Math.ceil(tot/PAGE)||1,st=(curPg-1)*PAGE,pg=arr.slice(st,st+PAGE);
+  S('pgI',`${curPg}/${pgs}`);S('pgSh',curPg);S('pgTo',pgs);S('pgAll',tot);
+  document.getElementById('lPrv').disabled=curPg<=1;document.getElementById('lNxt').disabled=curPg>=pgs;
+
+  const rows=[];
+  pg.forEach(r=>{
+    const p=pc(r);
+    // Dùng XL (xây lắp) để tính tiến độ
+    const khXl=N(r.khXl||r.kh);
+    const gnXl=N(r.gnXl||r.gn);
+    const pXl=khXl>0?Math.round(gnXl/khXl*100):null;
+    const cXl=COL(pXl);
+    const cbHD=canhBaoHD(r.batdau,r.tiendoHD,r.tt);
+    const isExp=expandedRows.has(r.ma);
+
+    // Tính số ngày còn lại
+    const ngayCon=cbHD.ngayCon;     // ngày còn đến ngày HT HĐ (tính từ hôm nay)
+    const denBD=cbHD.denBD||null;   // ngày còn đến khi bắt đầu TC
+    // Số ngày dùng để tính GN/ngày:
+    // - Chưa TC: dùng conDenHT (tổng HĐ còn lại từ hôm nay)
+    // - Đang TC: dùng ngayCon (HĐ còn lại từ hôm nay)
+    const ngayConGN=(cbHD.level==='notstarted')?(cbHD.conDenHT??ngayCon):ngayCon;
+    let dailyCell='';
+    if(ngayConGN!==null&&ngayConGN>0&&khXl>0&&gnXl<khXl){
+      const conLai=khXl-gnXl;
+      const daily=conLai/ngayConGN;
+      const dailyFmt=daily>=1e8?TY(daily)+' tỷ/ngày':MN(daily)+' tr/ngày';
+      const urgentDaily=daily>=1e8;
+      dailyCell=`<div style="font-size:9px;margin-top:2px">📌 Cần GN: <b style="color:${urgentDaily?'var(--red)':'var(--amber)'}">${dailyFmt}</b></div>`;
+    }else if(ngayCon!==null&&ngayCon<0){
+      dailyCell=`<div style="font-size:9px;margin-top:2px;color:var(--red)">⚠ Quá hạn ${Math.abs(ngayCon)} ngày</div>`;
+    }
+
+    // Vật liệu
+    const vlDat=r.vlDat||0,vlCat=r.vlCat||0,vlDa=r.vlDa||0;
+    const vlFmt=v=>v>0?v.toLocaleString('vi-VN'):'--';
+
+    // Vướng mắc
+    const hasVM=r.vuongmac&&r.vuongmac.toLowerCase()!=='không có'&&r.vuongmac.trim();
+
+    rows.push(`<tr onclick="toggleRow('${r.ma}')" style="cursor:pointer;${isExp?'background:#EEF5FF;font-weight:500':''}">
+      <td style="text-align:center;color:var(--blue);font-size:11px">${isExp?'▼':'▶'}</td>
+      <td><span class="st n" style="font-size:9px">${r.ma}</span></td>
+      <td class="tdn" title='${r.ten}'>${r.ten}</td>
+      <td style="font-size:10px;white-space:nowrap">${shP(r.phong)}</td>
+      <td style="font-size:10px;white-space:nowrap;color:var(--navy);font-weight:600">${r.cb||'--'}</td>
+      <td style="font-size:10px;color:var(--teal);white-space:nowrap">${r.dia||'--'}</td>
+      <td>${stB(r.tt)}</td>
+      <td><span class="bdg n" style="font-size:9px">${r.nguon}</span></td>
+      <td class="r" style="font-size:10px">${khXl?MN(khXl):'--'}</td>
+      <td class="r" style="font-size:10px">${gnXl?MN(gnXl):'--'}</td>
+      <td>${pbRow(pXl,cXl)}</td>
+      <td>
+        <span class="${cbHD.cls}" style="font-size:9px;padding:2px 5px;border-radius:10px;display:block">${cbHD.label}</span>
+        ${dailyCell}
+      </td>
+      <td style="font-size:10px;color:var(--ink3)" title='${r.nthi||""}'>${(r.nthi||'--').slice(0,16)}</td>
+      <td style="font-size:10px;text-align:right;color:${vlDat>0?'var(--brown)':'var(--ink3)'}">${vlFmt(vlDat)}</td>
+      <td style="font-size:10px;text-align:right;color:${vlCat>0?'#1E40AF':'var(--ink3)'}">${vlFmt(vlCat)}</td>
+      <td style="font-size:10px;text-align:right;color:${vlDa>0?'var(--ink2)':'var(--ink3)'}">${vlFmt(vlDa)}</td>
+      <td style="text-align:center">${hasVM?`<span style="color:var(--red);font-size:14px" title='${r.vuongmac}'>⚠</span>`:'<span style="color:var(--green);font-size:12px">✓</span>'}</td>
+    </tr>`);
+
+    // Expanded row
+    if(isExp){
+      const today=TODAY;
+      const d=parseDate(r.batdau);
+      const ngayBD=d?d.toLocaleDateString('vi-VN'):(r.batdau||'--');
+      const ngayHT=cbHD.ngayHT?cbHD.ngayHT.toLocaleDateString('vi-VN'):(d&&r.tiendoHD?new Date(d.getTime()+r.tiendoHD*86400000).toLocaleDateString('vi-VN'):'--');
+      const conLaiGN=khXl>gnXl?(khXl-gnXl):0;
+      const pctDone=ngayCon!==null&&r.tiendoHD>0?Math.round((r.tiendoHD-Math.max(0,ngayCon))/r.tiendoHD*100):null;
+
+      rows.push(`<tr class="row-exp">
+        <td colspan="17">
+          <div class="exp-body">
+            <div class="exp-field">
+              <span class="exp-lbl">📅 Bắt đầu thi công</span>
+              <span class="exp-val navy">${ngayBD}</span>
+            </div>
+            <div class="exp-field">
+              <span class="exp-lbl">📅 Kết thúc HĐ (dự kiến)</span>
+              <span class="exp-val navy">${ngayHT}</span>
+            </div>
+            <div class="exp-field">
+              <span class="exp-lbl">⏱ Số ngày HĐ</span>
+              <span class="exp-val">${r.tiendoHD||'--'} ngày</span>
+            </div>
+            <div class="exp-field">
+              <span class="exp-lbl">📍 Trạng thái tiến độ</span>
+              <span class="${cbHD.cls}" style="font-size:10px;padding:2px 8px;border-radius:10px">${cbHD.label}</span>
+            </div>
+            ${cbHD.level==='notstarted'?`<div class="exp-field">
+              <span class="exp-lbl">⏳ Đến ngày bắt đầu TC</span>
+              <span class="exp-val amber">Còn ${denBD} ngày (${new Date(cbHD.ngayBD).toLocaleDateString('vi-VN')})</span>
+            </div>`:''}
+            <div class="exp-field">
+              <span class="exp-lbl">⚡ Còn lại đến HT HĐ</span>
+              <span class="exp-val ${ngayCon!==null&&ngayCon<0?'red':ngayCon!==null&&ngayCon<=30?'amber':'green'}">${ngayCon!==null?(ngayCon<0?'Quá hạn '+Math.abs(ngayCon)+' ngày':'Còn '+ngayCon+' ngày'):'--'}</span>
+            </div>
+            <div class="exp-field">
+              <span class="exp-lbl">💰 KH XL (tr.đ)</span>
+              <span class="exp-val">${khXl?MN(khXl):'--'}</span>
+            </div>
+            <div class="exp-field">
+              <span class="exp-lbl">✅ GN XL (tr.đ)</span>
+              <span class="exp-val green">${gnXl?MN(gnXl):'--'}</span>
+            </div>
+            <div class="exp-field">
+              <span class="exp-lbl">⏳ Còn lại cần GN (tr.đ)</span>
+              <span class="exp-val ${conLaiGN>0?'amber':''}">${conLaiGN?MN(conLaiGN):'Đã đủ'}</span>
+            </div>
+            ${ngayCon!==null&&ngayCon>0&&conLaiGN>0?`<div class="exp-field">
+              <span class="exp-lbl">📌 Cần GN mỗi ngày</span>
+              <span class="exp-val red">${conLaiGN/ngayCon>=1e8?TY(conLaiGN/ngayCon)+' tỷ/ngày':MN(conLaiGN/ngayCon)+' tr.đ/ngày'}</span>
+            </div>`:''}
+            <div class="exp-field">
+              <span class="exp-lbl">🏗 TV Thiết kế</span>
+              <span class="exp-val">${r.tvtk||'--'}</span>
+            </div>
+            <div class="exp-field">
+              <span class="exp-lbl">🔨 Nhà thầu TC</span>
+              <span class="exp-val">${r.nthi||'--'}</span>
+            </div>
+            <div class="exp-field">
+              <span class="exp-lbl">👁 TV Giám sát</span>
+              <span class="exp-val">${r.tvgs||'--'}</span>
+            </div>
+            <div class="exp-field">
+              <span class="exp-lbl">🧱 VL Đất san lấp</span>
+              <span class="exp-val ${vlDat>0?'amber':''}">${vlFmt(vlDat)} m³</span>
+            </div>
+            <div class="exp-field">
+              <span class="exp-lbl">🪨 VL Cát</span>
+              <span class="exp-val" style="color:#1E40AF">${vlFmt(vlCat)} m³</span>
+            </div>
+            <div class="exp-field">
+              <span class="exp-lbl">⚫ VL Đá</span>
+              <span class="exp-val">${vlFmt(vlDa)} m³</span>
+            </div>
+            ${hasVM?`<div class="exp-field exp-full">
+              <span class="exp-lbl" style="color:var(--red)">⚠ Khó khăn, vướng mắc</span>
+              <span class="exp-val red">${r.vuongmac}</span>
+            </div>`:''}
+            ${r.ghichu&&r.ghichu!=='...'?`<div class="exp-field exp-full">
+              <span class="exp-lbl">📝 Ghi chú</span>
+              <span class="exp-val">${r.ghichu}</span>
+            </div>`:''}
+          </div>
+        </td>
+      </tr>`);
+    }
+  });
+
+  document.getElementById('ltb').innerHTML=rows.join('')||'<tr><td colspan="17" style="text-align:center;padding:18px;color:var(--ink3)">Không có dữ liệu</td></tr>';
+}
+function chgPg(d){curPg+=d;renderL();}
+function exportCSV(){
+  const arr=srtL();
+  const hdr=[
+    'Mã DA','Công trình','Phòng','Phó GĐ','Cán bộ phụ trách','Xã/Phường','TT','Nguồn vốn',
+    'TV Thiết kế','Nhà thầu TC','TV Giám sát','Nhà thầu khác',
+    'Bắt đầu TC','Tiến độ HĐ (ngày)','Ngày HT HĐ dự kiến','Còn lại (ngày)','CB Tiến độ HĐ',
+    'Năm DA','CB Năm DA',
+    'KH XL (tr.đ)','GN XL (tr.đ)','TL GN XL%','Còn GN XL (tr.đ)','Cần GN/ngày (tr.đ)',
+    'KH Tổng (tr.đ)','GN Tổng (tr.đ)','TL GN Tổng%',
+    'VL Đất (m³)','VL Cát (m³)','VL Đá (m³)','Vướng mắc','Ghi chú'
+  ];
+  const rows=arr.map(r=>{
+    const cbHD=canhBaoHD(r.batdau,r.tiendoHD,r.tt);
+    const cbNam=canhBaoNamDA(r.namda,r.tt);
+    const ngayCon=cbHD.ngayCon;
+    const d=parseDate(r.batdau);
+    const ngayHT=d&&r.tiendoHD?new Date(d.getTime()+r.tiendoHD*86400000).toLocaleDateString('vi-VN'):'';
+    const khXl=r.khXl||r.kh,gnXl=r.gnXl||r.gn;
+    const conLai=khXl>gnXl?khXl-gnXl:0;
+    const daily=ngayCon>0&&conLai>0?Math.round(conLai/ngayCon/1e6*100)/100:0;
+    const pXl=khXl>0?Math.round(gnXl/khXl*100):null;
+    return [
+      r.ma,`"${r.ten}"`,r.phong,r.pgd,r.cb||'',r.dia,
+      r.tt+(TT_L[r.tt]?' - '+TT_L[r.tt]:''),r.nguon,
+      `"${r.tvtk||''}"`,`"${r.nthi||''}"`,`"${r.tvgs||''}"`,`"${r.ntkhac||''}"`,
+      r.batdau||'',r.tiendoHD||'',ngayHT,
+      ngayCon!==null?ngayCon:'',cbHD.label,
+      r.namda||'',cbNam.label,
+      khXl?Math.round(khXl/1e6):'',gnXl?Math.round(gnXl/1e6):'',
+      pXl!==null?pXl+'%':'',conLai?Math.round(conLai/1e6):'',daily||'',
+      r.kh?Math.round(r.kh/1e6):'',r.gn?Math.round(r.gn/1e6):'',
+      pc(r)!==null?pc(r)+'%':'',
+      r.vlDat||0,r.vlCat||0,r.vlDa||0,
+      `"${r.vuongmac||''}"`,`"${r.ghichu||''}"`
+    ].join(',');
+  });
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob(['﻿'+[hdr,...rows].join('\n')],{type:'text/csv;charset=utf-8'}));
+  a.download=`BanQLDA_2026_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  toast('📥 Xuất '+arr.length+' DA — '+hdr.length+' cột');
+}
+
+function sw(id,el){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
+  el.classList.add('on');document.getElementById('panel-'+id).classList.add('on');
+  if(id==='list'){listData=[...allDA];S('lCnt',listData.length);renderL();}
+  if(id==='mo')setTimeout(renderMoCharts,50);
+}
+
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('s');setTimeout(()=>t.classList.remove('s'),3500);}
+window.addEventListener('DOMContentLoaded',()=>{
+  if(sessionStorage.getItem('qlda_auth')==='1'){
+    // Đã đăng nhập trong session này → hiển thị tên + load
+    const name = sessionStorage.getItem('qlda_user')||'';
+    if(name){
+      const chip=document.createElement('div');
+      chip.className='chip';
+      chip.innerHTML='👤 <b>'+name.split(' ').pop()+'</b>';
+      document.querySelector('.tr').prepend(chip);
+    }
+    init();
+  }
+  // Chưa đăng nhập → Google button tự render
+});
+</script>
+</body>
+</html>
