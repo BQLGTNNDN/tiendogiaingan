@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Báo cáo | Ban Quản lý dự án đầu tư xây dựng các công trình giao thông và nông nghiệp Đà Nẵng</title>
+<title>Dashboard | Ban QLDA Giao thông & Nông nghiệp Đà Nẵng</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
 :root{
@@ -223,9 +223,57 @@ table.mt td.r{text-align:right;font-variant-numeric:tabular-nums}
 .tdn-daily{font-size:9px;color:var(--ink3)}
 .alert-daily{font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px}
 footer{text-align:center;padding:13px;font-size:10px;color:var(--ink3);border-top:1px solid var(--rule);background:var(--surf);margin-top:10px}
+
+/* LOGIN SCREEN - GOOGLE */
+#loginScreen{position:fixed;inset:0;background:linear-gradient(135deg,#0a1628 0%,#1B3A6B 60%,#1e4d8c 100%);z-index:99999;display:flex;align-items:center;justify-content:center;padding:16px}
+#loginScreen.h{display:none}
+.login-box{background:rgba(255,255,255,.07);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.15);border-radius:16px;padding:36px 40px;max-width:400px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.5);text-align:center}
+.login-logo{width:64px;height:64px;border-radius:50%;background:rgba(255,255,255,.12);border:2px solid rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 16px}
+.login-title{font-size:13px;font-weight:700;color:#fff;margin-bottom:4px;line-height:1.5}
+.login-sub{font-size:11px;color:rgba(255,255,255,.5);margin-bottom:28px;line-height:1.5}
+.login-divider{border:none;border-top:1px solid rgba(255,255,255,.12);margin:20px 0}
+.login-err{background:rgba(181,42,42,.25);border:1px solid rgba(181,42,42,.5);border-radius:8px;padding:10px 14px;font-size:11px;color:#FCA5A5;margin-top:14px;display:none;line-height:1.5}
+.login-err.s{display:block}
+.login-footer{margin-top:22px;font-size:10px;color:rgba(255,255,255,.25);line-height:1.6}
+.login-loading{color:rgba(255,255,255,.6);font-size:12px;margin-top:14px;display:none}
+.login-loading.s{display:block}
+/* Center Google button */
+#g_id_signin{display:flex;justify-content:center;margin-top:4px}
+@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
 </style>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo">🏛️</div>
+    <div class="login-title">BAN QUẢN LÝ DỰ ÁN<br>GIAO THÔNG &amp; NÔNG NGHIỆP ĐÀ NẴNG</div>
+    <div class="login-sub">Hệ thống Báo cáo Giải Ngân &amp; Tiến Độ · KH 2026<br>Đăng nhập bằng tài khoản Google được cấp quyền</div>
+    <hr class="login-divider">
+    <!-- Google Sign-In Button -->
+    <div id="g_id_onload"
+      data-client_id="532346952448-g96goj4pacl285blr3pep9k0shbhjel1.apps.googleusercontent.com"
+      data-callback="handleGoogleLogin"
+      data-auto_prompt="false">
+    </div>
+    <div class="g_id_signin"
+      data-type="standard"
+      data-size="large"
+      data-theme="filled_blue"
+      data-text="signin_with"
+      data-shape="rectangular"
+      data-logo_alignment="left"
+      data-width="300">
+    </div>
+    <div class="login-loading" id="loginLoading">⏳ Đang xác thực…</div>
+    <div class="login-err" id="loginErr"></div>
+    <div class="login-footer">
+      Chỉ tài khoản được cấp quyền mới có thể đăng nhập<br>
+      © Ban QLDA Giao thông &amp; Nông nghiệp Đà Nẵng · 2026
+    </div>
+  </div>
+</div>
+
 <div id="loader"><div class="ring"></div><p id="ldMsg">Đang tải dữ liệu…</p></div>
 <div id="toast"></div>
 <div class="modal-ov h" id="modalOv" onclick="closeMo(event)">
@@ -240,7 +288,7 @@ footer{text-align:center;padding:13px;font-size:10px;color:var(--ink3);border-to
     <div class="seal">🏛️</div>
     <div class="brand-txt">
       <strong>BAN QUẢN LÝ DỰ ÁN ĐẦU TƯ XÂY DỰNG CÁC CÔNG TRÌNH GIAO THÔNG VÀ NÔNG NGHIỆP ĐÀ NẴNG</strong>
-      <span>Báo cáo Giải Ngân & Tiến Độ · Năm Kế Hoạch 2026 · Dữ liệu 16/06/2025</span>
+      <span>Dashboard Giải Ngân & Tiến Độ · Năm Kế Hoạch 2026 · Dữ liệu 16/06/2025</span>
     </div>
   </div>
   <div class="tr">
@@ -502,6 +550,45 @@ footer{text-align:center;padding:13px;font-size:10px;color:var(--ink3);border-to
 
 <footer>🏛️ Ban Quản lý Dự án Đầu tư Xây dựng các Công trình Giao thông và Nông nghiệp Đà Nẵng &nbsp;·&nbsp; Báo cáo giải ngân v6.0 · KH 2026 · CSV 16/06/2025 · 93 Xã/Phường</footer>
 <script>
+
+// ══ GOOGLE LOGIN ══
+const ALLOWED_EMAILS=['vuongkts2909@gmail.com','duongnd80@gmail.com'];
+
+function handleGoogleLogin(response){
+  document.getElementById('loginLoading').classList.add('s');
+  document.getElementById('loginErr').classList.remove('s');
+  try{
+    const payload=JSON.parse(atob(response.credential.split('.')[1]));
+    const email=(payload.email||'').toLowerCase().trim();
+    const name=payload.name||email;
+    if(ALLOWED_EMAILS.map(e=>e.toLowerCase()).includes(email)){
+      sessionStorage.setItem('qlda_auth','1');
+      sessionStorage.setItem('qlda_user',name);
+      document.getElementById('loginScreen').classList.add('h');
+      document.getElementById('loginLoading').classList.remove('s');
+      const chip=document.createElement('div');
+      chip.className='chip';
+      chip.innerHTML='👤 <b>'+name.split(' ').pop()+'</b>';
+      document.querySelector('.tr').prepend(chip);
+      init();
+    }else{
+      document.getElementById('loginLoading').classList.remove('s');
+      const err=document.getElementById('loginErr');
+      err.innerHTML='⛔ Tài khoản <b>'+email+'</b> không có quyền truy cập.<br>Liên hệ quản trị viên để được cấp quyền.';
+      err.classList.add('s');
+      document.querySelector('.login-box').style.animation='shake .3s ease';
+      setTimeout(()=>document.querySelector('.login-box').style.animation='',400);
+      if(typeof google!=='undefined')google.accounts.id.disableAutoSelect();
+    }
+  }catch(e){
+    document.getElementById('loginLoading').classList.remove('s');
+    document.getElementById('loginErr').innerHTML='❌ Lỗi xác thực. Vui lòng thử lại.';
+    document.getElementById('loginErr').classList.add('s');
+  }
+}
+if(sessionStorage.getItem('qlda_auth')==='1')document.getElementById('loginScreen').classList.add('h');
+
+
 // ══ DỮ LIỆU TĨNH TỪ CSV 16/06/2025 ══
 const DA_STATIC=[
 {ma:'DA001',ten:'Tuyến đường trục 1 Tây Bắc (đoạn từ nút giao thông Ngã Ba Huế đến bệnh viện ung thư, đoạn từ Hồ Tùng',phong:'Phòng Điều hành - Giám sát 3',pgd:'Nguyễn Ngọc Hoàng',cb:'Nguyễn Văn A1',dia:'Phường Hòa Khánh',tvtk:'Công ty ABC1',nthi:'Công ty DEF1',tvgs:'Công ty GHJ1',ntkhac:'Công ty KLM1',batdau:'01/01/2026',tiendoHD:375,namda:'2025-2027',tt:'TCCT',nguon:'NSTP',soNguonVon:1,kh:15000000000,gn:18034445834,tyle:120.0,khXl:15000000000,gnXl:9017222917,vlDat:33523,vlCat:2354,vlDa:7950,vuongmac:'Pháp lý, Thi công',ghichu:'...'},
@@ -1494,7 +1581,20 @@ function sw(id,el){
 }
 
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('s');setTimeout(()=>t.classList.remove('s'),3500);}
-window.addEventListener('DOMContentLoaded',()=>init());
+window.addEventListener('DOMContentLoaded',()=>{
+  if(sessionStorage.getItem('qlda_auth')==='1'){
+    // Đã đăng nhập trong session này → hiển thị tên + load
+    const name = sessionStorage.getItem('qlda_user')||'';
+    if(name){
+      const chip=document.createElement('div');
+      chip.className='chip';
+      chip.innerHTML='👤 <b>'+name.split(' ').pop()+'</b>';
+      document.querySelector('.tr').prepend(chip);
+    }
+    init();
+  }
+  // Chưa đăng nhập → Google button tự render
+});
 </script>
 </body>
 </html>
