@@ -1696,30 +1696,5 @@ window.addEventListener('DOMContentLoaded',()=>{
   // Chưa đăng nhập → Google button tự render
 });
 </script>
-  <script>
-// Tự động tìm và sửa lỗi năm 1926 của hàm cũ hệ thống
-if (typeof convertExcelDate === 'function') {
-    const originalConvertExcelDate = convertExcelDate;
-    convertExcelDate = function(serial) {
-        if (!serial) return '';
-        
-        // Nếu đã là chuỗi định dạng sẵn dạng ngày tháng chữ
-        if (typeof serial === 'string' && serial.includes('/')) {
-            return serial.trim();
-        }
-        
-        // Nếu là số sê-ri thô (46023)
-        if (!isNaN(serial)) {
-            let date = new Date((Number(serial) - 25569) * 86400000);
-            let d = String(date.getDate()).padStart(2, '0');
-            let m = String(date.getMonth() + 1).padStart(2, '0');
-            let y = date.getFullYear(); // Ép buộc lấy đủ 4 chữ số năm 2026
-            return `${d}/${m}/${y}`;
-        }
-        
-        return originalConvertExcelDate(serial);
-    };
-}
-</script>
 </body>
 </html>
