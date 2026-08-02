@@ -136,58 +136,157 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script><footer>🏛️ Ban Quản lý Dự án Đầu tư Xây dựng các Công trình Giao thông và Nông nghiệp Đà Nẵng &nbsp;·&nbsp; Báo cáo giải ngân v6.0 · KH 2026 · CSV 16/06/2025 · 93 Xã/Phường</footer>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
-<script>
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Báo cáo giải ngân - BQLDAGTNN Đà Nẵng</title>
+  
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body>
 
-// ══ GOOGLE LOGIN (11 TÀI KHOẢN) ══
-const ALLOWED_EMAILS = [
-  'vuongkts2909@gmail.com',
-  'duongnd80@gmail.com',
-  'dovanthaonhs@gmail.com',
-  'thuongdagt@gmail.com',
-  'duyanhdn@gmail.com',
-  'ducvpubdn@gmail.com',
-  'hoangbql78@gmail.com',
-  'hothuy73@gmail.com',
-  'nguyentuanphongqlda@gmail.com',
-  'minhpq2006@gmail.com',
-  'ngoctanqldt@gmail.com'
-];
+  <div id="loginScreen">
+    <div class="login-box">
+      <h2>ĐẮNG NHẬP HỆ THỐNG</h2>
+      <p>Ban QLDA Đầu tư Xây dựng các Công trình Giao thông và Nông nghiệp Đà Nẵng</p>
+      
+      <div id="g_id_onload"></div>
+      
+      <div id="loginLoading" class="loading-spinner" style="display:none;">Đang xác thực...</div>
+      <div id="loginErr" class="error-message"></div>
+    </div>
+  </div>
 
-function handleGoogleLogin(response){
-  document.getElementById('loginLoading').classList.add('s');
-  document.getElementById('loginErr').classList.remove('s');
-  try{
-    const payload=JSON.parse(atob(response.credential.split('.')[1]));
-    const email=(payload.email||'').toLowerCase().trim();
-    const name=payload.name||email;
-    if(ALLOWED_EMAILS.map(e=>e.toLowerCase()).includes(email)){
-      sessionStorage.setItem('qlda_auth','1');
-      sessionStorage.setItem('qlda_user',name);
-      document.getElementById('loginScreen').classList.add('h');
-      document.getElementById('loginLoading').classList.remove('s');
-      const chip=document.createElement('div');
-      chip.className='chip';
-      chip.innerHTML='👤 <b>'+name.split(' ').pop()+'</b>';
-      document.querySelector('.tr').prepend(chip);
-      init();
-    }else{
-      document.getElementById('loginLoading').classList.remove('s');
-      const err=document.getElementById('loginErr');
-      err.innerHTML='⛔ Tài khoản <b>'+email+'</b> không có quyền truy cập.<br>Liên hệ quản trị viên để được cấp quyền.';
-      err.classList.add('s');
-      document.querySelector('.login-box').style.animation='shake .3s ease';
-      setTimeout(()=>document.querySelector('.login-box').style.animation='',400);
-      if(typeof google!=='undefined')google.accounts.id.disableAutoSelect();
+  <footer>🏛️ Ban Quản lý Dự án Đầu tư Xây dựng các Công trình Giao thông và Nông nghiệp Đà Nẵng &nbsp;·&nbsp; Báo cáo giải ngân v6.0 · KH 2026 · CSV 16/06/2025 · 93 Xã/Phường</footer>
+
+  <script>
+  // ══ DANH SÁCH 11 EMAIL ĐƯỢC PHÉP TRUY CẬP ══
+  const ALLOWED_EMAILS = [
+    'vuongkts2909@gmail.com',
+    'duongnd80@gmail.com',
+    'dovanthaonhs@gmail.com',
+    'thuongdagt@gmail.com',
+    'duyanhdn@gmail.com',
+    'ducvpubdn@gmail.com',
+    'hoangbql78@gmail.com',
+    'hothuy73@gmail.com',
+    'nguyentuanphongqlda@gmail.com',
+    'minhpq2006@gmail.com',
+    'ngoctanqldt@gmail.com'
+  ];
+
+  // Hàm giải mã JWT Token an toàn với Tiếng Việt (UTF-8)
+  function decodeJwtResponse(token) {
+    try {
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+      }).join(''));
+      return JSON.parse(jsonPayload);
+    } catch (e) {
+      return null;
     }
-  }catch(e){
-    document.getElementById('loginLoading').classList.remove('s');
-    document.getElementById('loginErr').innerHTML='❌ Lỗi xác thực. Vui lòng thử lại.';
-    document.getElementById('loginErr').classList.add('s');
   }
-}
 
-if(sessionStorage.getItem('qlda_auth')==='1')document.getElementById('loginScreen').classList.add('h');
-</script>
+  // Xử lý sự kiện đăng nhập thành công từ Google
+  function handleGoogleLogin(response) {
+    const loadingEl = document.getElementById('loginLoading');
+    const errEl = document.getElementById('loginErr');
+    
+    if (loadingEl) loadingEl.classList.add('s');
+    if (errEl) errEl.classList.remove('s');
+
+    try {
+      const payload = decodeJwtResponse(response.credential);
+      if (!payload) throw new Error("Decode Failed");
+
+      const email = (payload.email || '').toLowerCase().trim();
+      const name = payload.name || email;
+
+      // Kiểm tra Email trong Whitelist
+      if (ALLOWED_EMAILS.map(e => e.toLowerCase()).includes(email)) {
+        sessionStorage.setItem('qlda_auth', '1');
+        sessionStorage.setItem('qlda_user', name);
+
+        const loginScreen = document.getElementById('loginScreen');
+        if (loginScreen) loginScreen.classList.add('h');
+        if (loadingEl) loadingEl.classList.remove('s');
+
+        // Tạo Chip hiển thị tên cán bộ
+        const chip = document.createElement('div');
+        chip.className = 'chip';
+        chip.innerHTML = '👤 <b>' + name.split(' ').pop() + '</b>';
+        const trContainer = document.querySelector('.tr');
+        if (trContainer) trContainer.prepend(chip);
+
+        // Khởi tạo ứng dụng
+        if (typeof init === 'function') init();
+      } else {
+        if (loadingEl) loadingEl.classList.remove('s');
+        if (errEl) {
+          errEl.innerHTML = '⛔ Tài khoản <b>' + email + '</b> không có quyền truy cập.<br>Liên hệ quản trị viên để được cấp quyền.';
+          errEl.classList.add('s');
+        }
+
+        const loginBox = document.querySelector('.login-box');
+        if (loginBox) {
+          loginBox.style.animation = 'shake .3s ease';
+          setTimeout(() => loginBox.style.animation = '', 400);
+        }
+
+        if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
+          google.accounts.id.disableAutoSelect();
+        }
+      }
+    } catch (e) {
+      if (loadingEl) loadingEl.classList.remove('s');
+      if (errEl) {
+        errEl.innerHTML = '❌ Lỗi xác thực tài khoản. Vui lòng thử lại!';
+        errEl.classList.add('s');
+      }
+    }
+  }
+
+  // Khởi tạo khi trang web tải xong
+  window.addEventListener('DOMContentLoaded', function () {
+    // 1. Kiểm tra nếu phiên đăng nhập cũ vẫn còn hiệu lực
+    if (sessionStorage.getItem('qlda_auth') === '1') {
+      const loginScreen = document.getElementById('loginScreen');
+      if (loginScreen) loginScreen.classList.add('h');
+
+      const name = sessionStorage.getItem('qlda_user') || 'User';
+      const chip = document.createElement('div');
+      chip.className = 'chip';
+      chip.innerHTML = '👤 <b>' + name.split(' ').pop() + '</b>';
+      const trContainer = document.querySelector('.tr');
+      if (trContainer) trContainer.prepend(chip);
+
+      if (typeof init === 'function') init();
+      return;
+    }
+
+    // 2. Khởi tạo Google SDK & Render Nút Đăng nhập
+    if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
+      google.accounts.id.initialize({
+        client_id: '532346952448-g96goj4pacl285blr3pep9k0shbhjel1.apps.googleusercontent.com',
+        callback: handleGoogleLogin
+      });
+
+      const btnTarget = document.getElementById('g_id_onload') || document.getElementById('googleBtn');
+      if (btnTarget) {
+        google.accounts.id.renderButton(
+          btnTarget,
+          { theme: 'outline', size: 'large', width: '100%', text: 'signin_with' }
+        );
+      }
+    }
+  });
+  </script>
+</body>
+</html>
 
 </body>
 </html>
