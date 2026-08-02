@@ -285,6 +285,207 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
   </script>
+  <!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Báo cáo giải ngân - BQLDAGTNN Đà Nẵng</title>
+  
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+  <style>
+    /* CSS Màn hình Đăng nhập */
+    #loginScreen {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(15, 23, 42, 0.9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      backdrop-filter: blur(5px);
+    }
+    #loginScreen.h { display: none !important; }
+    
+    .login-box {
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      text-align: center;
+      max-width: 400px;
+      width: 90%;
+    }
+    .login-box h2 {
+      margin-top: 0;
+      color: #1e293b;
+      font-size: 20px;
+    }
+    .login-box p {
+      color: #64748b;
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+    
+    #loginLoading { display: none; margin-top: 15px; color: #2563eb; font-weight: bold; }
+    #loginLoading.s { display: block !important; }
+    
+    #loginErr { display: none; margin-top: 15px; color: #dc2626; font-size: 13px; line-height: 1.4; }
+    #loginErr.s { display: block !important; }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-10px); }
+      40%, 80% { transform: translateX(10px); }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="loginScreen">
+    <div class="login-box">
+      <h2>ĐẮNG NHẬP HỆ THỐNG</h2>
+      <p>Ban QLDA Đầu tư Xây dựng các Công trình Giao thông và Nông nghiệp Đà Nẵng</p>
+      
+      <div id="g_id_onload"></div>
+      
+      <div id="loginLoading">⏳ Đang xác thực tài khoản...</div>
+      <div id="loginErr"></div>
+    </div>
+  </div>
+
+  <footer>🏛️ Ban Quản lý Dự án Đầu tư Xây dựng các Công trình Giao thông và Nông nghiệp Đà Nẵng &nbsp;·&nbsp; Báo cáo giải ngân v6.0 · KH 2026 · CSV 16/06/2025 · 93 Xã/Phường</footer>
+
+  <script>
+  // DANH SÁCH 11 EMAIL ĐƯỢC PHÉP TRUY CẬP
+  const ALLOWED_EMAILS = [
+    'vuongkts2909@gmail.com',
+    'duongnd80@gmail.com',
+    'dovanthaonhs@gmail.com',
+    'thuongdagt@gmail.com',
+    'duyanhdn@gmail.com',
+    'ducvpubdn@gmail.com',
+    'hoangbql78@gmail.com',
+    'hothuy73@gmail.com',
+    'nguyentuanphongqlda@gmail.com',
+    'minhpq2006@gmail.com',
+    'ngoctanqldt@gmail.com'
+  ];
+
+  // Hàm giải mã JWT Token hỗ trợ Tiếng Việt UTF-8 (Chống vỡ font/lỗi atob)
+  function decodeJwtResponse(token) {
+    try {
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+      }).join(''));
+      return JSON.parse(jsonPayload);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  // Hàm xử lý khi bấm đăng nhập Google thành công
+  function handleGoogleLogin(response) {
+    const loadingEl = document.getElementById('loginLoading');
+    const errEl = document.getElementById('loginErr');
+    
+    if (loadingEl) loadingEl.classList.add('s');
+    if (errEl) errEl.classList.remove('s');
+
+    try {
+      const payload = decodeJwtResponse(response.credential);
+      if (!payload) throw new Error("Decode Failed");
+
+      const email = (payload.email || '').toLowerCase().trim();
+      const name = payload.name || email;
+
+      // Kiểm tra xem Email có nằm trong Whitelist không
+      if (ALLOWED_EMAILS.map(e => e.toLowerCase()).includes(email)) {
+        // Lưu phiên làm việc
+        sessionStorage.setItem('qlda_auth', '1');
+        sessionStorage.setItem('qlda_user', name);
+
+        // Ẩn màn hình Đăng nhập
+        const loginScreen = document.getElementById('loginScreen');
+        if (loginScreen) loginScreen.classList.add('h');
+        if (loadingEl) loadingEl.classList.remove('s');
+
+        // Hiển thị Chip tên cán bộ
+        const chip = document.createElement('div');
+        chip.className = 'chip';
+        chip.innerHTML = '👤 <b>' + name.split(' ').pop() + '</b>';
+        const trContainer = document.querySelector('.tr');
+        if (trContainer) trContainer.prepend(chip);
+
+        // Chạy hàm khởi tạo trang Dashboard
+        if (typeof init === 'function') init();
+      } else {
+        // Email không có trong danh sách -> Từ chối
+        if (loadingEl) loadingEl.classList.remove('s');
+        if (errEl) {
+          errEl.innerHTML = '⛔ Tài khoản <b>' + email + '</b> không có quyền truy cập.<br>Liên hệ quản trị viên để được cấp quyền.';
+          errEl.classList.add('s');
+        }
+
+        const loginBox = document.querySelector('.login-box');
+        if (loginBox) {
+          loginBox.style.animation = 'shake .3s ease';
+          setTimeout(() => loginBox.style.animation = '', 400);
+        }
+
+        if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
+          google.accounts.id.disableAutoSelect();
+        }
+      }
+    } catch (e) {
+      if (loadingEl) loadingEl.classList.remove('s');
+      if (errEl) {
+        errEl.innerHTML = '❌ Lỗi xác thực tài khoản. Vui lòng thử lại!';
+        errEl.classList.add('s');
+      }
+    }
+  }
+
+  // Khởi tạo SDK Google khi trang tải xong
+  window.addEventListener('DOMContentLoaded', function () {
+    // 1. Nếu đã đăng nhập trước đó -> Tự động ẩn màn hình đăng nhập
+    if (sessionStorage.getItem('qlda_auth') === '1') {
+      const loginScreen = document.getElementById('loginScreen');
+      if (loginScreen) loginScreen.classList.add('h');
+
+      const name = sessionStorage.getItem('qlda_user') || 'User';
+      const chip = document.createElement('div');
+      chip.className = 'chip';
+      chip.innerHTML = '👤 <b>' + name.split(' ').pop() + '</b>';
+      const trContainer = document.querySelector('.tr');
+      if (trContainer) trContainer.prepend(chip);
+
+      if (typeof init === 'function') init();
+      return;
+    }
+
+    // 2. Vẽ nút Google Login
+    if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
+      google.accounts.id.initialize({
+        client_id: '532346952448-g96goj4pacl285blr3pep9k0shbhjel1.apps.googleusercontent.com',
+        callback: handleGoogleLogin
+      });
+
+      const btnTarget = document.getElementById('g_id_onload');
+      if (btnTarget) {
+        google.accounts.id.renderButton(
+          btnTarget,
+          { theme: 'outline', size: 'large', width: '100%', text: 'signin_with' }
+        );
+      }
+    }
+  });
+  </script>
+</body>
+</html>
 </body>
 </html>
 
