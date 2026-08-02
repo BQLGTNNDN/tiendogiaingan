@@ -3,199 +3,136 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Ban QLDA Giao thông & Nông nghiệp Đà Nẵng</title>
-<script src="https://accounts.google.com/gsi/client" async defer></script>
+<title>Báo cáo Giải Ngân | Ban QLDA Giao thông & Nông nghiệp Đà Nẵng</title>
 <style>
-:root{
-  --navy:#1B3A6B;--blue:#2E5FA3;--bg:#EEF2F7;--surf:#fff;--rule:#DDE3EA;
-  --ink:#0D1B2A;--ink2:#3D4F5C;--ink3:#7A8C96;--r:8px;--r2:12px;
-  --sh:0 2px 10px rgba(13,27,42,.09);--sh2:0 6px 20px rgba(13,27,42,.15);
-}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%}
-body{font-family:'Segoe UI',system-ui,Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:14px;line-height:1.6;display:flex;flex-direction:column}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden}
+body{font-family:'Segoe UI',system-ui,Arial,sans-serif;background:#f0f2f5}
+
 /* TOPBAR */
-.topbar{background:linear-gradient(135deg,#0f2447 0%,var(--navy) 60%,#1e4d8c 100%);padding:0 16px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:300;box-shadow:0 3px 16px rgba(0,0,0,.3);flex-shrink:0}
-.brand{display:flex;align-items:center;gap:10px;min-width:0}
-.seal{width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.12);border:2px solid rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
-.brand-txt strong{font-size:12px;font-weight:700;color:#fff;display:block;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:180px}
-.brand-txt span{font-size:10px;color:rgba(255,255,255,.5);display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:180px}
-@media(min-width:768px){
-  .brand-txt strong{max-width:400px;font-size:13px}
-  .brand-txt span{max-width:400px;font-size:11px}
+.topbar{
+  background:linear-gradient(135deg,#0a1628 0%,#1B3A6B 50%,#1e4d8c 100%);
+  padding:0 20px;
+  height:56px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  position:relative;
+  z-index:100;
+  box-shadow:0 2px 12px rgba(0,0,0,.25);
+  flex-shrink:0
 }
-.tr{display:flex;align-items:center;gap:8px;flex-wrap:wrap;flex-shrink:0}
-.chip{display:flex;align-items:center;gap:5px;padding:3px 10px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:20px;font-size:11px;color:rgba(255,255,255,.85);white-space:nowrap}
-.chip b{color:#7DD3FC}
-.btnLogout{padding:5px 14px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);color:#fff;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;transition:background .2s;white-space:nowrap}
-.btnLogout:hover{background:rgba(255,255,255,.25)}
-/* MAIN - flex container cho iframe */
-main{flex:1;display:flex;flex-direction:column;padding:12px;min-height:0}
-.iframe-wrapper{flex:1;position:relative;min-height:500px;border-radius:var(--r2);overflow:hidden;box-shadow:var(--sh);background:var(--surf)}
-.iframe-wrapper iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:0}
-@media(max-width:600px){
-  .topbar{padding:0 10px;height:54px}
-  .seal{width:32px;height:32px;font-size:15px}
+.brand{display:flex;align-items:center;gap:12px;min-width:0}
+.seal{
+  width:36px;height:36px;
+  border-radius:50%;
+  background:rgba(255,255,255,.1);
+  border:2px solid rgba(255,255,255,.25);
+  display:flex;align-items:center;justify-content:center;
+  font-size:17px;flex-shrink:0
+}
+.brand-txt strong{
+  font-size:12px;font-weight:700;color:#fff;
+  display:block;line-height:1.2;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:200px
+}
+.brand-txt span{
+  font-size:10px;color:rgba(255,255,255,.5);
+  display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:200px
+}
+.topbar-right{display:flex;align-items:center;gap:12px;flex-shrink:0}
+.topbar-right .date{
+  font-size:11px;color:rgba(255,255,255,.6);
+  padding:4px 12px;background:rgba(255,255,255,.08);
+  border-radius:16px;border:1px solid rgba(255,255,255,.08);
+  white-space:nowrap
+}
+.topbar-right .badge{
+  font-size:10px;font-weight:600;color:#7DD3FC;
+  padding:3px 10px;background:rgba(125,211,252,.12);
+  border-radius:12px;border:1px solid rgba(125,211,252,.2);
+  white-space:nowrap
+}
+
+/* IFRAME WRAPPER */
+.main-wrap{
+  height:calc(100vh - 56px);
+  width:100%;
+  padding:8px;
+  background:#e8ecf1
+}
+.iframe-container{
+  width:100%;
+  height:100%;
+  border-radius:10px;
+  overflow:hidden;
+  box-shadow:0 4px 24px rgba(0,0,0,.08);
+  background:#fff;
+  position:relative
+}
+.iframe-container iframe{
+  position:absolute;
+  top:0;left:0;
+  width:100%;height:100%;
+  border:0;
+  display:block
+}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+  .topbar{padding:0 12px;height:50px}
+  .seal{width:30px;height:30px;font-size:14px}
   .brand-txt strong{font-size:10px;max-width:120px}
   .brand-txt span{display:none}
-  .chip{font-size:10px;padding:2px 8px}
-  .btnLogout{font-size:10px;padding:4px 10px}
-  main{padding:8px}
-  .iframe-wrapper{min-height:300px;border-radius:var(--r)}
+  .topbar-right .date{font-size:9px;padding:2px 8px}
+  .topbar-right .badge{font-size:9px;padding:2px 8px}
+  .main-wrap{padding:4px}
+  .iframe-container{border-radius:6px}
 }
-/* LOGIN SCREEN */
-#loginScreen{position:fixed;inset:0;background:linear-gradient(135deg,#0a1628 0%,#1B3A6B 60%,#1e4d8c 100%);z-index:99999;display:flex;align-items:center;justify-content:center;padding:16px}
-#loginScreen.h{display:none}
-.login-box{background:rgba(255,255,255,.07);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.15);border-radius:16px;padding:32px 28px;max-width:400px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.5);text-align:center}
-.login-logo{width:64px;height:64px;border-radius:50%;background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 14px}
-.login-title{font-size:13px;font-weight:700;color:#fff;margin-bottom:4px;line-height:1.4}
-.login-sub{font-size:11px;color:rgba(255,255,255,.5);margin-bottom:24px;line-height:1.4}
-.login-divider{border:none;border-top:1px solid rgba(255,255,255,.1);margin:16px 0}
-.login-err{background:rgba(181,42,42,.25);border:1px solid rgba(181,42,42,.5);border-radius:8px;padding:10px 14px;font-size:12px;color:#FCA5A5;margin-top:14px;display:none;line-height:1.4}
-.login-err.s{display:block}
-.login-footer{margin-top:18px;font-size:10px;color:rgba(255,255,255,.25);line-height:1.5}
-.login-loading{color:rgba(255,255,255,.6);font-size:12px;margin-top:14px;display:none}
-.login-loading.s{display:block}
-#g_id_signin{display:flex;justify-content:center;margin-top:4px}
-@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
-.hidden{display:none!important}
-footer{text-align:center;padding:10px;font-size:10px;color:var(--ink3);border-top:1px solid var(--rule);background:var(--surf);flex-shrink:0}
+@media(max-width:480px){
+  .topbar{padding:0 8px;height:46px}
+  .seal{width:26px;height:26px;font-size:12px}
+  .brand-txt strong{font-size:9px;max-width:80px}
+  .topbar-right .date{font-size:8px;padding:2px 6px}
+  .topbar-right .badge{display:none}
+  .main-wrap{padding:2px}
+}
 </style>
 </head>
 <body>
 
-<!-- LOGIN SCREEN -->
-<div id="loginScreen">
-  <div class="login-box">
-    <div class="login-logo">🏛️</div>
-    <div class="login-title">BAN QUẢN LÝ DỰ ÁN<br>GIAO THÔNG &amp; NÔNG NGHIỆP ĐÀ NẴNG</div>
-    <div class="login-sub">Hệ thống Báo cáo Giải Ngân &amp; Tiến Độ · KH 2026<br>Đăng nhập bằng tài khoản Google được cấp quyền</div>
-    <hr class="login-divider">
-    <div id="g_id_onload"
-      data-client_id="532346952448-g96goj4pacl285blr3pep9k0shbhjel1.apps.googleusercontent.com"
-      data-callback="handleGoogleLogin"
-      data-auto_prompt="false">
+<!-- TOPBAR -->
+<header class="topbar">
+  <div class="brand">
+    <div class="seal">🏛️</div>
+    <div class="brand-txt">
+      <strong>BAN QLDA GIAO THÔNG &amp; NÔNG NGHIỆP ĐÀ NẴNG</strong>
+      <span>Báo cáo Giải Ngân · Năm kế hoạch 2026</span>
     </div>
-    <div class="g_id_signin"
-      data-type="standard"
-      data-size="large"
-      data-theme="filled_blue"
-      data-text="signin_with"
-      data-shape="rectangular"
-      data-logo_alignment="left"
-      data-width="300">
-    </div>
-    <div class="login-loading" id="loginLoading">⏳ Đang xác thực…</div>
-    <div class="login-err" id="loginErr"></div>
-    <div class="login-footer">
-      Chỉ tài khoản được cấp quyền mới có thể đăng nhập<br>
-      © Ban QLDA Giao thông &amp; Nông nghiệp Đà Nẵng · 2026
-    </div>
+  </div>
+  <div class="topbar-right">
+    <span class="badge">📊 KH 2026</span>
+    <span class="date" id="currentDate">--</span>
+  </div>
+</header>
+
+<!-- IFRAME -->
+<div class="main-wrap">
+  <div class="iframe-container">
+    <iframe 
+      src="https://datastudio.google.com/embed/reporting/5634896d-227b-43c8-8eb4-225370996309/page/QnN5F" 
+      allowfullscreen 
+      sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox">
+    </iframe>
   </div>
 </div>
 
-<!-- MAIN APP -->
-<div id="app" class="hidden">
-  <header class="topbar">
-    <div class="brand">
-      <div class="seal">🏛️</div>
-      <div class="brand-txt">
-        <strong>BAN QUẢN LÝ DỰ ÁN GIAO THÔNG &amp; NÔNG NGHIỆP</strong>
-        <span>Báo cáo Giải Ngân · Năm kế hoạch 2026</span>
-      </div>
-    </div>
-    <div class="tr">
-      <div class="chip">👤 <b id="userName">--</b></div>
-      <button class="btnLogout" onclick="logout()">Đăng xuất</button>
-    </div>
-  </header>
-
-  <main>
-    <div class="iframe-wrapper">
-      <iframe 
-        src="https://datastudio.google.com/embed/reporting/5634896d-227b-43c8-8eb4-225370996309/page/QnN5F" 
-        frameborder="0" 
-        allowfullscreen 
-        sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox">
-      </iframe>
-    </div>
-  </main>
-
-  <footer>🏛️ Ban Quản lý Dự án Đầu tư Xây dựng các Công trình Giao thông và Nông nghiệp Đà Nẵng · 2026</footer>
-</div>
-
 <script>
-// ══ DANH SÁCH EMAIL ĐƯỢC CẤP QUYỀN ══
-const ALLOWED_EMAILS = [
-  'vuongkts2909@gmail.com',
-  'duongnd80@gmail.com',
-  'dovanthaonhs@gmail.com',
-  'thuongdagt@gmail.com'
-];
-
-// ══ XỬ LÝ LOGIN GOOGLE ══
-function handleGoogleLogin(response) {
-  const loading = document.getElementById('loginLoading');
-  const errBox = document.getElementById('loginErr');
-  
-  loading.classList.add('s');
-  errBox.classList.remove('s');
-
-  try {
-    const payload = JSON.parse(atob(response.credential.split('.')[1]));
-    const email = (payload.email || '').toLowerCase().trim();
-    const name = payload.name || email;
-
-    if (ALLOWED_EMAILS.map(e => e.toLowerCase()).includes(email)) {
-      sessionStorage.setItem('qlda_auth', '1');
-      sessionStorage.setItem('qlda_user', name);
-      sessionStorage.setItem('qlda_email', email);
-
-      document.getElementById('loginScreen').classList.add('h');
-      document.getElementById('app').classList.remove('hidden');
-      
-      document.getElementById('userName').textContent = name.split(' ').pop();
-
-      loading.classList.remove('s');
-    } else {
-      loading.classList.remove('s');
-      errBox.innerHTML = '⛔ Tài khoản <b>' + email + '</b> không có quyền truy cập.<br>Liên hệ quản trị viên để được cấp quyền.';
-      errBox.classList.add('s');
-      document.querySelector('.login-box').style.animation = 'shake .3s ease';
-      setTimeout(() => document.querySelector('.login-box').style.animation = '', 400);
-      
-      if (typeof google !== 'undefined') {
-        google.accounts.id.disableAutoSelect();
-      }
-    }
-  } catch (e) {
-    loading.classList.remove('s');
-    errBox.innerHTML = '❌ Lỗi xác thực. Vui lòng thử lại.';
-    errBox.classList.add('s');
-  }
-}
-
-// ══ ĐĂNG XUẤT ══
-function logout() {
-  sessionStorage.removeItem('qlda_auth');
-  sessionStorage.removeItem('qlda_user');
-  sessionStorage.removeItem('qlda_email');
-  
-  document.getElementById('app').classList.add('hidden');
-  document.getElementById('loginScreen').classList.remove('h');
-  document.getElementById('loginErr').classList.remove('s');
-  document.getElementById('loginLoading').classList.remove('s');
-}
-
-// ══ KIỂM TRA SESSION ══
+// Hiển thị ngày hiện tại
 document.addEventListener('DOMContentLoaded', function() {
-  if (sessionStorage.getItem('qlda_auth') === '1') {
-    const name = sessionStorage.getItem('qlda_user') || 'Người dùng';
-    
-    document.getElementById('loginScreen').classList.add('h');
-    document.getElementById('app').classList.remove('hidden');
-    document.getElementById('userName').textContent = name.split(' ').pop();
-  }
+  const now = new Date();
+  const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
+  document.getElementById('currentDate').textContent = now.toLocaleDateString('vi-VN', options);
 });
 </script>
 
