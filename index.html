@@ -6,7 +6,7 @@
   <title>Báo cáo Giải Ngân | Ban QLDA Giao thông & Nông nghiệp Đà Nẵng</title>
   
   <script src="https://accounts.google.com/gsi/client" async defer></script>
-  
+
   <style>
     *{margin:0;padding:0;box-sizing:border-box}
     html,body{width:100%;height:100%;overflow:hidden;font-family:'Segoe UI',system-ui,Arial,sans-serif;background:#f0f2f5}
@@ -27,7 +27,7 @@
     .topbar-right .date{font-size:11px;color:rgba(255,255,255,.6);padding:4px 12px;background:rgba(255,255,255,.08);border-radius:16px;border:1px solid rgba(255,255,255,.08);white-space:nowrap}
     .topbar-right .badge{font-size:10px;font-weight:600;color:#7DD3FC;padding:3px 10px;background:rgba(125,211,252,.12);border-radius:12px;border:1px solid rgba(125,211,252,.2);white-space:nowrap}
 
-    /* CHIP HIỂN THỊ TÊN */
+    /* CHIP HIỂN THỊ TÊN NGƯỜI DÙNG */
     .chip{
       background:rgba(255,255,255,.15);color:#fff;padding:4px 14px;border-radius:20px;
       font-size:12px;border:1px solid rgba(255,255,255,.2);display:inline-flex;align-items:center;gap:6px;
@@ -39,21 +39,35 @@
     .iframe-container{width:100%;height:100%;border-radius:10px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.08);background:#fff;position:relative}
     .iframe-container iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:0;display:block}
 
-    /* LOGIN SCREEN */
+    /* LOGIN SCREEN - PHỦ TOÀN MÀN HÌNH */
     #loginScreen{
-      position:fixed;top:0;left:0;width:100%;height:100%;
-      background:rgba(15,23,42,0.92);display:flex;align-items:center;justify-content:center;
-      z-index:9999;backdrop-filter:blur(5px);
+      position:fixed;top:0;left:0;width:100vw;height:100vh;
+      background:#0f172a;display:flex;align-items:center;justify-content:center;
+      z-index:999999;
     }
     #loginScreen.h{display:none !important;}
-    .login-box{background:#ffffff;padding:35px 30px;border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,0.3);text-align:center;max-width:420px;width:90%}
-    .login-box h2{margin-top:0;color:#1e293b;font-size:22px;font-weight:700}
-    .login-box p{color:#64748b;font-size:14px;margin-bottom:25px;line-height:1.5}
-    #loginLoading{display:none;margin-top:15px;color:#2563eb;font-weight:bold}
+    
+    .login-box{
+      background:#ffffff;padding:35px 30px;border-radius:16px;
+      box-shadow:0 20px 25px -5px rgba(0,0,0,0.3);text-align:center;
+      max-width:400px;width:90%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    }
+    .login-box h2{margin:0 0 10px 0;color:#1e293b;font-size:20px;font-weight:700}
+    .login-box p{color:#64748b;font-size:13px;line-height:1.5;margin-bottom:25px}
+    .g-btn-wrapper{display:flex;justify-content:center;min-height:44px;margin-bottom:15px}
+    
+    #loginLoading{display:none;color:#2563eb;font-weight:600;font-size:14px;margin-top:15px}
     #loginLoading.s{display:block !important}
-    #loginErr{display:none;margin-top:15px;color:#dc2626;font-size:13px;line-height:1.4}
+    
+    #loginErr{display:none;color:#dc2626;font-size:13px;line-height:1.4;margin-top:15px;
+      background:#fef2f2;padding:10px;border-radius:8px;border:1px solid #fecaca}
     #loginErr.s{display:block !important}
-    @keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-10px)}40%,80%{transform:translateX(10px)}}
+
+    @keyframes shake{
+      0%,100%{transform:translateX(0)}
+      20%,60%{transform:translateX(-8px)}
+      40%,80%{transform:translateX(8px)}
+    }
 
     /* FOOTER */
     footer{
@@ -73,6 +87,8 @@
       .main-wrap{padding:4px}
       .iframe-container{border-radius:6px}
       footer{font-size:8px;padding:4px 8px}
+      .login-box{padding:25px 20px}
+      .login-box h2{font-size:18px}
     }
     @media(max-width:480px){
       .topbar{padding:0 8px;height:46px}
@@ -82,6 +98,7 @@
       .topbar-right .badge{display:none}
       .main-wrap{padding:2px}
       .chip{font-size:10px;padding:2px 10px}
+      .login-box{padding:20px 15px}
     }
   </style>
 </head>
@@ -102,7 +119,7 @@
   </div>
 </header>
 
-<!-- IFRAME -->
+<!-- IFRAME BÁO CÁO -->
 <div class="main-wrap">
   <div class="iframe-container">
     <iframe 
@@ -118,7 +135,9 @@
   <div class="login-box">
     <h2>🔐 ĐĂNG NHẬP HỆ THỐNG</h2>
     <p>Ban QLDA Đầu tư Xây dựng các Công trình Giao thông và Nông nghiệp Đà Nẵng</p>
-    <div id="g_id_onload"></div>
+    <div class="g-btn-wrapper">
+      <div id="g_id_onload"></div>
+    </div>
     <div id="loginLoading">⏳ Đang xác thực tài khoản...</div>
     <div id="loginErr"></div>
   </div>
@@ -142,7 +161,7 @@ const ALLOWED_EMAILS = [
   'ngoctanqldt@gmail.com'
 ];
 
-// ══ HÀM GIẢI MÃ JWT ══
+// ══ HÀM GIẢI MÃ JWT TOKEN (HỖ TRỢ TIẾNG VIỆT) ══
 function decodeJwtResponse(token) {
   try {
     const base64Url = token.split('.')[1];
@@ -158,11 +177,11 @@ function decodeJwtResponse(token) {
 
 // ══ HÀM KHỞI TẠO DASHBOARD ══
 function initDashboard() {
-  console.log('✅ Dashboard đã được khởi tạo');
-  // Có thể thêm logic khởi tạo khác ở đây
+  console.log('✅ Dashboard đã được khởi tạo -', new Date().toLocaleString('vi-VN'));
+  // Có thể thêm các logic khởi tạo khác ở đây
 }
 
-// ══ XỬ LÝ ĐĂNG NHẬP ══
+// ══ XỬ LÝ ĐĂNG NHẬP GOOGLE ══
 function handleGoogleLogin(response) {
   const loadingEl = document.getElementById('loginLoading');
   const errEl = document.getElementById('loginErr');
@@ -177,23 +196,32 @@ function handleGoogleLogin(response) {
     const email = (payload.email || '').toLowerCase().trim();
     const name = payload.name || email;
 
-    // Kiểm tra Email trong Whitelist
+    // Kiểm tra email trong whitelist
     if (ALLOWED_EMAILS.map(e => e.toLowerCase()).includes(email)) {
       // Lưu phiên đăng nhập
       sessionStorage.setItem('qlda_auth', '1');
       sessionStorage.setItem('qlda_user', name);
 
       // Ẩn màn hình đăng nhập
-      const loginScreen = document.getElementById('loginScreen');
-      if (loginScreen) loginScreen.classList.add('h');
+      document.getElementById('loginScreen').classList.add('h');
       if (loadingEl) loadingEl.classList.remove('s');
 
-      // Hiển thị Chip tên
+      // Tạo Chip hiển thị tên (lấy tên cuối cùng)
       const chip = document.createElement('div');
       chip.className = 'chip';
-      chip.innerHTML = '👤 <b>' + name.split(' ').pop() + '</b>';
+      const lastName = name.split(' ').pop() || name;
+      chip.innerHTML = '👤 <b>' + lastName + '</b>';
+      
       const topbarRight = document.querySelector('.topbar-right');
-      if (topbarRight) topbarRight.prepend(chip);
+      if (topbarRight) {
+        // Chèn chip vào trước badge
+        const badge = topbarRight.querySelector('.badge');
+        if (badge) {
+          topbarRight.insertBefore(chip, badge);
+        } else {
+          topbarRight.prepend(chip);
+        }
+      }
 
       // Khởi tạo dashboard
       initDashboard();
@@ -205,12 +233,14 @@ function handleGoogleLogin(response) {
         errEl.classList.add('s');
       }
 
+      // Hiệu ứng lắc
       const loginBox = document.querySelector('.login-box');
       if (loginBox) {
         loginBox.style.animation = 'shake .3s ease';
         setTimeout(() => loginBox.style.animation = '', 400);
       }
 
+      // Vô hiệu hóa auto-select của Google
       if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
         google.accounts.id.disableAutoSelect();
       }
@@ -227,29 +257,37 @@ function handleGoogleLogin(response) {
 
 // ══ KHỞI TẠO KHI TRANG TẢI XONG ══
 document.addEventListener('DOMContentLoaded', function() {
-  // Hiển thị ngày hiện tại
+  // 1. Hiển thị ngày hiện tại
   const now = new Date();
   const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
   const dateEl = document.getElementById('currentDate');
   if (dateEl) dateEl.textContent = now.toLocaleDateString('vi-VN', options);
 
-  // Kiểm tra phiên đăng nhập cũ
+  // 2. Kiểm tra phiên đăng nhập cũ
   if (sessionStorage.getItem('qlda_auth') === '1') {
-    const loginScreen = document.getElementById('loginScreen');
-    if (loginScreen) loginScreen.classList.add('h');
-
+    document.getElementById('loginScreen').classList.add('h');
+    
     const name = sessionStorage.getItem('qlda_user') || 'User';
     const chip = document.createElement('div');
     chip.className = 'chip';
-    chip.innerHTML = '👤 <b>' + name.split(' ').pop() + '</b>';
+    const lastName = name.split(' ').pop() || name;
+    chip.innerHTML = '👤 <b>' + lastName + '</b>';
+    
     const topbarRight = document.querySelector('.topbar-right');
-    if (topbarRight) topbarRight.prepend(chip);
+    if (topbarRight) {
+      const badge = topbarRight.querySelector('.badge');
+      if (badge) {
+        topbarRight.insertBefore(chip, badge);
+      } else {
+        topbarRight.prepend(chip);
+      }
+    }
 
     initDashboard();
     return;
   }
 
-  // Khởi tạo Google SDK
+  // 3. Khởi tạo Google SDK (nếu chưa đăng nhập)
   if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
     google.accounts.id.initialize({
       client_id: '532346952448-g96goj4pacl285blr3pep9k0shbhjel1.apps.googleusercontent.com',
@@ -260,11 +298,28 @@ document.addEventListener('DOMContentLoaded', function() {
     if (btnTarget) {
       google.accounts.id.renderButton(
         btnTarget,
-        { theme: 'outline', size: 'large', width: '100%', text: 'signin_with' }
+        { 
+          theme: 'outline', 
+          size: 'large', 
+          width: '280', 
+          text: 'signin_with' 
+        }
       );
     }
+  } else {
+    console.warn('⚠️ Google SDK chưa được tải');
   }
 });
+
+// ══ XỬ LÝ THOÁT (TÙY CHỌN) ══
+// Có thể thêm nút đăng xuất nếu cần
+/*
+function logout() {
+  sessionStorage.removeItem('qlda_auth');
+  sessionStorage.removeItem('qlda_user');
+  location.reload();
+}
+*/
 </script>
 
 </body>
