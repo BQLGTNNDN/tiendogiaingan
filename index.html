@@ -134,6 +134,59 @@ document.addEventListener('DOMContentLoaded', function() {
   const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
   document.getElementById('currentDate').textContent = now.toLocaleDateString('vi-VN', options);
 });
+</script><footer>🏛️ Ban Quản lý Dự án Đầu tư Xây dựng các Công trình Giao thông và Nông nghiệp Đà Nẵng &nbsp;·&nbsp; Báo cáo giải ngân v6.0 · KH 2026 · CSV 16/06/2025 · 93 Xã/Phường</footer>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script>
+
+// ══ GOOGLE LOGIN (11 TÀI KHOẢN) ══
+const ALLOWED_EMAILS = [
+  'vuongkts2909@gmail.com',
+  'duongnd80@gmail.com',
+  'dovanthaonhs@gmail.com',
+  'thuongdagt@gmail.com',
+  'duyanhdn@gmail.com',
+  'ducvpubdn@gmail.com',
+  'hoangbql78@gmail.com',
+  'hothuy73@gmail.com',
+  'nguyentuanphongqlda@gmail.com',
+  'minhpq2006@gmail.com',
+  'ngoctanqldt@gmail.com'
+];
+
+function handleGoogleLogin(response){
+  document.getElementById('loginLoading').classList.add('s');
+  document.getElementById('loginErr').classList.remove('s');
+  try{
+    const payload=JSON.parse(atob(response.credential.split('.')[1]));
+    const email=(payload.email||'').toLowerCase().trim();
+    const name=payload.name||email;
+    if(ALLOWED_EMAILS.map(e=>e.toLowerCase()).includes(email)){
+      sessionStorage.setItem('qlda_auth','1');
+      sessionStorage.setItem('qlda_user',name);
+      document.getElementById('loginScreen').classList.add('h');
+      document.getElementById('loginLoading').classList.remove('s');
+      const chip=document.createElement('div');
+      chip.className='chip';
+      chip.innerHTML='👤 <b>'+name.split(' ').pop()+'</b>';
+      document.querySelector('.tr').prepend(chip);
+      init();
+    }else{
+      document.getElementById('loginLoading').classList.remove('s');
+      const err=document.getElementById('loginErr');
+      err.innerHTML='⛔ Tài khoản <b>'+email+'</b> không có quyền truy cập.<br>Liên hệ quản trị viên để được cấp quyền.';
+      err.classList.add('s');
+      document.querySelector('.login-box').style.animation='shake .3s ease';
+      setTimeout(()=>document.querySelector('.login-box').style.animation='',400);
+      if(typeof google!=='undefined')google.accounts.id.disableAutoSelect();
+    }
+  }catch(e){
+    document.getElementById('loginLoading').classList.remove('s');
+    document.getElementById('loginErr').innerHTML='❌ Lỗi xác thực. Vui lòng thử lại.';
+    document.getElementById('loginErr').classList.add('s');
+  }
+}
+
+if(sessionStorage.getItem('qlda_auth')==='1')document.getElementById('loginScreen').classList.add('h');
 </script>
 
 </body>
